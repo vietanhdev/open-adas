@@ -42,6 +42,7 @@ set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 include_directories(
     "src"
+    "src/utils"
     "src/gui"
     "src/gui/dark"
     ${SDL2_INCLUDE_DIRS}
@@ -51,11 +52,13 @@ include_directories(
 add_executable(${PROJECT_NAME}
     "resources.qrc"
     "src/main.cpp"
-    "src/utility.cpp"
-    "src/file_storage.cpp"
+
+    "src/utils/utility.cpp"
+    "src/utils/file_storage.cpp"
+    "src/utils/timer.cpp"
+
     "src/gui/main_window.cpp"
     "src/gui/main_window.ui"
-    "src/timer.cpp"
     "src/gui/dark/dark_style.qrc"
     "src/gui/dark/dark_style.cpp"
 )

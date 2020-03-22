@@ -1,7 +1,7 @@
 #include "main_window.h"
 #include "ui_main_window.h"
 
-static void matDeleter(void* mat) { delete static_cast<cv::Mat*>(mat); }
+using namespace cv;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -17,12 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->menuBtn, SIGNAL(released()), this, SLOT(changeCam_clicked()));
     connect(ui->alertBtn, SIGNAL(released()), this,
             SLOT(changeCam_clicked()));
-
-
-    // Use space to capture
-    QShortcut *shortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
-    QObject::connect(shortcut, SIGNAL(activated()), this, SLOT(changeCam_clicked()));
-
 
     refreshCams();
 
@@ -65,7 +59,6 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 
 void MainWindow::showCam() {
-    using namespace cv;
 
     if (!video.open(current_camera_index)) {
         QMessageBox::critical(
