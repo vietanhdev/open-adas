@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>images/camera-icon.png</file>
+        <file>images/record-icon.png</file>
+        <file>images/info.png</file>
+        <file>images/no-effect.png</file>
+        <file>images/library-icon.png</file>
+        <file>images/flip-camera.png</file>
+        <file>images/menu.png</file>
+        <file>images/mute.png</file>
+        <file>images/warn.png</file>
+    </qresource>
+</RCC>
