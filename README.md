@@ -11,6 +11,9 @@ Smart dash camera for car.
 - OpenCV >= 4.0.1
 - C++ 17 compiler
 
+- CUDA 10.1
+- TensorRT 5.1.5-1+cuda10.1
+
 ### Setup for Linux - Ubuntu 18.04
 
 #### Setup
@@ -45,13 +48,21 @@ sudo apt-get install libsdl2-dev
 cd <project directory>
 mkdir build
 cd build
-cmake ..
+cmake -DCUDA_INCLUDE_DIRS=/usr/local/cuda-10.1/include ..
 make
 ```
 
 - Run
 ```
 ./CarSmartCam
+```
+
+
+#### Known errors
+
+- `/usr/bin/ld: cannot find -lcudart`:
+```
+sudo ln -s /usr/local/cuda/lib64/libcudart.so /usr/lib/libcudart.so
 ```
 
 

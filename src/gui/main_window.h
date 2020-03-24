@@ -20,6 +20,7 @@
 
 #include "file_storage.h"
 
+#include "object_detector.h"
 
 namespace Ui {
 class MainWindow;
@@ -61,6 +62,8 @@ private:
     int MAX_CAMS = 5; // Max number of camera supported. This number used to scan cameras
     int current_camera_index = 0;
     int selected_camera_index = 0;
+
+    ObjectDetector *object_detector;
 
 public:
     void setCurrentImage(const cv::Mat & img);

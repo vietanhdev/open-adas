@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Init Audio
     SDL_Init(SDL_INIT_AUDIO);
+
+    object_detector = new ObjectDetector();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -97,6 +99,7 @@ void MainWindow::showCam() {
         }
 
         video >> frame;
+        frame = object_detector->inference(frame);
         if (!frame.empty()) {
 
             // Processing
