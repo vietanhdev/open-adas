@@ -41,6 +41,12 @@ https://linuxize.com/post/how-to-install-opencv-on-ubuntu-18-04/
 sudo apt-get install libsdl2-dev
 ```
 
+- Install protobuf 3.6.1
+
+```
+https://github.com/protocolbuffers/protobuf
+```
+
 #### Compile and Run
 
 - Compile
@@ -48,7 +54,7 @@ sudo apt-get install libsdl2-dev
 cd <project directory>
 mkdir build
 cd build
-cmake -DCUDA_INCLUDE_DIRS=/usr/local/cuda-10.1/include ..
+cmake -DCUDA_INCLUDE_DIRS=/usr/local/cuda-10.0/include ..
 make
 ```
 
@@ -63,6 +69,11 @@ make
 - `/usr/bin/ld: cannot find -lcudart`:
 ```
 sudo ln -s /usr/local/cuda/lib64/libcudart.so /usr/lib/libcudart.so
+```
+
+- `/usr/bin/ld: cannot find -lcublas`:
+```
+sudo ln -s /usr/local/cuda/lib64/libcublas.so /usr/lib/libcublas.so
 ```
 
 

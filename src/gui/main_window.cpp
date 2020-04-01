@@ -24,7 +24,42 @@ MainWindow::MainWindow(QWidget *parent)
     SDL_Init(SDL_INIT_AUDIO);
 
     object_detector = new ObjectDetector();
+    lane_detector = new LaneDetector();
+
+    // Start processing threads
+    std::thread od_thread(&MainWindow::object_detection_thread, object_detector, std::ref(current_img), std::ref(current_img_mutex),
+                    std::ref(object_detection_results), std::ref(object_detection_results_mutex)
+                );
+    od_thread.detach(); 
 }
+
+
+void MainWindow::object_detection_thread(ObjectDetector * object_detector, cv::Mat & img, std::mutex & img_mutex, 
+    std::vector<Detection> & object_detection_results, std::mutex & object_detection_results_mutex) {
+    
+    cv::Mat clone_img;
+    while (true) {
+        {
+            std::lock_guard<std::mutex> guard(img_mutex);
+            clone_img = img.clone();
+        }
+
+        if (clone_img.empty()) {
+            continue;
+        }
+
+        std::vector<Detection> results;
+        results = object_detector->inference(clone_img);
+
+        {
+            std::lock_guard<std::mutex> guard(object_detection_results_mutex);
+            object_detection_results = results;
+        }
+    }
+     
+    
+}
+
 
 MainWindow::~MainWindow() { delete ui; }
 
@@ -99,9 +134,18 @@ void MainWindow::showCam() {
         }
 
         video >> frame;
-        frame = object_detector->inference(frame);
+
         if (!frame.empty()) {
 
+            {
+                std::lock_guard<std::mutex> guard(object_detection_results_mutex);
+                if (!object_detection_results.empty()) {
+                    cv::RNG rng(244);
+                    std::vector<cv::Scalar> color = { cv::Scalar(255, 0,0),cv::Scalar(0, 255,0)};
+                    draw_object_detection_results(object_detection_results, frame, color, false);
+                }
+            }
+            
             // Processing
             setCurrentImage(frame);
 

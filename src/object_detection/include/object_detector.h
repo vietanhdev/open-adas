@@ -15,7 +15,7 @@ class ObjectDetector {
 
    public:
     ObjectDetector();
-    cv::Mat inference(const cv::Mat &img);
+    std::vector<Detection> inference(const cv::Mat &img);
 };
 
 #endif  // OBJECT_DETECTOR_H

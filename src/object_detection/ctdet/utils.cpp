@@ -134,7 +134,7 @@ cv::Scalar randomColor(cv::RNG& rng) {
     return cv::Scalar(icolor & 255, (icolor >> 8) & 255, (icolor >> 16) & 255);
 }
 
-void drawImg(const std::vector<Detection> & result,cv::Mat& img,const std::vector<cv::Scalar>& color, const bool& forwardFace)
+void draw_object_detection_results(const std::vector<Detection> & result,cv::Mat& img,const std::vector<cv::Scalar>& color, const bool& forwardFace)
 {
     int mark;
     int box_think = (img.rows+img.cols) * .001 ;

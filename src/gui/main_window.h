@@ -14,6 +14,7 @@
 #include <SDL.h>
 
 #include <algorithm>
+#include <thread>
 #include <mutex>
 #include <memory>
 #include "opencv2/opencv.hpp"
@@ -21,6 +22,9 @@
 #include "file_storage.h"
 
 #include "object_detector.h"
+#include "lane_detector.h"
+#include "object_detector.h"
+#include "ctdet_utils.h"
 
 namespace Ui {
 class MainWindow;
@@ -64,11 +68,17 @@ private:
     int selected_camera_index = 0;
 
     ObjectDetector *object_detector;
+    LaneDetector *lane_detector;
+
+    std::vector<Detection> object_detection_results;
+    std::mutex object_detection_results_mutex;
 
 public:
     void setCurrentImage(const cv::Mat & img);
     cv::Mat getCurrentImage();
 
+    static void object_detection_thread(ObjectDetector * object_detector, cv::Mat & img, std::mutex & img_mutex, 
+    std::vector<Detection> & object_detection_results, std::mutex & object_detection_results_mutex);
 };
 
 #endif // MAINWINDOW_H
