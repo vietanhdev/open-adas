@@ -246,39 +246,44 @@ class LaneFinder:
         if self.found:
             self.equalize_lines(0.875)
 
-    def draw_lane_weighted(self, img, thickness=5, alpha=1, beta=0.5, gamma=0):
+    def draw_lane(self, img, thickness=5):
         left_line = self.left_line.get_line_points()
         right_line = self.right_line.get_line_points()
         both_lines = np.concatenate((left_line, np.flipud(right_line)), axis=0)
         lanes = np.zeros((self.warped_size[1], self.warped_size[0], 3), dtype=np.uint8)
+        # lanes = img.copy()
         if self.found:
             lanes = cv2.fillPoly(lanes, [both_lines.astype(np.int32)], (0, 255, 0))
             cv2.polylines(lanes, [left_line.astype(np.int32)], False, (255, 0, 0),thickness=10 )
             cv2.polylines(lanes, [right_line.astype(np.int32)],False,  (0, 0, 255), thickness=10)
             cv2.fillPoly(lanes, [both_lines.astype(np.int32)], (0, 255, 0))
+            
+        lanes_unwarped = self.unwarp(lanes)
+
+        if self.found:
             mid_coef = 0.5 * (self.left_line.poly_coeffs + self.right_line.poly_coeffs)
             curve = get_curvature(mid_coef, img_size=self.warped_size, pixels_per_meter=self.left_line.pixels_per_meter)
             shift = get_center_shift(mid_coef, img_size=self.warped_size,
                                      pixels_per_meter=self.left_line.pixels_per_meter)
-            cv2.putText(img, "Road curvature: {:6.2f}m".format(curve), (420, 50), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
+            cv2.putText(lanes_unwarped, "Road curvature: {:6.2f}m".format(curve), (420, 50), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
                         thickness=5, color=(255, 255, 255))
-            cv2.putText(img, "Road curvature: {:6.2f}m".format(curve), (420, 50), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
-                        thickness=3, color=(0, 0, 0))
-            cv2.putText(img, "Car position: {:4.2f}m".format(shift), (460, 100), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
+            cv2.putText(lanes_unwarped, "Road curvature: {:6.2f}m".format(curve), (420, 50), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
+                        thickness=3, color=(0, 255, 0))
+            cv2.putText(lanes_unwarped, "Car position: {:4.2f}m".format(shift), (460, 100), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
                         thickness=5, color=(255, 255, 255))
-            cv2.putText(img, "Car position: {:4.2f}m".format(shift), (460, 100), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
-                        thickness=3, color=(0, 0, 0))
+            cv2.putText(lanes_unwarped, "Car position: {:4.2f}m".format(shift), (460, 100), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
+                        thickness=3, color=(0, 255, 0))
         else:
-            cv2.putText(img, "Lane lost!", (550, 170), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
+            cv2.putText(lanes_unwarped, "Lane lost!", (550, 170), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
                         thickness=5, color=(255, 255, 255))
-            cv2.putText(img, "Lane lost!", (550, 170), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
-                        thickness=3, color=(0, 0, 0))
-        lanes_unwarped = self.unwarp(lanes)
-        
-        img = cv2.addWeighted(img, alpha, lanes_unwarped, beta, gamma)
-        return img
+            cv2.putText(lanes_unwarped, "Lane lost!", (550, 170), cv2.FONT_HERSHEY_PLAIN, fontScale=2.5,
+                        thickness=3, color=(0, 255, 0))
+
+        return lanes_unwarped
+
+
 
     def process_image(self, img, reset):
         self.find_lane(img, reset=reset)
-        lane_img = self.draw_lane_weighted(img)
-        return lane_img
+        lanes_unwarped = self.draw_lane(img)
+        return lanes_unwarped

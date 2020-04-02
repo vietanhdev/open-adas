@@ -18,8 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->alertBtn, SIGNAL(released()), this,
             SLOT(changeCam_clicked()));
 
-    refreshCams();
-
     // Init Audio
     SDL_Init(SDL_INIT_AUDIO);
 
@@ -30,7 +28,17 @@ MainWindow::MainWindow(QWidget *parent)
     std::thread od_thread(&MainWindow::object_detection_thread, object_detector, std::ref(current_img), std::ref(current_img_mutex),
                     std::ref(object_detection_results), std::ref(object_detection_results_mutex)
                 );
-    od_thread.detach(); 
+    std::thread ld_thread(&MainWindow::lane_detection_thread, lane_detector, std::ref(current_img), std::ref(current_img_mutex),
+                    std::ref(lane_detection_results), std::ref(lane_detection_results_mutex)
+                );
+    od_thread.detach();
+    ld_thread.detach(); 
+}
+
+
+void MainWindow::setInputVideo(std::string video_path) {
+    this->input_from_video = true;
+    this->video_path = video_path;
 }
 
 
@@ -56,7 +64,32 @@ void MainWindow::object_detection_thread(ObjectDetector * object_detector, cv::M
             object_detection_results = results;
         }
     }
-     
+    
+}
+
+
+void MainWindow::lane_detection_thread(LaneDetector * lane_detector, cv::Mat & img, std::mutex & img_mutex, 
+    cv::Mat & lane_detection_results, std::mutex & lane_detection_results_mutex) {
+
+    lane_detector->init();
+    
+    cv::Mat clone_img;
+    while (true) {
+        {
+            std::lock_guard<std::mutex> guard(img_mutex);
+            clone_img = img.clone();
+        }
+
+        if (clone_img.empty()) {
+            continue; 
+        }
+
+        cv::Mat results = lane_detector->detect_lane(clone_img);
+        {
+            std::lock_guard<std::mutex> guard(lane_detection_results_mutex);
+            lane_detection_results = results;
+        }
+    }
     
 }
 
@@ -95,15 +128,29 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 
+void MainWindow::showCam(std::string video_path) {
+    setInputVideo(video_path);
+    showCam();
+}
+
+std::string MainWindow::getInputVideoPath() {
+    return video_path;
+}
+
 void MainWindow::showCam() {
 
-    if (!video.open(current_camera_index)) {
+
+    if (input_from_video) {
+        video.open(getInputVideoPath());
+    } else if (!video.open(current_camera_index)) {
         QMessageBox::critical(
             this, "Camera Error",
             "Make sure you entered a correct camera index,"
             "<br>or that the camera is not being accessed by another program!");
         return;
     }
+
+    
 
     Mat frame;
     while (true) {
@@ -138,10 +185,19 @@ void MainWindow::showCam() {
         if (!frame.empty()) {
 
             {
+                std::lock_guard<std::mutex> guard(lane_detection_results_mutex);
+                if (!lane_detection_results.empty()) {
+                    cv::Mat lane_result = lane_detection_results.clone();
+                    cv::resize(lane_result, lane_result, frame.size());
+                    cv::addWeighted(frame, 1, lane_result, 0.5, 0, frame);
+                }
+            }
+
+            {
                 std::lock_guard<std::mutex> guard(object_detection_results_mutex);
                 if (!object_detection_results.empty()) {
                     cv::RNG rng(244);
-                    std::vector<cv::Scalar> color = { cv::Scalar(255, 0,0),cv::Scalar(0, 255,0)};
+                    std::vector<cv::Scalar> color = { cv::Scalar(0,255,0), cv::Scalar(0,255,0) };
                     draw_object_detection_results(object_detection_results, frame, color, false);
                 }
             }
@@ -155,7 +211,11 @@ void MainWindow::showCam() {
                         static_cast<int>(frame.step), QImage::Format_RGB888);
             pixmap.setPixmap(QPixmap::fromImage(qimg.rgbSwapped()));
             ui->graphicsView->fitInView(&pixmap, Qt::KeepAspectRatio);
+        } else if (input_from_video) {
+            video.release();
+            video.open(getInputVideoPath());
         }
+
         qApp->processEvents();
     }
 }

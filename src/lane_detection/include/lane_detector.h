@@ -13,10 +13,14 @@ namespace np = boost::python::numpy;
 
 class LaneDetector {
    private:
+        py::object main_module;
+        // Load the dictionary for the namespace
+        py::object mn;
+        py::object image_processor;
         py::object process_img;
    public:
 
-    void Init() {
+    void init_python() {
         // Set your python location.
         // wchar_t str[] = L"/home/vietanhdev/miniconda3/envs/example_env";
         // Py_SetPythonHome(str);
@@ -27,45 +31,52 @@ class LaneDetector {
         np::initialize();
     }
 
-    LaneDetector() {
+    LaneDetector() {}
 
+
+    void init() {
         try {
             // Initialize boost python and numpy
-            Init();
+            init_python();
 
             // Import module
-            py::object main_module = py::import("__main__");
+            main_module = py::import("__main__");
 
             // Load the dictionary for the namespace
-            py::object mn = main_module.attr("__dict__");
+            mn = main_module.attr("__dict__");
 
             // Import the ConfigParser module into the namespace
             py::exec("import init_lane_detector", mn);
 
             // Create the locally-held RawConfigParser object
-            py::object image_processor =
-                py::eval("init_lane_detector.get_lane_finder()", mn);
+            image_processor = py::eval("init_lane_detector.get_lane_finder()", mn);
+
+            // Get processing method
             this->process_img = image_processor.attr("process_image");
 
         } catch (py::error_already_set&) {
             PyErr_Print();
             exit(1);
         }
-
     }
 
     cv::Mat detect_lane(const cv::Mat& img) {
 
-        cv::Mat clone_img;
-        cv::resize(img, clone_img, cv::Size(1280, 720));
-        np::ndarray nd_img = ConvertMatToNDArray(clone_img);
-        np::ndarray output_img = py::extract<np::ndarray>(process_img(nd_img, false));
-        cv::Mat mat_img = ConvertNDArrayToMat(output_img);
+        try {
 
-        cv::imshow("Debug Lane", mat_img);
-        cv::waitKey(1);
+            cv::Mat clone_img = img.clone();
+            cv::resize(clone_img, clone_img, cv::Size(1280, 720));
+            np::ndarray nd_img = ConvertMatToNDArray(clone_img);
+            np::ndarray output_img = py::extract<np::ndarray>(process_img(nd_img, false));
+            cv::Mat mat_img = ConvertNDArrayToMat(output_img);
+            return mat_img;
 
-        return mat_img;
+        } catch (py::error_already_set&) {
+            PyErr_Print();
+            exit(1);
+        }
+
+        return cv::Mat();
 
     }
 

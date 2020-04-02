@@ -38,6 +38,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void showCam();
+    void showCam(std::string video_path);
+    void refreshCams();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -45,7 +47,7 @@ protected:
 
 private slots:
     void changeCam_clicked();
-    void refreshCams();
+    
     
 private:
     Ui::MainWindow *ui;
@@ -66,6 +68,8 @@ private:
     int MAX_CAMS = 5; // Max number of camera supported. This number used to scan cameras
     int current_camera_index = 0;
     int selected_camera_index = 0;
+    bool input_from_video = false;
+    std::string video_path;
 
     ObjectDetector *object_detector;
     LaneDetector *lane_detector;
@@ -73,12 +77,23 @@ private:
     std::vector<Detection> object_detection_results;
     std::mutex object_detection_results_mutex;
 
+    cv::Mat lane_detection_results;
+    std::mutex lane_detection_results_mutex;
+
 public:
     void setCurrentImage(const cv::Mat & img);
     cv::Mat getCurrentImage();
 
+    void setInputVideo(std::string video_path);
+
+
+private:
+    std::string getInputVideoPath();
+
     static void object_detection_thread(ObjectDetector * object_detector, cv::Mat & img, std::mutex & img_mutex, 
     std::vector<Detection> & object_detection_results, std::mutex & object_detection_results_mutex);
+    static void lane_detection_thread(LaneDetector * lane_detector, cv::Mat & img, std::mutex & img_mutex, 
+    cv::Mat & lane_detection_results, std::mutex & lane_detection_results_mutex);
 };
 
 #endif // MAINWINDOW_H

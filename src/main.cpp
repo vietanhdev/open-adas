@@ -21,7 +21,13 @@ int main(int argc, char *argv[]) {
     MainWindow *mainWindow = new MainWindow;
     mainWindow->show();
 
-    mainWindow->showCam();
+    if (argc != 2) {
+        mainWindow->refreshCams();
+        mainWindow->showCam();
+    } else {
+        mainWindow->showCam(std::string(argv[1]));
+    }
+    
 
     return a.exec();
 }

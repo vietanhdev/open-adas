@@ -76,6 +76,8 @@ sudo ln -s /usr/local/cuda/lib64/libcudart.so /usr/lib/libcudart.so
 sudo ln -s /usr/local/cuda/lib64/libcublas.so /usr/lib/libcublas.so
 ```
 
+- While running boost::python with numpy in a separate thread, you have to run `np::initialize();` for that thread.
+
 
 ## III. REFERENCES:
 
