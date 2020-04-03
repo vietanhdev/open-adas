@@ -10,18 +10,16 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QShortcut>
-
 #include <SDL.h>
-
 #include <algorithm>
 #include <thread>
 #include <mutex>
 #include <memory>
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
+#include <regex>
 
 #include "file_storage.h"
-
-#include "object_detector.h"
+#include "camera.h"
 #include "lane_detector.h"
 #include "object_detector.h"
 #include "ctdet_utils.h"
@@ -65,9 +63,10 @@ private:
     cv::VideoCapture video;
 
     // Camera to use
-    int MAX_CAMS = 5; // Max number of camera supported. This number used to scan cameras
+    std::vector<struct Camera> available_cams;
     int current_camera_index = 0;
-    int selected_camera_index = 0;
+
+    // Input from video (for demonstration)
     bool input_from_video = false;
     std::string video_path;
 

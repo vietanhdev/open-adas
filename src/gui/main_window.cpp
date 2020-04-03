@@ -155,22 +155,6 @@ void MainWindow::showCam() {
     Mat frame;
     while (true) {
 
-        // User changed camera
-        if (selected_camera_index != current_camera_index) {
-            
-            video.release();
-            refreshCams();
-            current_camera_index = selected_camera_index;
-            video.open(current_camera_index);
-
-        } else if (!video.isOpened()) {
-
-            // Reset to default camera (0)
-            refreshCams();
-            current_camera_index = selected_camera_index;
-
-        }
-
         // If we still cannot open camera, exit the program
         if (!video.isOpened()) {
             QMessageBox::critical(
@@ -196,12 +180,10 @@ void MainWindow::showCam() {
             {
                 std::lock_guard<std::mutex> guard(object_detection_results_mutex);
                 if (!object_detection_results.empty()) {
-                    cv::RNG rng(244);
-                    std::vector<cv::Scalar> color = { cv::Scalar(0,255,0), cv::Scalar(0,255,0) };
-                    draw_object_detection_results(object_detection_results, frame, color, false);
+                    draw_object_detection_results(object_detection_results, frame, cv::Scalar(0,255,0), false);
                 }
             }
-            
+
             // Processing
             setCurrentImage(frame);
 
@@ -221,15 +203,41 @@ void MainWindow::showCam() {
 }
 
 
+// Get the number of camera available
 void MainWindow::refreshCams() {
 
-    // Get the number of camera available
-    cv::VideoCapture temp_camera;
-    for (int i = 0; i < MAX_CAMS; ++i) {
-        cv::VideoCapture temp_camera(i);
-        bool fail = (!temp_camera.isOpened());
-        temp_camera.release();
+    std::vector<struct Camera> cams;
+    std::string path = "/sys/class/video4linux";
+    for (const auto & entry : fs::directory_iterator(path)) {
+        std::string str_path = fs::canonical(entry).u8string();
+
+        // Get camera
+        int v4l_id;
+        std::regex v4l_id_ex("video[\\d]+$");
+        std::smatch v4l_id_sm;
+        if (regex_search(str_path, v4l_id_sm, v4l_id_ex)) {
+            std::cout << v4l_id_sm.str() << std::endl;
+            std::string tmp = v4l_id_sm.str();
+            v4l_id = std::stoi(tmp.substr(5, tmp.size() - 5));
+        } else {
+            continue;
+        }
+
+        // Get camera identifier
+        std::string identifier;
+        std::regex identifier_ex("\\/[\\d]+\\-[\\d]+\\.[\\d]+/");
+        std::smatch identifier_sm;
+        if (regex_search(str_path, identifier_sm, identifier_ex)) {
+            identifier = identifier_sm.str();
+        } else {
+            identifier = std::to_string(v4l_id);
+        }
+
+        cams.push_back(Camera(v4l_id, identifier));
     }
+
+    available_cams = cams;
+
 }
 
 

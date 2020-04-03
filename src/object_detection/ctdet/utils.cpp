@@ -134,7 +134,7 @@ cv::Scalar randomColor(cv::RNG& rng) {
     return cv::Scalar(icolor & 255, (icolor >> 8) & 255, (icolor >> 16) & 255);
 }
 
-void draw_object_detection_results(const std::vector<Detection> & result,cv::Mat& img,const std::vector<cv::Scalar>& color, const bool& forwardFace)
+void draw_object_detection_results(const std::vector<Detection> & result,cv::Mat& img, const cv::Scalar color, const bool& forwardFace)
 {
     int mark;
     int box_think = (img.rows+img.cols) * .001 ;
@@ -154,11 +154,11 @@ void draw_object_detection_results(const std::vector<Detection> & result,cv::Mat
 
         cv::rectangle(img, cv::Point(item.bbox.x1,item.bbox.y1),
                       cv::Point(item.bbox.x2 ,item.bbox.y2),
-                      color[item.classId], box_think*2, 8, 0);
+                      color, box_think*2, 8, 0);
         if(!forwardFace){
             cv::putText(img,label,
                     cv::Point(item.bbox.x2,item.bbox.y2 - size.height),
-                    cv::FONT_HERSHEY_COMPLEX, label_scale , color[item.classId], box_think/2, 8, 0);
+                    cv::FONT_HERSHEY_COMPLEX, label_scale , color, box_think/2, 8, 0);
         }
         if(forwardFace)
         {

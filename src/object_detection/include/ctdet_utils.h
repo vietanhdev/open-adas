@@ -165,6 +165,6 @@ struct Detection{
 extern std::vector<float> prepareImage(cv::Mat& img, const bool& forwardFace);
 extern void postProcess(std::vector<Detection> & result,const cv::Mat& img, const bool& forwardFace);
 extern void postProcess(std::vector<Detection> & result,const int &img_w ,const int& img_h, const bool& forwardFace);
-extern void draw_object_detection_results(const std::vector<Detection> & result,cv::Mat& img,const std::vector<cv::Scalar>& color, const bool& forwardFace);
+extern void draw_object_detection_results(const std::vector<Detection> & result,cv::Mat& img, cv::Scalar color, const bool& forwardFace);
 extern cv::Scalar randomColor(cv::RNG& rng);
 #endif //CTDET_TRT_UTILS_H
