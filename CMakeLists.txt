@@ -1,4 +1,4 @@
-#Specify the minimum version of CMake
+# Specify the minimum version of CMake
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 # Specify project title
@@ -6,7 +6,6 @@ project(CarSmartCam)
 
 # Setup for TensorRT
 set(GPU_ARCHS 53)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
-# set(TENSORRT_ROOT /usr/local/TensorRT-5.1.5.0)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
@@ -92,30 +91,33 @@ message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
 
-
-# Build object detector
-add_subdirectory(src/object_detection/onnx-tensorrt)
-add_subdirectory(src/object_detection/ctdet)
-add_subdirectory(src/object_detection/inference)
-
-# Build lane detector
-# add_subdirectory(src/lane_detection/lane_detector)
-
-
 include_directories(
     "src"
     "src/utils"
-    "src/gui"
-    "src/gui/dark"
-    "src/object_detection/include"
-    "src/lane_detection/include"
-    # "src/lane_detection/lane_detector/pyboostcvconverter/include"
-    ${PYTHON_INCLUDE_DIRS}
+    "src/user_interface"
+    "src/user_interface/dark"
+    "src/object_detector/include"
+    "src/lane_detector/include"
+    "src/car_prop_reader/NemaTode/include"
     ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIRS}
 )
+
+
+
+# Build object detector
+add_subdirectory(src/object_detector/onnx-tensorrt)
+add_subdirectory(src/object_detector/ctdet)
+add_subdirectory(src/object_detector/inference)
+
+# Build car prop reader
+add_subdirectory(src/car_prop_reader) # library to parge GPS info
+
+# Build lane detector
+add_subdirectory(src/lane_detector)
+
 
 # add required source, header, ui and resource files
 add_executable(${PROJECT_NAME}
@@ -126,10 +128,10 @@ add_executable(${PROJECT_NAME}
     "src/utils/file_storage.cpp"
     "src/utils/timer.cpp"
 
-    "src/gui/main_window.cpp"
-    "src/gui/main_window.ui"
-    "src/gui/dark/dark_style.qrc"
-    "src/gui/dark/dark_style.cpp"
+    "src/user_interface/main_window.cpp"
+    "src/user_interface/main_window.ui"
+    "src/user_interface/dark/dark_style.qrc"
+    "src/user_interface/dark/dark_style.cpp"
 )
 
 ADD_LIBRARY(
@@ -151,8 +153,7 @@ target_link_libraries(${PROJECT_NAME}
     ${CPP_FS_LIB} 
     ${SDL2_LIBRARIES}  
     ${Boost_LIBRARIES}
-    ${PYTHON_LIBRARIES}
-    ctdet ) # TODO: Add lanedt
+    ctdet carprop lanedt)
 
 # Copy files
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -169,5 +170,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/src/lane_detection/python_lane_detector $<TARGET_FILE_DIR:${PROJECT_NAME}>/python_lane_detector)
+        ${CMAKE_SOURCE_DIR}/src/lane_detector/python_lane_detector $<TARGET_FILE_DIR:${PROJECT_NAME}>/python_lane_detector)
 
