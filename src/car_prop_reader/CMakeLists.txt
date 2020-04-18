@@ -3,7 +3,7 @@ project(car_prop_reader)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast -fPIC")
 
-add_subdirectory(NemaTode)                        
+add_subdirectory(libs/NemaTode)                        
 
 file(GLOB CPP_SRC *.cpp)
 

@@ -1,7 +1,7 @@
 #include "object_detector.h"
 
-ObjectDetector::ObjectDetector() {
-    net = new ctdet::ctdetNet("models/object_detection/ctdet_bdd_rescdn18.engine");
+ObjectDetector::ObjectDetector(std::string model_path) {
+    net = new ctdet::ctdetNet(model_path);
     outputData = std::unique_ptr<float[]>(new float[net->outputBufferSize]);
 }
 

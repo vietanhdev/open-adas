@@ -93,9 +93,9 @@ message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
 include_directories(
     "src"
-    "src/utils"
+    "src/utils/include"
     "src/user_interface"
-    "src/user_interface/dark"
+    "src/user_interface/dark_theme"
     "src/object_detector/include"
     "src/lane_detector/include"
     "src/car_prop_reader/NemaTode/include"
@@ -106,11 +106,8 @@ include_directories(
 )
 
 
-
 # Build object detector
-add_subdirectory(src/object_detector/onnx-tensorrt)
-add_subdirectory(src/object_detector/ctdet)
-add_subdirectory(src/object_detector/inference)
+add_subdirectory(src/object_detector)
 
 # Build car prop reader
 add_subdirectory(src/car_prop_reader) # library to parge GPS info
@@ -130,8 +127,8 @@ add_executable(${PROJECT_NAME}
 
     "src/user_interface/main_window.cpp"
     "src/user_interface/main_window.ui"
-    "src/user_interface/dark/dark_style.qrc"
-    "src/user_interface/dark/dark_style.cpp"
+    "src/user_interface/dark_theme/dark_style.qrc"
+    "src/user_interface/dark_theme/dark_style.cpp"
 )
 
 ADD_LIBRARY(

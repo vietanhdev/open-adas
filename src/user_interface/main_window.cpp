@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Init Audio
     SDL_Init(SDL_INIT_AUDIO);
 
-    object_detector = new ObjectDetector();
+    object_detector = new ObjectDetector(SMARTCAM_OBJECT_DETECTION_MODEL);
     lane_detector = new LaneDetector();
 
     // Start processing threads

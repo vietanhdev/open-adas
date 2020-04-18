@@ -1,3 +1,8 @@
+
+# Instruction to convert CenterNet to TensorRT 
+
+**NOTE:** using author's source code.
+
 1. Replace THC-based DCNv2 with ATen-based DCNv2. 
 If it is not replaced, you will get (TypeError: int() not supported on cdata 'struct THLongTensor *') when converting onnx, and I have no idea to solve it.
 So I use DCNv2 from mmdetection.

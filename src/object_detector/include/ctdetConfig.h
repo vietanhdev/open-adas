@@ -5,13 +5,11 @@
 #ifndef CTDET_TRT_CTDETCONFIG_H
 #define CTDET_TRT_CTDETCONFIG_H
 
-namespace ctdet{
+namespace ctdet {
 
     constexpr static float visThresh = 0.5;
     constexpr static int kernelSize = 3;  /// nms maxpool size
 
-
-    //ctdet  ctdet_coco_dla_2x.onnx
     constexpr static int input_w = 512;
     constexpr static int input_h = 512;
     constexpr static int channel = 3;

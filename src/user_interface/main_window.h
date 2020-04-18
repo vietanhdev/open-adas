@@ -23,6 +23,7 @@
 #include "lane_detector.h"
 #include "object_detector.h"
 #include "ctdet_utils.h"
+#include "config.h"
 
 namespace Ui {
 class MainWindow;

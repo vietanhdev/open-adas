@@ -14,7 +14,7 @@ class ObjectDetector {
     std::unique_ptr<float[]> outputData;
 
    public:
-    ObjectDetector();
+    ObjectDetector(std::string model_path);
     std::vector<Detection> inference(const cv::Mat &img);
 };
 
