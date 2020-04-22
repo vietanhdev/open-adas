@@ -13,13 +13,16 @@ namespace np = boost::python::numpy;
 
 class LaneDetector {
    private:
-     py::object main_module;
-     py::object mn;
-     py::object image_processor;
-     py::object process_img;
-   public:
+    const int INPUT_WIDTH = 320;
+    const int INPUT_HEIGHT = 224;
 
-     bool ready = false;
+    py::object main_module;
+    py::object mn;
+    py::object image_processor;
+    py::object process_img;
+
+   public:
+    bool ready = false;
 
     LaneDetector();
     
@@ -34,5 +37,6 @@ class LaneDetector {
     // Function to convert from numpy array to cv::Mat
     cv::Mat ConvertNDArrayToMat(const np::ndarray& ndarr);
 };
+
 
 #endif

@@ -13,21 +13,6 @@ class LaneDetector:
     INPUT_SIZE = (320, 224)
     OUTPUT_SIZE = (320, 224)
 
-    lane_width = 50
-    segment_start = 6
-    segment_amount = 1
-
-    finding_lane_again = False
-    begin_finding_lane_time = 0
-
-    # Tracking
-    last_center = 160
-    last_direction = 0
-    lane_confidence = 0
-
-    speed_decay = 0
-
-
     def __init__(self, onnx_file_path, engine_file_path):
         # Do inference with TensorRT
         trt_outputs = []
@@ -35,33 +20,9 @@ class LaneDetector:
         self.context = self.engine.create_execution_context()
         self.inputs, self.outputs, self.bindings, self.stream = allocate_buffers(self.engine)
 
-
-    def find_main_direction(self, image):
-        draw = image.copy()
-        draw = cv2.cvtColor(draw, cv2.COLOR_GRAY2BGR)
-        linesP = cv2.HoughLinesP(image, 1, np.pi / 180, 50, None, 50, 60)
-        sum_x_diff = 0
-        if linesP is None:
-            return 0, 0 
-
-        for i in range(0, len(linesP)):
-            l = linesP[i][0]
-            p1 = (l[0], l[1])
-            p2 = (l[2], l[3])
-            if p1[1] > p2[1]:
-                p = p1
-                p1 = p2
-                p2 = p
-            sum_x_diff += p1[0] - p2[0]
-            cv2.line(draw, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
-
-        # print(sum_x_diff)
-        # cv2.imshow("lines", draw)
-
-        return np.sign(sum_x_diff), len(linesP)
-
     def get_lane_mask(self, img):
         input_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
         input_img = cv2.resize(input_img, self.INPUT_SIZE).astype(np.float32)
 
         # Set host input to the image. The do_inference function will copy the input to the GPU before executing.
@@ -76,6 +37,13 @@ class LaneDetector:
         lane = output[..., 1].squeeze()
 
         # lane = output[..., 0].squeeze()
+
+        # Convert to BGR is a must to prevent error
+        # TODO: Look into this bug
+        lane = cv2.cvtColor(lane, cv2.COLOR_GRAY2BGR)
+
+        print(road.shape)
+        print(road.dtype)
 
         return lane
 
