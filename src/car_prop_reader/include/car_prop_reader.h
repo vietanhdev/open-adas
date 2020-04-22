@@ -7,12 +7,20 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-
+#include <mutex>
 #include <nmeaparse/nmea.h>
 
 using namespace nmea;
 using namespace std;
 
+
+enum SignalStatus {
+    SIGNAL_NORMAL = 0,
+    SIGNAL_NOT_CONNECTED = 1,
+    SIGNAL_SOCKET_CREATION_ERROR = -1,
+    SIGNAL_INVALID_ADDRESS = -2,
+    SIGNAL_CONNECTION_FAILED = -3
+};
 
 class CarPropReader {
 
@@ -37,10 +45,12 @@ class CarPropReader {
     // -1: Socket creation error
     // -2: Invalid address/ Address not supported
     // -3: Connection failed
-    int signal_status = 1;
+    int signal_status = SIGNAL_NOT_CONNECTED;
     
+
+    std::mutex car_prop_mutex;
     float car_speed = 0; // km/h
-    float longtitude = 0;
+    float longitude = 0;
     float latitude = 0;
 
   public:
@@ -57,11 +67,11 @@ class CarPropReader {
 
     int printError() {
         switch (signal_status) {
-            case 0: cout << "Socket: No error" << endl; break;
-            case 1: cout << "Socket: Not connected" << endl; break;
-            case -1: cout << "Socket: Socket creation error" << endl; break;
-            case -2: cout << "Socket: Invalid address/ Address not supported" << endl; break;
-            case -3: cout << "Socket: Connection failed" << endl; break;
+            case SIGNAL_NORMAL: cout << "Socket: No error" << endl; break;
+            case SIGNAL_NOT_CONNECTED: cout << "Socket: Not connected" << endl; break;
+            case SIGNAL_SOCKET_CREATION_ERROR: cout << "Socket: Socket creation error" << endl; break;
+            case SIGNAL_INVALID_ADDRESS: cout << "Socket: Invalid address/ Address not supported" << endl; break;
+            case SIGNAL_CONNECTION_FAILED: cout << "Socket: Connection failed" << endl; break;
         }
         return signal_status;
     }
@@ -70,8 +80,8 @@ class CarPropReader {
     // Return 0: success
     // Return 1: fail
     int updateProps() {
-
-        if (sock == 0) {
+        
+        if (getSignalStatus() == SIGNAL_NOT_CONNECTED) {
             init_socket_conn();
         }
 
@@ -93,12 +103,40 @@ class CarPropReader {
         // From a buffer in memory...
         nmea_parser->readBuffer((uint8_t*)buffer, sizeof(buffer));
 
-        longtitude = gps->fix.longitude;
+
+        std::lock_guard<std::mutex> lk(car_prop_mutex);
+        signal_status = SIGNAL_NORMAL;
+        longitude = gps->fix.longitude;
         latitude = gps->fix.latitude;
         car_speed = gps->fix.speed;
 
         return 0;
 
+    }
+    
+    float getLongitude() {
+        std::lock_guard<std::mutex> lk(car_prop_mutex);
+        return longitude;
+    }
+
+    float getLatitude() {
+        std::lock_guard<std::mutex> lk(car_prop_mutex);
+        return latitude;
+    }
+
+    float getCarSpeed() {
+        std::lock_guard<std::mutex> lk(car_prop_mutex);
+        return car_speed;
+    }
+
+    float getSignalStatus() {
+        std::lock_guard<std::mutex> lk(car_prop_mutex);
+        return signal_status;
+    }
+
+    void setSignalStatus(SignalStatus status) {
+        std::lock_guard<std::mutex> lk(car_prop_mutex);
+        signal_status = status;
     }
 
   private:
@@ -110,9 +148,9 @@ class CarPropReader {
         }
 
         if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) { 
-            signal_status = -1;
+            setSignalStatus(SIGNAL_SOCKET_CREATION_ERROR);
             // cerr << "\n Socket creation error \n" << endl; 
-            return -1; 
+            return SIGNAL_SOCKET_CREATION_ERROR; 
         } 
 
         struct timeval tv;
@@ -125,13 +163,13 @@ class CarPropReader {
         
         // Convert IPv4 and IPv6 addresses from text to binary form 
         if(inet_pton(AF_INET, socket_server.c_str(), &serv_addr.sin_addr) <= 0)  {
-            signal_status = -2;
+            setSignalStatus(SIGNAL_INVALID_ADDRESS);
             // cerr << "\nInvalid address/ Address not supported \n" << endl; 
             return -1; 
         } 
     
         if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) { 
-            signal_status = -3;
+            setSignalStatus(SIGNAL_CONNECTION_FAILED);
             // cerr << "\nConnection Failed \n" << endl; 
             return -1; 
         } 

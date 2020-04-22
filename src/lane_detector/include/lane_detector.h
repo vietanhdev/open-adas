@@ -13,11 +13,13 @@ namespace np = boost::python::numpy;
 
 class LaneDetector {
    private:
-        py::object main_module;
-        py::object mn;
-        py::object image_processor;
-        py::object process_img;
+     py::object main_module;
+     py::object mn;
+     py::object image_processor;
+     py::object process_img;
    public:
+
+     bool ready = false;
 
     LaneDetector();
     

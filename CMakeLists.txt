@@ -98,7 +98,7 @@ include_directories(
     "src/user_interface/dark_theme"
     "src/object_detector/include"
     "src/lane_detector/include"
-    "src/car_prop_reader/NemaTode/include"
+    "src/car_prop_reader/include"
     ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}

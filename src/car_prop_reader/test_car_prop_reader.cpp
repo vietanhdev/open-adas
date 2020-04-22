@@ -15,8 +15,8 @@ int main(int argc, char const *argv[]) {
             cout << "Error on reading" << endl;
             reader.printError();
         }
-        cout << "Long: " << reader.longtitude << " N, " << reader.latitude << " E" << endl;
-        cout << "Speed: " << reader.car_speed << " km/h" << endl;
+        cout << "Long: " << reader.getLongitude() << " N, " << reader.getLatitude() << " E" << endl;
+        cout << "Speed: " << reader.getCarSpeed() << " km/h" << endl;
     }
 
     return 0;

@@ -35,7 +35,9 @@ void LaneDetector::init() {
         image_processor = py::eval("init_lane_detector.get_lane_finder()", mn);
 
         // Get processing method
-        this->process_img = image_processor.attr("process_image");
+        this->process_img = image_processor.attr("get_lane_mask");
+
+        this->ready = true;
 
     } catch (py::error_already_set&) {
         PyErr_Print();
@@ -48,10 +50,10 @@ cv::Mat LaneDetector::detect_lane(const cv::Mat& img) {
     try {
 
         cv::Mat clone_img = img.clone();
-        cv::resize(clone_img, clone_img, cv::Size(1280, 720));
         np::ndarray nd_img = ConvertMatToNDArray(clone_img);
-        np::ndarray output_img = py::extract<np::ndarray>(process_img(nd_img, false));
+        np::ndarray output_img = py::extract<np::ndarray>(process_img(nd_img));
         cv::Mat mat_img = ConvertNDArrayToMat(output_img);
+        
         return mat_img;
 
     } catch (py::error_already_set&) {

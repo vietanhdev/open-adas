@@ -21,18 +21,18 @@ MainWindow::MainWindow(QWidget *parent)
     // Init Audio
     SDL_Init(SDL_INIT_AUDIO);
 
-    object_detector = new ObjectDetector(SMARTCAM_OBJECT_DETECTION_MODEL);
-    lane_detector = new LaneDetector();
+    object_detector = std::make_shared<ObjectDetector>(SMARTCAM_OBJECT_DETECTION_MODEL);
+    lane_detector = std::make_shared<LaneDetector>();
+    car_prop_reader = std::make_shared<CarPropReader>();
 
     // Start processing threads
-    std::thread od_thread(&MainWindow::object_detection_thread, object_detector, std::ref(current_img), std::ref(current_img_mutex),
-                    std::ref(object_detection_results), std::ref(object_detection_results_mutex)
-                );
-    std::thread ld_thread(&MainWindow::lane_detection_thread, lane_detector, std::ref(current_img), std::ref(current_img_mutex),
-                    std::ref(lane_detection_results), std::ref(lane_detection_results_mutex)
-                );
+    std::thread od_thread(&MainWindow::object_detection_thread, object_detector, std::ref(current_img), std::ref(current_img_mutex), std::ref(object_detection_results), std::ref(object_detection_results_mutex));
+    std::thread ld_thread(&MainWindow::lane_detection_thread, lane_detector, std::ref(current_img), std::ref(current_img_mutex), std::ref(lane_detection_results), std::ref(lane_detection_results_mutex));
+    std::thread cpr_thread(&MainWindow::car_prop_reader_thread, car_prop_reader);
+
     od_thread.detach();
     ld_thread.detach(); 
+    cpr_thread.detach(); 
 }
 
 
@@ -42,8 +42,7 @@ void MainWindow::setInputVideo(std::string video_path) {
 }
 
 
-void MainWindow::object_detection_thread(ObjectDetector * object_detector, cv::Mat & img, std::mutex & img_mutex, 
-    std::vector<Detection> & object_detection_results, std::mutex & object_detection_results_mutex) {
+void MainWindow::object_detection_thread(std::shared_ptr<ObjectDetector> object_detector, cv::Mat & img, std::mutex & img_mutex, std::vector<Detection> & object_detection_results, std::mutex & object_detection_results_mutex) {
     
     cv::Mat clone_img;
     while (true) {
@@ -68,8 +67,7 @@ void MainWindow::object_detection_thread(ObjectDetector * object_detector, cv::M
 }
 
 
-void MainWindow::lane_detection_thread(LaneDetector * lane_detector, cv::Mat & img, std::mutex & img_mutex, 
-    cv::Mat & lane_detection_results, std::mutex & lane_detection_results_mutex) {
+void MainWindow::lane_detection_thread(std::shared_ptr<LaneDetector> lane_detector, cv::Mat & img, std::mutex & img_mutex, cv::Mat & lane_detection_results, std::mutex & lane_detection_results_mutex) {
 
     lane_detector->init();
     
@@ -81,8 +79,13 @@ void MainWindow::lane_detection_thread(LaneDetector * lane_detector, cv::Mat & i
         }
 
         if (clone_img.empty()) {
+            cout << "Empty " << endl;
             continue; 
         }
+
+        // cv::imshow("Cloned", img);
+        // cv::waitKey(0);
+        cv::imwrite("clone.png", clone_img);
 
         cv::Mat results = lane_detector->detect_lane(clone_img);
         {
@@ -91,6 +94,13 @@ void MainWindow::lane_detection_thread(LaneDetector * lane_detector, cv::Mat & i
         }
     }
     
+}
+
+
+void MainWindow::car_prop_reader_thread(std::shared_ptr<CarPropReader> car_prop_reader) {
+    while (true) {
+        car_prop_reader->updateProps();
+    }
 }
 
 
@@ -150,9 +160,8 @@ void MainWindow::showCam() {
         return;
     }
 
-    
-
     Mat frame;
+    Mat draw_frame;
     while (true) {
 
         // If we still cannot open camera, exit the program
@@ -168,29 +177,62 @@ void MainWindow::showCam() {
 
         if (!frame.empty()) {
 
+            if (input_from_video && !lane_detector->ready) {
+                video.set(cv::CAP_PROP_POS_FRAMES, 0);
+            }
+
+            // Processing
+            setCurrentImage(frame);
+
+            draw_frame = getCurrentImage();
             {
                 std::lock_guard<std::mutex> guard(lane_detection_results_mutex);
                 if (!lane_detection_results.empty()) {
                     cv::Mat lane_result = lane_detection_results.clone();
-                    cv::resize(lane_result, lane_result, frame.size());
-                    cv::addWeighted(frame, 1, lane_result, 0.5, 0, frame);
+                    cv::resize(lane_result, lane_result, draw_frame.size());
+
+
+                    // cv::imshow("Lane", lane_result);
+                    // cv::waitKey(1);
+
+                    cv::Mat rgb_lane_result;
+                    cv::cvtColor(lane_result, rgb_lane_result, cv::COLOR_GRAY2BGR);
+                    rgb_lane_result.setTo(Scalar(0,255,0), lane_result > 50);
+
+                    cv::addWeighted(draw_frame, 1, rgb_lane_result, 0.5, 0, draw_frame);
                 }
             }
 
             {
                 std::lock_guard<std::mutex> guard(object_detection_results_mutex);
                 if (!object_detection_results.empty()) {
-                    draw_object_detection_results(object_detection_results, frame, cv::Scalar(0,255,0), false);
+                    draw_object_detection_results(object_detection_results, draw_frame, cv::Scalar(0,255,0), false);
                 }
             }
 
-            // Processing
-            setCurrentImage(frame);
+            // Add speed
+            int gps_signal_status = car_prop_reader->getSignalStatus();
+            if (gps_signal_status != 0) {
+                std::stringstream ss;
+                ss << "No GPS";
+
+                #ifdef SMARTCAM_DEBUG
+                    ss << " (" << gps_signal_status << ")";
+                #endif
+
+                putText(draw_frame, ss.str(), Point2f(80 - 2, draw_frame.rows - 80 - 2), FONT_HERSHEY_PLAIN, 5,  Scalar(0,0,0), 5);
+                putText(draw_frame, ss.str(), Point2f(80, draw_frame.rows - 80), FONT_HERSHEY_PLAIN, 5,  Scalar(0,0,255,255), 5);
+            } else {
+                std::stringstream ss;
+                ss << car_prop_reader->getCarSpeed() << " km/h";
+                putText(draw_frame, ss.str(), Point2f(80 - 2, draw_frame.rows - 80 - 2), FONT_HERSHEY_PLAIN, 5,  Scalar(0,0,0), 5);
+                putText(draw_frame, ss.str(), Point2f(80, draw_frame.rows - 80), FONT_HERSHEY_PLAIN, 5,  Scalar(0,0,255,255), 5);
+            }
 
             // ### Show current image
-            QImage qimg(frame.data, static_cast<int>(frame.cols),
-                        static_cast<int>(frame.rows),
-                        static_cast<int>(frame.step), QImage::Format_RGB888);
+            QImage qimg(draw_frame.data, static_cast<int>(draw_frame.cols),
+                        static_cast<int>(draw_frame.rows),
+                        static_cast<int>(draw_frame.step), QImage::Format_RGB888);
             pixmap.setPixmap(QPixmap::fromImage(qimg.rgbSwapped()));
             ui->graphicsView->fitInView(&pixmap, Qt::KeepAspectRatio);
         } else if (input_from_video) {
