@@ -83,10 +83,6 @@ void MainWindow::lane_detection_thread(std::shared_ptr<LaneDetector> lane_detect
             continue; 
         }
 
-        // cv::imshow("Cloned", img);
-        // cv::waitKey(0);
-        cv::imwrite("clone.png", clone_img);
-
         cv::Mat results = lane_detector->detect_lane(clone_img);
         {
             std::lock_guard<std::mutex> guard(lane_detection_results_mutex);
@@ -190,10 +186,6 @@ void MainWindow::showCam() {
                 if (!lane_detection_results.empty()) {
                     cv::Mat lane_result = lane_detection_results.clone();
                     cv::resize(lane_result, lane_result, draw_frame.size());
-
-
-                    // cv::imshow("Lane", lane_result);
-                    // cv::waitKey(1);
 
                     cv::Mat rgb_lane_result;
                     cv::cvtColor(lane_result, rgb_lane_result, cv::COLOR_GRAY2BGR);

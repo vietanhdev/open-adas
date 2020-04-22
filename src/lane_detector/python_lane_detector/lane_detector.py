@@ -36,14 +36,9 @@ class LaneDetector:
         road = output[..., 0].squeeze()
         lane = output[..., 1].squeeze()
 
-        # lane = output[..., 0].squeeze()
-
         # Convert to BGR is a must to prevent error
         # TODO: Look into this bug
         lane = cv2.cvtColor(lane, cv2.COLOR_GRAY2BGR)
-
-        print(road.shape)
-        print(road.dtype)
 
         return lane
 

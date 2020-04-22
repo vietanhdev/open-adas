@@ -49,12 +49,9 @@ cv::Mat LaneDetector::detect_lane(const cv::Mat& img) {
 
     try {
 
-        
-
         cv::Mat resized;
         cv::resize(img, resized, cv::Size(INPUT_WIDTH, INPUT_HEIGHT));
 
-        //cv::Mat clone_img = img.clone();
         np::ndarray nd_img = ConvertMatToNDArray(resized);
         np::ndarray output_img = py::extract<np::ndarray>(process_img(nd_img));
         cv::Mat mat_img = ConvertNDArrayToMat(output_img);
