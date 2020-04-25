@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(CarSmartCam)
 
 # Setup for TensorRT
-set(GPU_ARCHS 53)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
+set(GPU_ARCHS 75)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
@@ -96,7 +96,7 @@ include_directories(
     "src/utils/include"
     "src/user_interface"
     "src/user_interface/dark_theme"
-    "src/object_detector/include"
+    "src/object_detector/detector/include"
     "src/lane_detector/include"
     "src/car_prop_reader/include"
     ${SDL2_INCLUDE_DIRS}
@@ -106,7 +106,7 @@ include_directories(
 )
 
 
-# Build object detector
+# Build object detector & tracker
 add_subdirectory(src/object_detector)
 
 # Build car prop reader
@@ -150,7 +150,7 @@ target_link_libraries(${PROJECT_NAME}
     ${CPP_FS_LIB} 
     ${SDL2_LIBRARIES}  
     ${Boost_LIBRARIES}
-    ctdet carprop lanedt)
+    detector_with_track carprop lanedt)
 
 # Copy files
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
