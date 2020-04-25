@@ -189,7 +189,7 @@ void MainWindow::showCam() {
 
                     cv::Mat rgb_lane_result;
                     cv::cvtColor(lane_result, rgb_lane_result, cv::COLOR_GRAY2BGR);
-                    rgb_lane_result.setTo(Scalar(0,255,0), lane_result > 50);
+                    rgb_lane_result.setTo(Scalar(0,0,255), lane_result > 50);
 
                     cv::addWeighted(draw_frame, 1, rgb_lane_result, 0.5, 0, draw_frame);
                 }
