@@ -48,8 +48,15 @@ https://github.com/protocolbuffers/protobuf
 ```
 
 - Install pycuda on Python 2.7:
+
+**Jetson Nano**
 ```
 sudo python -m pip install --global-option=build_ext --global-option="-I/usr/local/cuda-10.0/targets/aarch64-linux/include/" --global-option="-L/usr/local/cuda-10.0/targets/aarch64-linux/lib/" pycuda
+```
+
+**x86-64**
+```
+sudo python -m pip install --global-option=build_ext --global-option="-I/usr/local/cuda-10.0/targets/x86_64-linux/include/" --global-option="-L/usr/local/cuda-10.0/targets/x86_64-linux/lib/" pycuda
 ```
 
 #### Compile and Run

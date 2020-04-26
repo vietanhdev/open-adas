@@ -28,9 +28,15 @@ include_directories(${CUDA_INCLUDE_DIRS}
 file(GLOB CPP_SRC object_detector/*.cpp)
 file(GLOB CU_SRC object_detector/*.cu)
 cuda_add_library(ctdet SHARED ${CPP_SRC} ${CU_SRC})
+# Use C++ 17
+target_compile_features(ctdet PRIVATE cxx_std_17)
+if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+    set (CPP_FS_LIB "stdc++fs")
+endif()
 target_link_libraries(ctdet
         ${TENSORRT_LIBRARY_INFER}
         ${OpenCV_LIBS}
+        ${CPP_FS_LIB}
         nvonnxparser
         nvonnxparser_runtime)
 

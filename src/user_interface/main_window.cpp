@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Init Audio
     SDL_Init(SDL_INIT_AUDIO);
 
-    object_detector = std::make_shared<ObjectDetector>(SMARTCAM_OBJECT_DETECTION_MODEL);
+    object_detector = std::make_shared<ObjectDetector>(SMARTCAM_OBJECT_DETECTION_ONNX_MODEL, SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN);
     lane_detector = std::make_shared<LaneDetector>();
     car_prop_reader = std::make_shared<CarPropReader>();
 

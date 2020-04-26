@@ -113,7 +113,7 @@ namespace ctdet
         std::cout << "deserializing" << std::endl;
         mRunTime = nvinfer1::createInferRuntime(gLogger);
         assert(mRunTime != nullptr);
-        mEngine= mRunTime->deserializeCudaEngine(data.get(), length, mPlugins);
+        mEngine = mRunTime->deserializeCudaEngine(data.get(), length, mPlugins);
         assert(mEngine != nullptr);
         InitEngine();
     }

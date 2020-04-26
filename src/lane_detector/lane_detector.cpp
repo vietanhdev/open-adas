@@ -9,6 +9,7 @@ void LaneDetector::init_python() {
     // Py_SetPythonHome(str);
 
     setenv("PYTHONPATH", "./python_lane_detector", 1);
+    
 
     Py_Initialize();
     np::initialize();
