@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(CarSmartCam)
 
 # Setup for TensorRT
-set(GPU_ARCHS 75)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
+set(GPU_ARCHS 53)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
 
 set(CMAKE_BUILD_TYPE Debug)
 
@@ -59,39 +59,6 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 # without -fPIE. We add that here.
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
-set(Python_ADDITIONAL_VERSIONS 2.7)
-FIND_PACKAGE(PythonInterp 2.7)
-if (PYTHONINTERP_FOUND)
-  if (UNIX AND NOT APPLE)
-    if (PYTHON_VERSION_MAJOR EQUAL 3)
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_SUFFIX} numpy)
-        FIND_PACKAGE(PythonInterp 3)
-        FIND_PACKAGE(PythonLibs 3 REQUIRED)
-    else()
-        FIND_PACKAGE(Boost COMPONENTS python numpy)
-        FIND_PACKAGE(PythonInterp)
-        FIND_PACKAGE(PythonLibs REQUIRED)
-    endif()
-  else()	
-    if (PYTHON_VERSION_MAJOR EQUAL 3)
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} numpy)
-        FIND_PACKAGE(PythonInterp 3)
-        FIND_PACKAGE(PythonLibs 3 REQUIRED)
-    else()
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} numpy)
-        FIND_PACKAGE(PythonInterp)
-        FIND_PACKAGE(PythonLibs REQUIRED)
-    endif()
-  endif()
-else()
-    message("Python not found")
-endif()
-
-message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
-message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
-message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
-
 
 include_directories(
     "src"
@@ -103,8 +70,6 @@ include_directories(
     "src/car_prop_reader/include"
     ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
-    ${PYTHON_INCLUDE_DIRS}
 )
 
 
@@ -151,7 +116,6 @@ target_link_libraries(${PROJECT_NAME}
     ${OpenCV_LIBS} 
     ${CPP_FS_LIB} 
     ${SDL2_LIBRARIES}  
-    ${Boost_LIBRARIES}
     detector_with_track carprop lanedt)
 
 # Copy files
