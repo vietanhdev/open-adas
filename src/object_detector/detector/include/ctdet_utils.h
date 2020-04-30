@@ -86,10 +86,10 @@ private:
     std::map<std::string, Record> mProfile;
 };
 
-class Logger : public nvinfer1::ILogger
+class CTDetLogger : public nvinfer1::ILogger
 {
 public:
-    Logger(Severity severity = Severity::kWARNING)
+    CTDetLogger(Severity severity = Severity::kWARNING)
             : reportableSeverity(severity)
     {
     }

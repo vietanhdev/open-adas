@@ -103,7 +103,7 @@ void ObjectDetectorWithTracking::AsyncProcess()
 
         int k = 0;
 #ifndef SILENT_WORK
-        cv::imshow("Video", frameInfo.m_frame);
+        // cv::imshow("Video", frameInfo.m_frame);
 
 		int waitTime = manualMode ? 0 : 1;// std::max<int>(1, cvRound(1000 / m_fps - currTime));
         k = cv::waitKey(waitTime);

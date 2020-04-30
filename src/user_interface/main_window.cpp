@@ -1,5 +1,6 @@
 #include "main_window.h"
 #include "ui_main_window.h"
+#include "config.h"
 
 using namespace cv;
 
@@ -21,18 +22,22 @@ MainWindow::MainWindow(QWidget *parent)
     // Init Audio
     SDL_Init(SDL_INIT_AUDIO);
 
-    object_detector = std::make_shared<ObjectDetector>(SMARTCAM_OBJECT_DETECTION_ONNX_MODEL, SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN);
+    object_detector = std::make_shared<ObjectDetector>(SMARTCAM_OBJECT_DETECTION_MODEL, SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN);
     lane_detector = std::make_shared<LaneDetector>();
     car_prop_reader = std::make_shared<CarPropReader>();
 
     // Start processing threads
     std::thread od_thread(&MainWindow::object_detection_thread, object_detector, std::ref(current_img), std::ref(current_img_mutex), std::ref(object_detection_results), std::ref(object_detection_results_mutex));
-    std::thread ld_thread(&MainWindow::lane_detection_thread, lane_detector, std::ref(current_img), std::ref(current_img_mutex), std::ref(lane_detection_results), std::ref(lane_detection_results_mutex));
-    std::thread cpr_thread(&MainWindow::car_prop_reader_thread, car_prop_reader);
-
     od_thread.detach();
+
+    #ifndef DISABLE_LANE_DETECTOR
+    std::thread ld_thread(&MainWindow::lane_detection_thread, lane_detector, std::ref(current_img), std::ref(current_img_mutex), std::ref(lane_detection_results), std::ref(lane_detection_results_mutex));
     ld_thread.detach(); 
+    #endif
+
+    std::thread cpr_thread(&MainWindow::car_prop_reader_thread, car_prop_reader);
     cpr_thread.detach(); 
+    
 }
 
 
@@ -68,8 +73,6 @@ void MainWindow::object_detection_thread(std::shared_ptr<ObjectDetector> object_
 
 
 void MainWindow::lane_detection_thread(std::shared_ptr<LaneDetector> lane_detector, cv::Mat & img, std::mutex & img_mutex, cv::Mat & lane_detection_results, std::mutex & lane_detection_results_mutex) {
-
-    lane_detector->init();
     
     cv::Mat clone_img;
     while (true) {
@@ -79,11 +82,10 @@ void MainWindow::lane_detection_thread(std::shared_ptr<LaneDetector> lane_detect
         }
 
         if (clone_img.empty()) {
-            cout << "Empty " << endl;
             continue; 
         }
 
-        cv::Mat results = lane_detector->detect_lane(clone_img);
+        cv::Mat results = lane_detector->detectLane(clone_img);
         {
             std::lock_guard<std::mutex> guard(lane_detection_results_mutex);
             lane_detection_results = results;
@@ -173,9 +175,11 @@ void MainWindow::showCam() {
 
         if (!frame.empty()) {
 
-            if (input_from_video && !lane_detector->ready) {
-                video.set(cv::CAP_PROP_POS_FRAMES, 0);
-            }
+            #ifndef DISABLE_LANE_DETECTOR
+            // if (input_from_video && !lane_detector->ready) {
+            //     video.set(cv::CAP_PROP_POS_FRAMES, 0);
+            // }
+            #endif
 
             // Processing
             setCurrentImage(frame);
@@ -187,11 +191,12 @@ void MainWindow::showCam() {
                     cv::Mat lane_result = lane_detection_results.clone();
                     cv::resize(lane_result, lane_result, draw_frame.size());
 
-                    cv::Mat rgb_lane_result;
-                    cv::cvtColor(lane_result, rgb_lane_result, cv::COLOR_GRAY2BGR);
-                    rgb_lane_result.setTo(Scalar(0,0,255), lane_result > 50);
+                    cv::Mat rgb_lane_result = cv::Mat::zeros(draw_frame.size(), CV_8UC3);
 
-                    cv::addWeighted(draw_frame, 1, rgb_lane_result, 0.5, 0, draw_frame);
+                    rgb_lane_result.setTo(Scalar(0,0,255), lane_result > 0.5);
+                    draw_frame.setTo(Scalar(0,0,0), lane_result > 0.5);
+
+                    cv::addWeighted(draw_frame, 1, rgb_lane_result, 1, 0, draw_frame);
                 }
             }
 

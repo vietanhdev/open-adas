@@ -8,7 +8,7 @@
 #include "ctdetLayer.h"
 #include "entroyCalibrator.h"
 
-static Logger gLogger;
+static CTDetLogger gLogger;
 
 namespace ctdet
 {
