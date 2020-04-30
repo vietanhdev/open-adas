@@ -200,7 +200,6 @@ struct SimpleProfiler : public nvinfer1::IProfiler
         }
         out.flags(old_settings);
         out.precision(old_precision);
-        out << "========== " << value.mName << " total runtime = " << totalTime << " ms ==========" << std::endl;
 
         return out;
     }

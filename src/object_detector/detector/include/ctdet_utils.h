@@ -52,29 +52,7 @@ public:
             totalTime += elem.second.time;
             maxLayerNameLength = std::max(maxLayerNameLength, static_cast<int>(elem.first.size()));
         }
-//        auto old_settings = std::cout.flags();
-//        auto old_precision = std::cout.precision();
-//        // Output header
-//        {
-//            std::cout << std::setw(maxLayerNameLength) << layerNameStr << " ";
-//            std::cout << std::setw(12) << "Runtime, "
-//                << "%"
-//                << " ";
-//            std::cout << std::setw(12) << "Invocations"
-//                << " ";
-//            std::cout << std::setw(12) << "Runtime, ms" << std::endl;
-//        }
-//        for (const auto& elem : mProfile)
-//        {
-//            std::cout << std::setw(maxLayerNameLength) << elem.first << " ";
-//            std::cout << std::setw(12) << std::fixed << std::setprecision(1) << (elem.second.time * 100.0F / totalTime) << "%"
-//                << " ";
-//            std::cout << std::setw(12) << elem.second.count << " ";
-//            std::cout << std::setw(12) << std::fixed << std::setprecision(2) << elem.second.time << std::endl;
-//        }
-//        std::cout.flags(old_settings);
-//        std::cout.precision(old_precision);
-        std::cout<< " total runtime = " << totalTime/runTimes << " ms " << std::endl;
+
     }
 
     virtual void reportLayerTime(const char* layerName, float ms)
