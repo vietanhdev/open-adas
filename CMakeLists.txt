@@ -66,6 +66,9 @@ include_directories(
     "src/user_interface"
     "src/user_interface/dark_theme"
     "src/object_detector/detector/include"
+    "src/object_detector/common"
+    "src/object_detector/tracker"
+    "src/object_detector"
     "src/lane_detector/include"
     "src/car_prop_reader/include"
     ${SDL2_INCLUDE_DIRS}

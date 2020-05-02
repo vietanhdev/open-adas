@@ -16,9 +16,7 @@ namespace ctdet {
     constexpr static int classNum = 10;
     constexpr static float mean[]= {0.408, 0.447, 0.470};
     constexpr static float std[] = {0.289, 0.274, 0.278};
-    constexpr static char *className[]= {(char*)"person", (char*)"rider", (char*)"car", (char*)"bus",
-                                         (char*)"truck", (char*)"bike", (char*)"motor", (char*)"traffic_light", (char*)"traffic_sign",
-                                         (char*)"train"};
+    constexpr static char *className[]= {(char*)"person", (char*)"rider", (char*)"car", (char*)"bus", (char*)"truck", (char*)"bike", (char*)"motor", (char*)"traffic_light", (char*)"traffic_sign", (char*)"train"};
 
 }
 #endif //CTDET_TRT_CTDETCONFIG_H

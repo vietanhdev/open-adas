@@ -87,26 +87,6 @@ typedef std::vector<CRegion> regions_t;
 ///
 namespace tracking
 {
-///
-/// \brief The Detectors enum
-///
-enum Detectors
-{
-    Motion_VIBE,
-    Motion_MOG,
-    Motion_GMG,
-    Motion_CNT,
-    Motion_SuBSENSE,
-    Motion_LOBSTER,
-    Motion_MOG2,
-    Face_HAAR,
-    Pedestrian_HOG,
-    Pedestrian_C4,
-    SSD_MobileNet,
-    Yolo_OCV,
-	Yolo_Darknet,
-	Yolo_TensorRT
-};
 
 ///
 /// \brief The DistType enum

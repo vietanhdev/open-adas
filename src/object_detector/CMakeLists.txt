@@ -17,10 +17,11 @@ set(HEADERS
 # Include directories
 # ----------------------------------------------------------------------------
 INCLUDE_DIRECTORIES(
-                    ./tracker/src
-                    ./tracker/common
-                    ./tracker/src/Tracker
-                    ./tracker/src/Tracker/HungarianAlg
+    ./common
+    ./tracker
+    ./tracker/Tracker
+    ./tracker/Tracker/HungarianAlg
+    ./detector/include
 )
 
 set(LIBS
