@@ -165,6 +165,9 @@ void MainWindow::showCam() {
         return;
     }
 
+    video.set(cv::CAP_PROP_FRAME_WIDTH, 480);
+    video.set(cv::CAP_PROP_FRAME_HEIGHT, 360);
+
     Mat frame;
     Mat draw_frame;
     while (true) {
