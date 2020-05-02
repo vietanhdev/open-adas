@@ -184,8 +184,8 @@ bool ObjectDetectorWithTracking::initTracker(cv::UMat frame) {
     settings.m_minAreaRadius = frame.rows / 20.f;
     // settings.m_maximumAllowedSkippedFrames =
     //     cvRound(m_fps / 5);  // Maximum allowed skipped frames
-    settings.m_maximumAllowedSkippedFrames = 1;
-    settings.m_maxTraceLength = cvRound(5 * m_fps);  // Maximum trace length
+    settings.m_maximumAllowedSkippedFrames = 15;
+    settings.m_maxTraceLength = 100;  // Maximum trace length
 
     m_tracker = std::make_unique<CTracker>(settings);
 
