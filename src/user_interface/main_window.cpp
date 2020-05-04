@@ -68,8 +68,6 @@ void MainWindow::object_tracking_thread(
             continue;
         }
 
-        // std::vector<Detection> results;
-        // results = object_detector->inference(clone_img);
 
         std::vector<TrackingObject> tracks;
         if (0 != object_detector_with_tracking->runDetectAndTrack(clone_img,

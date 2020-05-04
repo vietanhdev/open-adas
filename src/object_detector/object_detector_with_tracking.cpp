@@ -6,6 +6,8 @@
 
 #include "config.h"
 
+using namespace std;
+
 ///
 /// \brief ObjectDetectorWithTracking::ObjectDetectorWithTracking
 /// \param parser
@@ -113,7 +115,7 @@ void ObjectDetectorWithTracking::drawTrack(cv::Mat frame, int resizeCoeff,
     track.m_rrect.points(rectPoints);
     for (int i = 0; i < 4; ++i) {
         cv::line(frame, ResizePoint(rectPoints[i]),
-                 ResizePoint(rectPoints[(i + 1) % 4]), color);
+                 ResizePoint(rectPoints[(i + 1) % 4]), color, 3);
     }
 #if 0
     float angle = 0;//atan2(track.m_velocity[0], track.m_velocity[1]);
@@ -171,21 +173,21 @@ bool ObjectDetectorWithTracking::initDetector(cv::UMat frame) {
 bool ObjectDetectorWithTracking::initTracker(cv::UMat frame) {
     TrackerSettings settings;
     settings.SetDistance(tracking::DistJaccard);
-    settings.m_kalmanType = tracking::KalmanUnscented;
+    settings.m_kalmanType = tracking::KalmanLinear;
     settings.m_filterGoal = tracking::FilterRect;
     settings.m_lostTrackType =
-        tracking::TrackCSRT;  // Use visual objects tracker for collisions
+        tracking::TrackKCF;  // Use visual objects tracker for collisions
                               // resolving
     settings.m_matchType = tracking::MatchHungrian;
     settings.m_dt = 0.1f;             // Delta time for Kalman filter
-    settings.m_accelNoiseMag = 0.3f;  // Accel noise magnitude for Kalman filter
+    settings.m_accelNoiseMag = 0.2f;  // Accel noise magnitude for Kalman filter
     settings.m_distThres =
         0.5f;  // Distance threshold between region and object on two frames
     settings.m_minAreaRadius = frame.rows / 20.f;
     // settings.m_maximumAllowedSkippedFrames =
     //     cvRound(m_fps / 5);  // Maximum allowed skipped frames
-    settings.m_maximumAllowedSkippedFrames = 15;
-    settings.m_maxTraceLength = 100;  // Maximum trace length
+    settings.m_maximumAllowedSkippedFrames = 1;
+    settings.m_maxTraceLength = 50;  // Maximum trace length
 
     m_tracker = std::make_unique<CTracker>(settings);
 
