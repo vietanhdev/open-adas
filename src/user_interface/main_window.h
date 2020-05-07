@@ -85,7 +85,10 @@ private:
     std::vector<TrackingObject> object_tracking_results;
     std::mutex object_tracking_results_mutex;
 
-    cv::Mat lane_detection_results;
+    cv::Mat lane_line_mask;
+    cv::Mat detected_line_img;
+    cv::Mat reduced_line_img;
+    std::vector<LaneLine> lane_detection_results;
     std::mutex lane_detection_results_mutex;
 
 public:
@@ -100,8 +103,7 @@ private:
 
     static void object_tracking_thread(std::shared_ptr<ObjectDetectorWithTracking> object_detector, cv::Mat & img, std::mutex & img_mutex, 
     std::vector<TrackingObject> & object_tracking_results, std::mutex & object_tracking_results_mutex);
-    static void lane_detection_thread(std::shared_ptr<LaneDetector> lane_detector, cv::Mat & img, std::mutex & img_mutex, 
-    cv::Mat & lane_detection_results, std::mutex & lane_detection_results_mutex);
+    static void lane_detection_thread(std::shared_ptr<LaneDetector> lane_detector, MainWindow*);
     static void car_prop_reader_thread(std::shared_ptr<CarPropReader> car_prop_reader);
 };
 

@@ -36,9 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 #ifndef DISABLE_LANE_DETECTOR
     std::thread ld_thread(&MainWindow::lane_detection_thread, lane_detector,
-                          std::ref(current_img), std::ref(current_img_mutex),
-                          std::ref(lane_detection_results),
-                          std::ref(lane_detection_results_mutex));
+                          this);
     ld_thread.detach();
 #endif
 
@@ -83,25 +81,37 @@ void MainWindow::object_tracking_thread(
 }
 
 void MainWindow::lane_detection_thread(
-    std::shared_ptr<LaneDetector> lane_detector, cv::Mat &img,
-    std::mutex &img_mutex, cv::Mat &lane_detection_results,
-    std::mutex &lane_detection_results_mutex) {
+    std::shared_ptr<LaneDetector> lane_detector, MainWindow *main_ptr) {
     cv::Mat clone_img;
     while (true) {
         {
-            std::lock_guard<std::mutex> guard(img_mutex);
-            clone_img = img.clone();
+            std::lock_guard<std::mutex> guard(main_ptr->current_img_mutex);
+            clone_img = main_ptr->current_img.clone();
         }
 
         if (clone_img.empty()) {
             continue;
         }
 
-        cv::Mat results = lane_detector->detectLane(clone_img);
+        #if defined (DEBUG_LANE_DETECTOR_SHOW_LINES)  || defined (DEBUG_LANE_DETECTOR_SHOW_LINE_MASK)
+        cv::Mat lane_line_mask_copy;
+        cv::Mat detected_line_img_copy;
+        cv::Mat reduced_line_img_copy;
+        std::vector<LaneLine> results = lane_detector->detectLaneLines(clone_img, lane_line_mask_copy, detected_line_img_copy, reduced_line_img_copy);
         {
-            std::lock_guard<std::mutex> guard(lane_detection_results_mutex);
-            lane_detection_results = results;
+            std::lock_guard<std::mutex> guard(main_ptr->lane_detection_results_mutex);
+            main_ptr->lane_line_mask = lane_line_mask_copy;
+            main_ptr->detected_line_img = detected_line_img_copy;
+            main_ptr->reduced_line_img = reduced_line_img_copy;
+            main_ptr->lane_detection_results = results;
         }
+        #else
+        std::vector<LaneLine> results = lane_detector->detectLaneLines(clone_img);
+        {
+            std::lock_guard<std::mutex> guard(main_ptr->lane_detection_results_mutex);
+            main_ptr->lane_detection_results = results;
+        }
+        #endif 
     }
 }
 
@@ -186,31 +196,63 @@ void MainWindow::showCam() {
             setCurrentImage(frame);
 
             draw_frame = getCurrentImage();
+
+            #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
+            cv::Mat lane_line_mask_copy;
+            #endif
+
+            #ifdef DEBUG_LANE_DETECTOR_SHOW_LINES
+            cv::Mat detected_line_img_copy;
+            cv::Mat reduced_line_img_copy;
+            #endif
+
+            std::vector<LaneLine> lane_detection_results_copy;
+            
             {
                 std::lock_guard<std::mutex> guard(lane_detection_results_mutex);
-                if (!lane_detection_results.empty()) {
-                    cv::Mat lane_result = lane_detection_results.clone();
-                    cv::resize(lane_result, lane_result, draw_frame.size());
+                lane_detection_results_copy = lane_detection_results;
 
-                    cv::Mat rgb_lane_result =
-                        cv::Mat::zeros(draw_frame.size(), CV_8UC3);
+                #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
+                lane_line_mask_copy = lane_line_mask.clone();
+                #endif
+                #ifdef DEBUG_LANE_DETECTOR_SHOW_LINES
+                detected_line_img_copy = detected_line_img.clone();
+                reduced_line_img_copy = reduced_line_img.clone();
+                #endif
+            }
+                
+            if (!lane_detection_results.empty()) {
 
-                    rgb_lane_result.setTo(Scalar(0, 0, 255), lane_result > 0.5);
-                    draw_frame.setTo(Scalar(0, 0, 0), lane_result > 0.5);
+                #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
+                    if (!lane_line_mask_copy.empty()) {
+                        cv::resize(lane_line_mask_copy, lane_line_mask_copy, draw_frame.size());
 
-                    cv::addWeighted(draw_frame, 1, rgb_lane_result, 1, 0,
-                                    draw_frame);
-                }
+                        cv::Mat rgb_lane_result =
+                            cv::Mat::zeros(draw_frame.size(), CV_8UC3);
+
+                        rgb_lane_result.setTo(Scalar(0, 0, 255), lane_line_mask_copy > 0.5);
+                        draw_frame.setTo(Scalar(0, 0, 0), lane_line_mask_copy > 0.5);
+
+                        cv::addWeighted(draw_frame, 1, rgb_lane_result, 1, 0,
+                                        draw_frame);
+                    }
+                #endif
+
+                #ifdef DEBUG_LANE_DETECTOR_SHOW_LINES
+                    if (!detected_line_img_copy.empty()) {
+                        cv::namedWindow("Detected Lines", cv::WINDOW_NORMAL);
+                        cv::imshow("Detected Lines", detected_line_img_copy);
+                        cv::waitKey(1);
+                    }
+                    if (!reduced_line_img_copy.empty()) {
+                        cv::namedWindow("Reduced Lines", cv::WINDOW_NORMAL);
+                        cv::imshow("Reduced Lines", reduced_line_img_copy);
+                        cv::waitKey(1);
+                    }
+                #endif
+                
             }
 
-            // {
-            //     std::lock_guard<std::mutex>
-            //     guard(object_detection_results_mutex); if
-            //     (!object_detection_results.empty()) {
-            //         draw_object_detection_results(object_detection_results,
-            //         draw_frame, cv::Scalar(0,255,0), false);
-            //     }
-            // }
             {
                 std::lock_guard<std::mutex> guard(
                     object_tracking_results_mutex);

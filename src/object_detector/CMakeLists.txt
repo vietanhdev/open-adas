@@ -22,6 +22,7 @@ INCLUDE_DIRECTORIES(
     ./tracker/Tracker
     ./tracker/Tracker/HungarianAlg
     ./detector/include
+    ../utils/include
 )
 
 set(LIBS

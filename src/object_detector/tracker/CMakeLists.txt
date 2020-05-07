@@ -2,11 +2,13 @@ cmake_minimum_required(VERSION 3.5)
 
 project(mtracking)
 
-include_directories(../common)
+include_directories(../common
+                    ../../utils/include)
 
 set(main_sources ../common/nms.h ../common/defines.h)
 
   set(tracker_sources
+            ../../utils/timer.cpp
              Ctracker.cpp
              Ctracker.h
              ShortPathCalculator.cpp

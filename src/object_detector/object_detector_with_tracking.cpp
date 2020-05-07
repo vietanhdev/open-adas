@@ -182,11 +182,11 @@ bool ObjectDetectorWithTracking::initTracker(cv::UMat frame) {
     settings.m_dt = 0.1f;             // Delta time for Kalman filter
     settings.m_accelNoiseMag = 0.2f;  // Accel noise magnitude for Kalman filter
     settings.m_distThres =
-        0.5f;  // Distance threshold between region and object on two frames
+        0.6f;  // Distance threshold between region and object on two frames
     settings.m_minAreaRadius = frame.rows / 20.f;
     // settings.m_maximumAllowedSkippedFrames =
     //     cvRound(m_fps / 5);  // Maximum allowed skipped frames
-    settings.m_maximumAllowedSkippedFrames = 1;
+    settings.m_maximumAllowedSkippedFrames = 0;
     settings.m_maxTraceLength = 50;  // Maximum trace length
 
     m_tracker = std::make_unique<CTracker>(settings);
