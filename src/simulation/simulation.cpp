@@ -58,7 +58,7 @@ void Simulation::playingThread(Simulation * this_ptr) {
 
         this_ptr->setCurrentImage(frame);
 
-        // TODO: Add wait
+        std::this_thread::sleep_for(std::chrono::microseconds(int(1.0 / fps * 1e6)));
     }
 
     this_ptr->playing_thread_running = false;

@@ -22,6 +22,7 @@
 #include <condition_variable>
 #include <QWidget>
 #include <QFileDialog>
+#include <chrono>
 #include "config.h"
 #include "ui_simulation.h"
 

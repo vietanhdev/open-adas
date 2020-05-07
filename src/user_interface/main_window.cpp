@@ -13,8 +13,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->scene()->addItem(&pixmap);
 
     // Connect buttons
-    connect(ui->changeCamBtn, SIGNAL(released()), this,
-            SLOT(changeCamClicked()));
     connect(ui->menuBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
     connect(ui->alertBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
 
@@ -235,30 +233,30 @@ void MainWindow::startVideoGrabber() {
                 }
             }
 
-            // Add speed
-            int gps_signal_status = car_prop_reader->getSignalStatus();
-            if (gps_signal_status != 0) {
-                std::stringstream ss;
-                ss << "No GPS";
+//             // Add speed
+//             int gps_signal_status = car_prop_reader->getSignalStatus();
+//             if (gps_signal_status != 0) {
+//                 std::stringstream ss;
+//                 ss << "No GPS";
 
-#ifdef SMARTCAM_DEBUG
-                ss << " (" << gps_signal_status << ")";
-#endif
+// #ifdef SMARTCAM_DEBUG
+//                 ss << " (" << gps_signal_status << ")";
+// #endif
 
-                putText(draw_frame, ss.str(),
-                        Point2f(20 - 2, draw_frame.rows - 20 - 2),
-                        FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 0), 3);
-                putText(draw_frame, ss.str(), Point2f(20, draw_frame.rows - 20),
-                        FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255, 255), 3);
-            } else {
-                std::stringstream ss;
-                ss << car_prop_reader->getCarSpeed() << " km/h";
-                putText(draw_frame, ss.str(),
-                        Point2f(20 - 2, draw_frame.rows - 20 - 2),
-                        FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 0), 3);
-                putText(draw_frame, ss.str(), Point2f(20, draw_frame.rows - 20),
-                        FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255, 255), 3);
-            }
+//                 putText(draw_frame, ss.str(),
+//                         Point2f(20 - 2, draw_frame.rows - 20 - 2),
+//                         FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 0), 3);
+//                 putText(draw_frame, ss.str(), Point2f(20, draw_frame.rows - 20),
+//                         FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255, 255), 3);
+//             } else {
+//                 std::stringstream ss;
+//                 ss << car_prop_reader->getCarSpeed() << " km/h";
+//                 putText(draw_frame, ss.str(),
+//                         Point2f(20 - 2, draw_frame.rows - 20 - 2),
+//                         FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 0), 3);
+//                 putText(draw_frame, ss.str(), Point2f(20, draw_frame.rows - 20),
+//                         FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255, 255), 3);
+//             }
 
             // ### Show current image
             QImage qimg(draw_frame.data, static_cast<int>(draw_frame.cols),
