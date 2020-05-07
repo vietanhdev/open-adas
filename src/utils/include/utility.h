@@ -13,6 +13,7 @@ namespace ml_cam {
 
     QImage Mat2QImage(cv::Mat const& src);
     cv::Mat QImage2Mat(QImage const& src);
+    cv::Mat resizeByMaxSize(const cv::Mat &img, int max_size);
 
 }
 

@@ -115,8 +115,10 @@ void ObjectDetectorWithTracking::drawTrack(cv::Mat frame, int resizeCoeff,
     track.m_rrect.points(rectPoints);
     for (int i = 0; i < 4; ++i) {
         cv::line(frame, ResizePoint(rectPoints[i]),
-                 ResizePoint(rectPoints[(i + 1) % 4]), color, 3);
+                 ResizePoint(rectPoints[(i + 1) % 4]), color, 2);
     }
+    cv::putText(frame, track.m_type, rectPoints[0],
+                        cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0, 0, 255), 1);
 #if 0
     float angle = 0;//atan2(track.m_velocity[0], track.m_velocity[1]);
     cv::RotatedRect rr(track.m_rrect.center,
@@ -133,10 +135,10 @@ void ObjectDetectorWithTracking::drawTrack(cv::Mat frame, int resizeCoeff,
             const TrajectoryPoint& pt2 = track.m_trace.at(j + 1);
 #if (CV_VERSION_MAJOR >= 4)
             cv::line(frame, ResizePoint(pt1.m_prediction),
-                     ResizePoint(pt2.m_prediction), cl, 3, cv::LINE_AA);
+                     ResizePoint(pt2.m_prediction), cl, 2, cv::LINE_AA);
 #else
             cv::line(frame, ResizePoint(pt1.m_prediction),
-                     ResizePoint(pt2.m_prediction), cl, 3, CV_AA);
+                     ResizePoint(pt2.m_prediction), cl, 2, CV_AA);
 #endif
             if (!pt2.m_hasRaw) {
 #if (CV_VERSION_MAJOR >= 4)

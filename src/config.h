@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define IMG_MAX_SIZE 512 
+
 // #define DISABLE_LANE_DETECTOR
 #define SMARTCAM_DEBUG
 

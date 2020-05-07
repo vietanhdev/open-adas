@@ -64,6 +64,7 @@ include_directories(
     "src"
     "src/utils/include"
     "src/user_interface"
+    "src/simulation"
     "src/user_interface/dark_theme"
     "src/object_detector/detector/include"
     "src/object_detector/common"
@@ -99,6 +100,9 @@ add_executable(${PROJECT_NAME}
     "src/user_interface/main_window.ui"
     "src/user_interface/dark_theme/dark_style.qrc"
     "src/user_interface/dark_theme/dark_style.cpp"
+
+    "src/simulation/simulation.cpp"
+    "src/simulation/simulation.ui"
 )
 
 ADD_LIBRARY(

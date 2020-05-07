@@ -1,33 +1,74 @@
-#include <QApplication>
 #include <stdlib.h>
+#include <QApplication>
 #include <iostream>
-#include "filesystem_include.h"
-#include "dark_style.h"
-#include "main_window.h"
-#include "file_storage.h"
+#include <opencv2/opencv.hpp>
 
+#include "dark_style.h"
+#include "file_storage.h"
+#include "filesystem_include.h"
+#include "main_window.h"
+#include "simulation.h"
+#include "input_source.h"
+
+using namespace std;
+using namespace cv;
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
-    // Init file storage
-    ml_cam::FileStorage fs;
-    fs.initStorage();
+    const std::string keys =
+        "{help h usage ? |      | print this message   }"
+        "{input_source   |simulation| input source. 'simulation' or 'camera'   }"
+        "{input_video_path  |      | path to video file for simulation }"
+        "{input_data_path   |      | path to data file for simulation  }"
+        ;
+
+    CommandLineParser parser(argc, argv, keys);
+    parser.about("CarSmartCam v1.0.0");
+    if (parser.has("help")) {
+        parser.printMessage();
+        return 0;
+    }
+
+    std::string input_source = parser.get<std::string>("input_source");
+    std::string input_video_path = parser.get<std::string>("input_video_path");
+    std::string input_data_path = parser.get<std::string>("input_data_path");
 
     // Style our application with custom dark style
     a.setStyle(new DarkStyle);
-    
-    // Create our mainwindow instance
-    MainWindow *mainWindow = new MainWindow;
-    mainWindow->show();
 
-    if (argc != 2) {
-        mainWindow->refreshCams();
-        mainWindow->showCam();
-    } else {
-        mainWindow->showCam(std::string(argv[1]));
+    // Create our mainwindow instance
+    MainWindow *main_window = new MainWindow;
+    main_window->show();
+    // main_window->showFullScreen();
+
+    // Set input source and start camera getter
+    if (input_source == "simulation") {
+
+        // Create simulation window
+        QWidget *simulation;
+
+        if (input_video_path == "" && input_data_path == "") {
+            simulation = new Simulation();
+        } else {
+            simulation = new Simulation(input_video_path, input_data_path);
+        }
+        
+        simulation->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+        simulation->show();
+
+        // Set simulation
+        main_window->setInputSource(InputFromSimulation);
+        main_window->setSimulation((Simulation*)simulation);
+
+    } else if (input_source == "camera") {
+        
+        cout << "Input from camera has not been supported yet." << endl;
+        exit(1);
+
     }
-    
+
+    main_window->startVideoGrabber();
 
     return a.exec();
 }

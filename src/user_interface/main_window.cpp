@@ -1,9 +1,9 @@
 #include "main_window.h"
-
-#include "config.h"
 #include "ui_main_window.h"
+#include "config.h"
 
 using namespace cv;
+using namespace ml_cam;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -14,9 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Connect buttons
     connect(ui->changeCamBtn, SIGNAL(released()), this,
-            SLOT(changeCam_clicked()));
-    connect(ui->menuBtn, SIGNAL(released()), this, SLOT(changeCam_clicked()));
-    connect(ui->alertBtn, SIGNAL(released()), this, SLOT(changeCam_clicked()));
+            SLOT(changeCamClicked()));
+    connect(ui->menuBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
+    connect(ui->alertBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
 
     // Init Audio
     SDL_Init(SDL_INIT_AUDIO);
@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     car_prop_reader = std::make_shared<CarPropReader>();
 
     // Start processing threads
-    std::thread od_thread(&MainWindow::object_tracking_thread,
+    std::thread od_thread(&MainWindow::objectTrackingThread,
                           object_detector_with_tracking, std::ref(current_img),
                           std::ref(current_img_mutex),
                           std::ref(object_tracking_results),
@@ -35,22 +35,17 @@ MainWindow::MainWindow(QWidget *parent)
     od_thread.detach();
 
 #ifndef DISABLE_LANE_DETECTOR
-    std::thread ld_thread(&MainWindow::lane_detection_thread, lane_detector,
+    std::thread ld_thread(&MainWindow::laneDetectionThread, lane_detector,
                           this);
     ld_thread.detach();
 #endif
 
-    std::thread cpr_thread(&MainWindow::car_prop_reader_thread,
+    std::thread cpr_thread(&MainWindow::carPropReaderThread,
                            car_prop_reader);
     cpr_thread.detach();
 }
 
-void MainWindow::setInputVideo(std::string video_path) {
-    this->input_from_video = true;
-    this->video_path = video_path;
-}
-
-void MainWindow::object_tracking_thread(
+void MainWindow::objectTrackingThread(
     std::shared_ptr<ObjectDetectorWithTracking> object_detector_with_tracking,
     cv::Mat &img, std::mutex &img_mutex,
     std::vector<TrackingObject> &object_tracking_results,
@@ -80,7 +75,7 @@ void MainWindow::object_tracking_thread(
     }
 }
 
-void MainWindow::lane_detection_thread(
+void MainWindow::laneDetectionThread(
     std::shared_ptr<LaneDetector> lane_detector, MainWindow *main_ptr) {
     cv::Mat clone_img;
     while (true) {
@@ -115,7 +110,7 @@ void MainWindow::lane_detection_thread(
     }
 }
 
-void MainWindow::car_prop_reader_thread(
+void MainWindow::carPropReaderThread(
     std::shared_ptr<CarPropReader> car_prop_reader) {
     while (true) {
         car_prop_reader->updateProps();
@@ -124,7 +119,7 @@ void MainWindow::car_prop_reader_thread(
 
 MainWindow::~MainWindow() { delete ui; }
 
-void MainWindow::changeCam_clicked() {
+void MainWindow::changeCamClicked() {
     SDL_AudioSpec wavSpec;
     Uint32 wavLength;
     Uint8 *wavBuffer;
@@ -155,43 +150,19 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     exit(0);
 }
 
-void MainWindow::showCam(std::string video_path) {
-    setInputVideo(video_path);
-    showCam();
-}
-
-std::string MainWindow::getInputVideoPath() { return video_path; }
-
-void MainWindow::showCam() {
-    if (input_from_video) {
-        video.open(getInputVideoPath());
-    } else if (!video.open(current_camera_index)) {
-        QMessageBox::critical(
-            this, "Camera Error",
-            "Make sure you entered a correct camera index,"
-            "<br>or that the camera is not being accessed by another program!");
-        return;
-    }
-
-    video.set(cv::CAP_PROP_FRAME_WIDTH, 480);
-    video.set(cv::CAP_PROP_FRAME_HEIGHT, 360);
+void MainWindow::startVideoGrabber() {
 
     Mat frame;
     Mat draw_frame;
-    while (true) {
-        // If we still cannot open camera, exit the program
-        if (!video.isOpened()) {
-            QMessageBox::critical(
-                this, "Camera Error",
-                "Make sure you entered a correct camera index,"
-                "<br>or that the camera is not being accessed by another "
-                "program!");
-            exit(1);
-        }
 
-        video >> frame;
+    while (true) {
+        frame = simulation->getCurrentImage();
 
         if (!frame.empty()) {
+            
+            // Resize frame
+            frame =  resizeByMaxSize(frame, IMG_MAX_SIZE);
+
             // Processing
             setCurrentImage(frame);
 
@@ -275,18 +246,18 @@ void MainWindow::showCam() {
 #endif
 
                 putText(draw_frame, ss.str(),
-                        Point2f(80 - 2, draw_frame.rows - 80 - 2),
-                        FONT_HERSHEY_PLAIN, 5, Scalar(0, 0, 0), 5);
-                putText(draw_frame, ss.str(), Point2f(80, draw_frame.rows - 80),
-                        FONT_HERSHEY_PLAIN, 5, Scalar(0, 0, 255, 255), 5);
+                        Point2f(20 - 2, draw_frame.rows - 20 - 2),
+                        FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 0), 3);
+                putText(draw_frame, ss.str(), Point2f(20, draw_frame.rows - 20),
+                        FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255, 255), 3);
             } else {
                 std::stringstream ss;
                 ss << car_prop_reader->getCarSpeed() << " km/h";
                 putText(draw_frame, ss.str(),
-                        Point2f(80 - 2, draw_frame.rows - 80 - 2),
-                        FONT_HERSHEY_PLAIN, 5, Scalar(0, 0, 0), 5);
-                putText(draw_frame, ss.str(), Point2f(80, draw_frame.rows - 80),
-                        FONT_HERSHEY_PLAIN, 5, Scalar(0, 0, 255, 255), 5);
+                        Point2f(20 - 2, draw_frame.rows - 20 - 2),
+                        FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 0), 3);
+                putText(draw_frame, ss.str(), Point2f(20, draw_frame.rows - 20),
+                        FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255, 255), 3);
             }
 
             // ### Show current image
@@ -296,9 +267,6 @@ void MainWindow::showCam() {
                         QImage::Format_RGB888);
             pixmap.setPixmap(QPixmap::fromImage(qimg.rgbSwapped()));
             ui->graphicsView->fitInView(&pixmap, Qt::KeepAspectRatio);
-        } else if (input_from_video) {
-            video.release();
-            video.open(getInputVideoPath());
         }
 
         qApp->processEvents();
@@ -348,4 +316,12 @@ void MainWindow::setCurrentImage(const cv::Mat &img) {
 cv::Mat MainWindow::getCurrentImage() {
     std::lock_guard<std::mutex> guard(current_img_mutex);
     return current_img.clone();
+}
+
+void MainWindow::setInputSource(InputSource input_source) {
+    this->input_source = input_source;
+}
+
+void MainWindow::setSimulation(Simulation *simulation) {
+    this->simulation = simulation;
 }
