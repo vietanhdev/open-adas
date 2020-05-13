@@ -1,3 +1,5 @@
+#ifndef CAR_PROP_READER_H
+#define CAR_PROP_READER_H
 
 #include <stdio.h> 
 #include <sys/socket.h> 
@@ -22,7 +24,7 @@ enum SignalStatus {
     SIGNAL_CONNECTION_FAILED = -3
 };
 
-class CarPropReader {
+class CarGPSReader {
 
   private:
 
@@ -54,7 +56,7 @@ class CarPropReader {
     float latitude = 0;
 
   public:
-    CarPropReader() {
+    CarGPSReader() {
         this->socket_port = 50000;
         this->socket_server = "192.168.1.244"; // TODO: Fix this
 
@@ -178,3 +180,5 @@ class CarPropReader {
     }
 
 };
+
+#endif

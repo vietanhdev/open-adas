@@ -1,12 +1,12 @@
 #include <iostream>
 #include <fstream>
-#include "car_prop_reader.h"
+#include "car_gps_reader.h"
 
 using namespace std;
    
 int main(int argc, char const *argv[]) { 
 
-    CarPropReader reader;
+    CarGPSReader reader;
 
     while (true) {
         int ret = reader.updateProps();

@@ -22,13 +22,14 @@
 
 #include "utility.h"
 #include "camera.h"
-#include "car_prop_reader.h"
 #include "config.h"
 #include "file_storage.h"
 #include "lane_detector.h"
 #include "object_detector.h"
+#include "car_gps_reader.h"
 #include "input_source.h"
 #include "simulation.h"
+#include "car_status.h"
 
 namespace Ui {
 class MainWindow;
@@ -57,46 +58,23 @@ class MainWindow : public QMainWindow {
     InputSource input_source;
     Simulation *simulation;
 
-    // Current image
-    cv::Mat current_img;
-    std::mutex current_img_mutex;
-
     QGraphicsPixmapItem pixmap;
-    cv::VideoCapture video;
-
-    // Camera to use
-    std::vector<struct Camera> available_cams;
-    int current_camera_index = 0;
 
     // Processors
     std::shared_ptr<ObjectDetector> object_detector;
     std::shared_ptr<LaneDetector> lane_detector;
-    std::shared_ptr<CarPropReader> car_prop_reader;
+    std::shared_ptr<CarGPSReader> car_gps_reader;
 
-    // Object detection result
-    std::vector<Detection> object_detection_results;
-    std::mutex object_detection_results_mutex;
-
-    // Lane detection result
-    cv::Mat lane_line_mask;
-    cv::Mat detected_line_img;
-    cv::Mat reduced_line_img;
-    std::vector<LaneLine> lane_detection_results;
-    std::mutex lane_detection_results_mutex;
-
-   public:
-    void setCurrentImage(const cv::Mat &img);
-    cv::Mat getCurrentImage();
+    CarStatus car_status;
 
    private:
-    std::string getInputVideoPath();
 
     static void objectDetectionThread(
-        std::shared_ptr<ObjectDetector> object_detector, MainWindow *);
+        std::shared_ptr<ObjectDetector> object_detector, CarStatus *);
     static void laneDetectionThread(
-        std::shared_ptr<LaneDetector> lane_detector, MainWindow *);
+        std::shared_ptr<LaneDetector> lane_detector, CarStatus *);
     static void carPropReaderThread(
-        std::shared_ptr<CarPropReader> car_prop_reader);
+        std::shared_ptr<CarGPSReader> car_gps_reader);
 
    public:
     void setInputSource(InputSource input_source);

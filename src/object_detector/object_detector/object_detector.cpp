@@ -58,10 +58,6 @@ void ObjectDetector::drawDetections(const std::vector<Detection> & result,cv::Ma
         stream << ctdet::className[item.classId] << " " << item.prob << std::endl;
         std::getline(stream,label);
 
-        if ( item.prob < 0.4 ) {
-            continue;
-        }
-
         auto size = cv::getTextSize(label,cv::FONT_HERSHEY_COMPLEX,label_scale,1,&base_line);
 
         cv::rectangle(img, cv::Point(item.bbox.x1,item.bbox.y1),

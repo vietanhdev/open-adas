@@ -77,7 +77,7 @@ include_directories(
     "src/shared/uff_models/common/include"
     "src/shared/uff_models/unet"
     
-    "src/car_prop_reader/include"
+    "src/car_status/include"
     
     ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
@@ -88,7 +88,7 @@ include_directories(
 add_subdirectory(src/object_detector)
 
 # Build car prop reader
-add_subdirectory(src/car_prop_reader) # library to parge GPS info
+add_subdirectory(src/car_status)
 
 # Build lane detector
 add_subdirectory(src/lane_detector)
@@ -133,9 +133,10 @@ target_link_libraries(${PROJECT_NAME}
     ${CPP_FS_LIB} 
     ${SDL2_LIBRARIES}  
     object_detector
-    car_properties
     lane_detector
     sign_classifier
+    car_status
+    car_gps
 )
 
 # Copy files

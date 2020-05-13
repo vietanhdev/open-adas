@@ -21,89 +21,70 @@ MainWindow::MainWindow(QWidget *parent)
 
     object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
-    car_prop_reader = std::make_shared<CarPropReader>();
+    car_gps_reader = std::make_shared<CarGPSReader>();
 
     // Start processing threads
     std::thread od_thread(&MainWindow::objectDetectionThread, 
         object_detector,
-        this);
+        &car_status);
     od_thread.detach();
 
 #ifndef DISABLE_LANE_DETECTOR
     std::thread ld_thread(&MainWindow::laneDetectionThread, 
         lane_detector,
-        this);
+        &car_status);
     ld_thread.detach();
 #endif
 
     std::thread cpr_thread(&MainWindow::carPropReaderThread,
-                           car_prop_reader);
+                           car_gps_reader);
     cpr_thread.detach();
 }
 
 void MainWindow::objectDetectionThread(
     std::shared_ptr<ObjectDetector> object_detector,
-    MainWindow *main_ptr) {
+    CarStatus *car_status) {
     cv::Mat clone_img;
     while (true) {
-        {
-            std::lock_guard<std::mutex> guard(main_ptr->current_img_mutex);
-            clone_img = main_ptr->current_img.clone();
-        }
+        clone_img = car_status->getCurrentImage();
 
         if (clone_img.empty()) {
             continue;
         }
 
         std::vector<Detection> objects = object_detector->detect(clone_img);
-
-        {
-            std::lock_guard<std::mutex> guard(main_ptr->object_detection_results_mutex);
-            main_ptr->object_detection_results = objects;
-        }
-        
+        car_status->setDetectedObjects(objects);
     }
 }
 
 void MainWindow::laneDetectionThread(
-    std::shared_ptr<LaneDetector> lane_detector, MainWindow *main_ptr) {
+    std::shared_ptr<LaneDetector> lane_detector, CarStatus *car_status) {
     cv::Mat clone_img;
     while (true) {
-        {
-            std::lock_guard<std::mutex> guard(main_ptr->current_img_mutex);
-            clone_img = main_ptr->current_img.clone();
-        }
-
+        clone_img = car_status->getCurrentImage();
         if (clone_img.empty()) {
             continue;
         }
 
         #if defined (DEBUG_LANE_DETECTOR_SHOW_LINES)  || defined (DEBUG_LANE_DETECTOR_SHOW_LINE_MASK)
-        cv::Mat lane_line_mask_copy;
-        cv::Mat detected_line_img_copy;
-        cv::Mat reduced_line_img_copy;
-        std::vector<LaneLine> results = lane_detector->detectLaneLines(clone_img, lane_line_mask_copy, detected_line_img_copy, reduced_line_img_copy);
-        {
-            std::lock_guard<std::mutex> guard(main_ptr->lane_detection_results_mutex);
-            main_ptr->lane_line_mask = lane_line_mask_copy;
-            main_ptr->detected_line_img = detected_line_img_copy;
-            main_ptr->reduced_line_img = reduced_line_img_copy;
-            main_ptr->lane_detection_results = results;
-        }
+        cv::Mat lane_line_mask;
+        cv::Mat detected_line_img;
+        cv::Mat reduced_line_img;
+
+        std::vector<LaneLine> detected_lines = lane_detector->detectLaneLines(clone_img, lane_line_mask, detected_line_img, reduced_line_img);
+
+        car_status->setDetectedLaneLines(detected_lines, lane_line_mask, detected_line_img, reduced_line_img);
         #else
-        std::vector<LaneLine> results = lane_detector->detectLaneLines(clone_img);
-        {
-            std::lock_guard<std::mutex> guard(main_ptr->lane_detection_results_mutex);
-            main_ptr->lane_detection_results = results;
-        }
+        std::vector<LaneLine> detected_lines = lane_detector->detectLaneLines(clone_img);
+        car_status->setDetectedLaneLines(detected_lines);
         #endif 
     }
 }
 
 void MainWindow::carPropReaderThread(
-    std::shared_ptr<CarPropReader> car_prop_reader) {
+    std::shared_ptr<CarGPSReader> car_gps_reader) {
     while (true) {
-        car_prop_reader->updateProps();
+        car_gps_reader->updateProps();
     }
 }
 
@@ -133,9 +114,6 @@ void MainWindow::changeCamClicked() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    if (video.isOpened()) {
-        video.release();
-    }
     QApplication::quit();
     exit(0);
 }
@@ -154,35 +132,21 @@ void MainWindow::startVideoGrabber() {
             frame =  resizeByMaxSize(frame, IMG_MAX_SIZE);
 
             // Processing
-            setCurrentImage(frame);
+            car_status.setCurrentImage(frame);
+            draw_frame = car_status.getCurrentImage();
 
-            draw_frame = getCurrentImage();
-
-            #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
-            cv::Mat lane_line_mask_copy;
-            #endif
-
-            #ifdef DEBUG_LANE_DETECTOR_SHOW_LINES
-            cv::Mat detected_line_img_copy;
-            cv::Mat reduced_line_img_copy;
-            #endif
-
-            std::vector<LaneLine> lane_detection_results_copy;
-            
-            {
-                std::lock_guard<std::mutex> guard(lane_detection_results_mutex);
-                lane_detection_results_copy = lane_detection_results;
+            std::vector<LaneLine> detected_lane_lines = car_status.getDetectedLaneLines();
+                
+            if (!detected_lane_lines.empty()) {
 
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
-                lane_line_mask_copy = lane_line_mask.clone();
+                cv::Mat lane_line_mask_copy = car_status.getLineMask();
                 #endif
+
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINES
-                detected_line_img_copy = detected_line_img.clone();
-                reduced_line_img_copy = reduced_line_img.clone();
+                cv::Mat detected_line_img_copy = car_status->getDetectedLinesViz();
+                cv::Mat reduced_line_img_copy = car_status->getReducedLinesViz();
                 #endif
-            }
-                
-            if (!lane_detection_results.empty()) {
 
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
                     if (!lane_line_mask_copy.empty()) {
@@ -215,16 +179,11 @@ void MainWindow::startVideoGrabber() {
             }
 
 
-            std::vector<Detection> object_detection_results_clone;
-            {
-                std::lock_guard<std::mutex> guard(
-                    object_detection_results_mutex);
-                object_detection_results_clone = object_detection_results;
-            }
+            std::vector<Detection> detected_objects = car_status.getDetectedObjects();
 
-            if (!object_detection_results_clone.empty()) {
+            if (!detected_objects.empty()) {
                 object_detector->drawDetections(
-                    object_detection_results_clone, draw_frame);
+                    detected_objects, draw_frame);
             }
     
             // ### Show current image
@@ -272,18 +231,9 @@ void MainWindow::refreshCams() {
         cams.push_back(Camera(v4l_id, identifier));
     }
 
-    available_cams = cams;
+    // available_cams = cams;
 }
 
-void MainWindow::setCurrentImage(const cv::Mat &img) {
-    std::lock_guard<std::mutex> guard(current_img_mutex);
-    current_img = img.clone();
-}
-
-cv::Mat MainWindow::getCurrentImage() {
-    std::lock_guard<std::mutex> guard(current_img_mutex);
-    return current_img.clone();
-}
 
 void MainWindow::setInputSource(InputSource input_source) {
     this->input_source = input_source;
