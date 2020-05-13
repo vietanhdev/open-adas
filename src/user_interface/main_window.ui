@@ -22,8 +22,23 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item row="0" column="2">
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -56,53 +71,6 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QPushButton" name="changeCamBtn">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>194</width>
-            <height>38</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(240, 240, 240);
-color: rgb(0, 0, 0);
-font: 20pt 14pt;
-border-radius:0px;
-border: 1px solid #000;
-padding-right: 10px;
-padding-left: 10px;</string>
-          </property>
-          <property name="text">
-           <string>Cam: Front</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../../resources.qrc">
-            <normaloff>:/resources/images/flip-camera.png</normaloff>:/resources/images/flip-camera.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>32</width>
-            <height>32</height>
-           </size>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-          <property name="default">
-           <bool>true</bool>
-          </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item alignment="Qt::AlignLeft|Qt::AlignTop">
          <widget class="QPushButton" name="alertBtn">
           <property name="sizePolicy">
@@ -118,11 +86,7 @@ padding-left: 10px;</string>
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(240, 240, 240);
-color: rgb(0, 0, 0);
-font: 20pt 14pt;
-border-radius:0px;
-border: 1px solid #000;
+           <string notr="true">font: 20pt 14pt;
 padding-right: 10px;
 padding-left: 10px;</string>
           </property>
@@ -160,25 +124,21 @@ padding-left: 10px;</string>
           </property>
           <property name="minimumSize">
            <size>
-            <width>194</width>
+            <width>50</width>
             <height>38</height>
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(240, 240, 240);
-color: rgb(0, 0, 0);
-font: 20pt 14pt;
-border-radius:0px;
-border: 1px solid #000;
+           <string notr="true">font: 20pt 14pt;
 padding-right: 10px;
 padding-left: 10px;</string>
           </property>
           <property name="text">
-           <string>Mute</string>
+           <string/>
           </property>
           <property name="icon">
            <iconset resource="../../resources.qrc">
-            <normaloff>:/resources/images/mute.png</normaloff>:/resources/images/mute.png</iconset>
+            <normaloff>:/resources/images/volume.png</normaloff>:/resources/images/volume.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -209,6 +169,21 @@ padding-left: 10px;</string>
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>Speed: __ km/h</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="menuBtn">

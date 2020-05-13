@@ -7,6 +7,8 @@ project(CarSmartCam)
 # Setup for TensorRT
 set(GPU_ARCHS 53)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
@@ -57,56 +59,25 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 # without -fPIE. We add that here.
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
-set(Python_ADDITIONAL_VERSIONS 2.7)
-FIND_PACKAGE(PythonInterp 2.7)
-if (PYTHONINTERP_FOUND)
-  if (UNIX AND NOT APPLE)
-    if (PYTHON_VERSION_MAJOR EQUAL 3)
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_SUFFIX} numpy)
-        FIND_PACKAGE(PythonInterp 3)
-        FIND_PACKAGE(PythonLibs 3 REQUIRED)
-    else()
-        FIND_PACKAGE(Boost COMPONENTS python numpy)
-        FIND_PACKAGE(PythonInterp)
-        FIND_PACKAGE(PythonLibs REQUIRED)
-    endif()
-  else()	
-    if (PYTHON_VERSION_MAJOR EQUAL 3)
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} numpy)
-        FIND_PACKAGE(PythonInterp 3)
-        FIND_PACKAGE(PythonLibs 3 REQUIRED)
-    else()
-        FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR} numpy)
-        FIND_PACKAGE(PythonInterp)
-        FIND_PACKAGE(PythonLibs REQUIRED)
-    endif()
-  endif()
-else()
-    message("Python not found")
-endif()
-
-message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
-message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
-message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
-
 
 include_directories(
     "src"
     "src/utils/include"
     "src/user_interface"
+    "src/simulation"
     "src/user_interface/dark_theme"
-    "src/object_detector/include"
+    "src/object_detector/detector/include"
+    "src/object_detector/common"
+    "src/object_detector/tracker"
+    "src/object_detector"
     "src/lane_detector/include"
     "src/car_prop_reader/include"
     ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
-    ${PYTHON_INCLUDE_DIRS}
 )
 
 
-# Build object detector
+# Build object detector & tracker
 add_subdirectory(src/object_detector)
 
 # Build car prop reader
@@ -129,6 +100,9 @@ add_executable(${PROJECT_NAME}
     "src/user_interface/main_window.ui"
     "src/user_interface/dark_theme/dark_style.qrc"
     "src/user_interface/dark_theme/dark_style.cpp"
+
+    "src/simulation/simulation.cpp"
+    "src/simulation/simulation.ui"
 )
 
 ADD_LIBRARY(
@@ -149,8 +123,7 @@ target_link_libraries(${PROJECT_NAME}
     ${OpenCV_LIBS} 
     ${CPP_FS_LIB} 
     ${SDL2_LIBRARIES}  
-    ${Boost_LIBRARIES}
-    ctdet carprop lanedt)
+    detector_with_track carprop lanedt)
 
 # Copy files
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -164,8 +137,3 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                        ${CMAKE_SOURCE_DIR}/sounds $<TARGET_FILE_DIR:${PROJECT_NAME}>/sounds)
-
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/src/lane_detector/python_lane_detector $<TARGET_FILE_DIR:${PROJECT_NAME}>/python_lane_detector)
-

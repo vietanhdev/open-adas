@@ -47,11 +47,6 @@ sudo apt-get install libsdl2-dev
 https://github.com/protocolbuffers/protobuf
 ```
 
-- Install pycuda on Python 2.7:
-```
-sudo python -m pip install --global-option=build_ext --global-option="-I/usr/local/cuda-10.0/targets/aarch64-linux/include/" --global-option="-L/usr/local/cuda-10.0/targets/aarch64-linux/lib/" pycuda
-```
-
 #### Compile and Run
 
 - Compile
@@ -80,9 +75,6 @@ sudo ln -s /usr/local/cuda/lib64/libcudart.so /usr/lib/libcudart.so
 ```
 sudo ln -s /usr/local/cuda/lib64/libcublas.so /usr/lib/libcublas.so
 ```
-
-- While running boost::python with numpy in a separate thread, you have to run `np::initialize();` for that thread.
-
 
 ## III. REFERENCES:
 

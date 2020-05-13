@@ -1,42 +1,53 @@
 #ifndef LANE_DETECTOR_H
 #define LANE_DETECTOR_H
 
-#include <python2.7/Python.h>
-#include <opencv2/opencv.hpp>
-#include <boost/python.hpp>
-#include <boost/python/numpy.hpp>
+#include <getopt.h>
+
 #include <iostream>
+#include <string>
+#include <vector>
 
-
-namespace py = boost::python;
-namespace np = boost::python::numpy;
+#include "lane_line.h"
+#include "unet.h"
 
 class LaneDetector {
    private:
-    const int INPUT_WIDTH = 320;
-    const int INPUT_HEIGHT = 224;
+    const int INPUT_WIDTH = 512;
+    const int INPUT_HEIGHT = 512;
+    const std::string INPUT_NODE = "data";
+    const std::string OUTPUT_NODE = "sigmoid/Sigmoid";
 
-    py::object main_module;
-    py::object mn;
-    py::object image_processor;
-    py::object process_img;
+    std::shared_ptr<Unet> model;
 
    public:
     bool ready = false;
 
     LaneDetector();
-    
-    void init_python();
-    void init();
 
-    cv::Mat detect_lane(const cv::Mat& img);
+    cv::Mat getLaneMask(const cv::Mat& input_img);
 
-    // Function to convert from cv::Mat to numpy array
-    np::ndarray ConvertMatToNDArray(const cv::Mat& mat);
+    // Lane detect function
+    // For debug purpose
+    std::vector<LaneLine> detectLaneLines(const cv::Mat& input_img,
+                                                cv::Mat& line_mask,
+                                                cv::Mat& detected_lines_img,
+                                                cv::Mat& reduced_lines_img);
+    // For general usage
+    std::vector<LaneLine> detectLaneLines(const cv::Mat& img);
 
-    // Function to convert from numpy array to cv::Mat
-    cv::Mat ConvertNDArrayToMat(const np::ndarray& ndarr);
+   private:
+    // Utils functions
+    std::vector<cv::Vec4i> detectAndReduceLines(const cv::Mat& img,
+                                                cv::Mat& detectedLinesImg,
+                                                cv::Mat& reducedLinesImg);
+    static cv::Vec2d linearParameters(cv::Vec4i line);
+    static cv::Vec4i extendedLine(cv::Vec4i line, double d);
+    static std::vector<cv::Point2i> boundingRectangleContour(cv::Vec4i line,
+                                                             float d);
+    static bool extendedBoundingRectangleLineEquivalence(
+        const cv::Vec4i& _l1, const cv::Vec4i& _l2,
+        float extensionLengthFraction, float maxAngleDiff,
+        float boundingRectangleThickness);
 };
-
 
 #endif

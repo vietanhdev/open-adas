@@ -77,3 +77,6 @@ build
 CMakeLists.txt.user
 /models
 !/models/.gitkeep
+
+/data/videos
+!/data/videos/.gitkeep

@@ -9,5 +9,6 @@
         <file>images/menu.png</file>
         <file>images/mute.png</file>
         <file>images/warn.png</file>
+        <file>images/volume.png</file>
     </qresource>
 </RCC>
