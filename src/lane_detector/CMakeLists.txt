@@ -31,7 +31,7 @@ include_directories(${CUDA_INCLUDE_DIRS}
                     )
 
 file(GLOB CPP_SRC common/*.cpp)
-cuda_add_library(lanedt ${CPP_SRC} lane_detector.cpp unet.cpp)
+cuda_add_library(lanedt ${CPP_SRC} lane_detector.cpp unet.cpp uff_model.cpp)
 
 # Use C++ 17
 target_compile_features(lanedt PRIVATE cxx_std_17)

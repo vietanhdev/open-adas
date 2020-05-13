@@ -5,7 +5,7 @@
 using namespace cv;
 
 LaneDetector::LaneDetector() {
-    UnetParams params;
+    UffModelParams params;
     params.inputW = INPUT_WIDTH;
     params.inputH = INPUT_HEIGHT;
     params.batchSize = 1;
