@@ -23,13 +23,18 @@
 #include <QWidget>
 #include <QFileDialog>
 #include <chrono>
+#include <fstream>
+#include <string>
+#include <bits/stdc++.h> 
 #include "config.h"
 #include "ui_simulation.h"
+#include "simulation_data.h"
 
 class Simulation : public QWidget, private Ui::Simulation {
     Q_OBJECT
 
-   public:
+   private:
+    std::atomic<float> car_speed = 0.0;
     std::atomic<bool> is_playing = false;
     std::atomic<bool> playing_thread_running = false;
     std::mutex path_mutex;
@@ -45,6 +50,8 @@ class Simulation : public QWidget, private Ui::Simulation {
     void stopPlaying();
     void startPlaying();
     cv::Mat getCurrentImage();
+    void setCarSpeed(float);
+    float getCarSpeed();
 
    private slots:
     void selectVideoBtnClicked();
@@ -60,6 +67,8 @@ class Simulation : public QWidget, private Ui::Simulation {
     bool isPlaying();
     void setPlaying(bool playing);
     void setCurrentImage(const cv::Mat &img);
+
+    int readSimulationData(std::string video_path, std::string data_file_path, SimulationData &sim_data);
    
 };
 

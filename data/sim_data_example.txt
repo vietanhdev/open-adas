@@ -1,0 +1,13 @@
+Simulation Data
+version 1.0
+
+VideoProps
+playing_speed 100
+begin_frame 0
+end_frame 1203
+---
+
+CarSpeed
+<begin_frame> <end_frame> <speed (km/h)>
+0 1203 20.0
+---

@@ -18,8 +18,8 @@
 #define SMARTCAM_OBJECT_DETECTION_MODE "FLOAT32"
 
 #define SMARTCAM_LANE_DETECTION_MODEL \
-    "models/lane_detection/full_model_mapillary_lane_resnet18.uff"
+    "models/lane_detection/config02_model_.103-0.399921.uff"
 #define SMARTCAM_LANE_DETECTION_TENSORRT_PLAN \
-    "models/lane_detection/full_model_mapillary_lane_resnet18.engine"
+    "models/lane_detection/config02_model_.103-0.399921.engine"
 
 #endif

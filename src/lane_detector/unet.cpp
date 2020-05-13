@@ -186,13 +186,17 @@ bool Unet::infer(const cv::Mat& input_img, cv::Mat& output_img) {
     // Memcpy from device output buffers to host output buffers
     buffers->copyOutputToHost();
 
+    cv::Mat prepared_output;
+
     // Post-process output
-    if (!processOutput(*buffers, output_img)) {
+    if (!processOutput(*buffers, prepared_output)) {
         return false;
     }
 
     // Resize output_img to original size
-    cv::resize(output_img, output_img, cv::Size(origin_w, origin_h));
+    cv::resize(prepared_output, prepared_output, cv::Size(origin_w, origin_h));
+
+    output_img = prepared_output;
 
     return true;
 }

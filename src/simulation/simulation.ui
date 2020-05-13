@@ -120,31 +120,41 @@ color: #000;
    <property name="title">
     <string>Speed</string>
    </property>
-   <widget class="QLCDNumber" name="speedMeter">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>101</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: white;
-background: #888;</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>115</x>
-      <y>31</y>
+      <x>110</x>
+      <y>50</y>
       <width>40</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
      <string>km/h</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="speedLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>81</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>28</pointsize>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>00</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
   </widget>
