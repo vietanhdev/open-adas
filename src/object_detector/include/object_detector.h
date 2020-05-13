@@ -8,6 +8,7 @@
 #include "filesystem_include.h"
 #include "ctdetNet.h"
 #include "ctdet_utils.h"
+#include "config.h"
 
 class ObjectDetector {
    private:
@@ -15,8 +16,9 @@ class ObjectDetector {
     std::unique_ptr<float[]> outputData;
 
    public:
-    ObjectDetector(std::string onnx_model_path, std::string tensorrt_plan_path, std::string tensorrt_mode="FLOAT16");
-    std::vector<Detection> inference(const cv::Mat &img);
+    ObjectDetector();
+    std::vector<Detection> detect(const cv::Mat &img);
+    void drawDetections(const std::vector<Detection> & result,cv::Mat& img);
 };
 
 #endif  // OBJECT_DETECTOR_H

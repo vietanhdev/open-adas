@@ -27,7 +27,6 @@
 #include "file_storage.h"
 #include "lane_detector.h"
 #include "object_detector.h"
-#include "object_detector_with_tracking.h"
 #include "input_source.h"
 #include "simulation.h"
 
@@ -69,18 +68,16 @@ class MainWindow : public QMainWindow {
     std::vector<struct Camera> available_cams;
     int current_camera_index = 0;
 
+    // Processors
     std::shared_ptr<ObjectDetector> object_detector;
-    std::shared_ptr<ObjectDetectorWithTracking> object_detector_with_tracking;
     std::shared_ptr<LaneDetector> lane_detector;
     std::shared_ptr<CarPropReader> car_prop_reader;
-    std::unique_ptr<CTracker> object_tracker;
 
+    // Object detection result
     std::vector<Detection> object_detection_results;
     std::mutex object_detection_results_mutex;
 
-    std::vector<TrackingObject> object_tracking_results;
-    std::mutex object_tracking_results_mutex;
-
+    // Lane detection result
     cv::Mat lane_line_mask;
     cv::Mat detected_line_img;
     cv::Mat reduced_line_img;
@@ -94,11 +91,8 @@ class MainWindow : public QMainWindow {
    private:
     std::string getInputVideoPath();
 
-    static void objectTrackingThread(
-        std::shared_ptr<ObjectDetectorWithTracking> object_detector,
-        cv::Mat &img, std::mutex &img_mutex,
-        std::vector<TrackingObject> &object_tracking_results,
-        std::mutex &object_tracking_results_mutex);
+    static void objectDetectionThread(
+        std::shared_ptr<ObjectDetector> object_detector, MainWindow *);
     static void laneDetectionThread(
         std::shared_ptr<LaneDetector> lane_detector, MainWindow *);
     static void carPropReaderThread(

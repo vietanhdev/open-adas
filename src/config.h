@@ -15,7 +15,7 @@
 #define SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN \
     "models/object_detection/ctdet_bdd_rescdn18.engine"
 // Mode: FLOAT32, FLOAT16. INT in the future
-#define SMARTCAM_OBJECT_DETECTION_MODE "FLOAT32"
+#define SMARTCAM_OBJECT_DETECTION_MODE "FLOAT16"
 
 #define SMARTCAM_LANE_DETECTION_MODEL \
     "models/lane_detection/config02_model_.103-0.399921.uff"

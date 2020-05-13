@@ -19,22 +19,20 @@ MainWindow::MainWindow(QWidget *parent)
     // Init Audio
     SDL_Init(SDL_INIT_AUDIO);
 
-    object_detector_with_tracking =
-        std::make_shared<ObjectDetectorWithTracking>();
+    object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
     car_prop_reader = std::make_shared<CarPropReader>();
 
     // Start processing threads
-    std::thread od_thread(&MainWindow::objectTrackingThread,
-                          object_detector_with_tracking, std::ref(current_img),
-                          std::ref(current_img_mutex),
-                          std::ref(object_tracking_results),
-                          std::ref(object_tracking_results_mutex));
+    std::thread od_thread(&MainWindow::objectDetectionThread, 
+        object_detector,
+        this);
     od_thread.detach();
 
 #ifndef DISABLE_LANE_DETECTOR
-    std::thread ld_thread(&MainWindow::laneDetectionThread, lane_detector,
-                          this);
+    std::thread ld_thread(&MainWindow::laneDetectionThread, 
+        lane_detector,
+        this);
     ld_thread.detach();
 #endif
 
@@ -43,33 +41,27 @@ MainWindow::MainWindow(QWidget *parent)
     cpr_thread.detach();
 }
 
-void MainWindow::objectTrackingThread(
-    std::shared_ptr<ObjectDetectorWithTracking> object_detector_with_tracking,
-    cv::Mat &img, std::mutex &img_mutex,
-    std::vector<TrackingObject> &object_tracking_results,
-    std::mutex &object_tracking_results_mutex) {
+void MainWindow::objectDetectionThread(
+    std::shared_ptr<ObjectDetector> object_detector,
+    MainWindow *main_ptr) {
     cv::Mat clone_img;
     while (true) {
         {
-            std::lock_guard<std::mutex> guard(img_mutex);
-            clone_img = img.clone();
+            std::lock_guard<std::mutex> guard(main_ptr->current_img_mutex);
+            clone_img = main_ptr->current_img.clone();
         }
 
         if (clone_img.empty()) {
             continue;
         }
 
-
-        std::vector<TrackingObject> tracks;
-        if (0 != object_detector_with_tracking->runDetectAndTrack(clone_img,
-                                                              tracks)) {
-            cerr << "Error on detecting and tracking!" << endl;
-        }
+        std::vector<Detection> objects = object_detector->detect(clone_img);
 
         {
-            std::lock_guard<std::mutex> guard(object_tracking_results_mutex);
-            object_tracking_results = tracks;
+            std::lock_guard<std::mutex> guard(main_ptr->object_detection_results_mutex);
+            main_ptr->object_detection_results = objects;
         }
+        
     }
 }
 
@@ -222,42 +214,19 @@ void MainWindow::startVideoGrabber() {
                 
             }
 
+
+            std::vector<Detection> object_detection_results_clone;
             {
                 std::lock_guard<std::mutex> guard(
-                    object_tracking_results_mutex);
-                if (!object_tracking_results.empty()) {
-                    for (int i = 0; i < object_tracking_results.size(); ++i) {
-                        object_detector_with_tracking->drawTrack(
-                            draw_frame, 1.0, object_tracking_results[i], true);
-                    }
-                }
+                    object_detection_results_mutex);
+                object_detection_results_clone = object_detection_results;
             }
 
-//             // Add speed
-//             int gps_signal_status = car_prop_reader->getSignalStatus();
-//             if (gps_signal_status != 0) {
-//                 std::stringstream ss;
-//                 ss << "No GPS";
-
-// #ifdef SMARTCAM_DEBUG
-//                 ss << " (" << gps_signal_status << ")";
-// #endif
-
-//                 putText(draw_frame, ss.str(),
-//                         Point2f(20 - 2, draw_frame.rows - 20 - 2),
-//                         FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 0), 3);
-//                 putText(draw_frame, ss.str(), Point2f(20, draw_frame.rows - 20),
-//                         FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255, 255), 3);
-//             } else {
-//                 std::stringstream ss;
-//                 ss << car_prop_reader->getCarSpeed() << " km/h";
-//                 putText(draw_frame, ss.str(),
-//                         Point2f(20 - 2, draw_frame.rows - 20 - 2),
-//                         FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 0), 3);
-//                 putText(draw_frame, ss.str(), Point2f(20, draw_frame.rows - 20),
-//                         FONT_HERSHEY_PLAIN, 3, Scalar(0, 0, 255, 255), 3);
-//             }
-
+            if (!object_detection_results_clone.empty()) {
+                object_detector->drawDetections(
+                    object_detection_results_clone, draw_frame);
+            }
+    
             // ### Show current image
             QImage qimg(draw_frame.data, static_cast<int>(draw_frame.cols),
                         static_cast<int>(draw_frame.rows),

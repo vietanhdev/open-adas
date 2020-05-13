@@ -63,18 +63,22 @@ set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 include_directories(
     "src"
     "src/utils/include"
+
     "src/user_interface"
     "src/simulation"
     "src/user_interface/dark_theme"
-    "src/object_detector/detector/include"
-    "src/object_detector/common"
-    "src/object_detector/tracker"
+
+    "src/object_detector/include"
     "src/object_detector"
+
+    "src/traffic_sign_classifier"
+
     "src/lane_detector"
     "src/shared/uff_models/common/include"
     "src/shared/uff_models/unet"
-    "src/traffic_sign_classifier"
+    
     "src/car_prop_reader/include"
+    
     ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
 )
@@ -128,11 +132,11 @@ target_link_libraries(${PROJECT_NAME}
     ${OpenCV_LIBS} 
     ${CPP_FS_LIB} 
     ${SDL2_LIBRARIES}  
-    detector_with_track
+    object_detector
     car_properties
     lane_detector
     sign_classifier
-    )
+)
 
 # Copy files
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
