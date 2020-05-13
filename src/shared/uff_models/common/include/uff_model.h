@@ -1,5 +1,5 @@
 #include <cuda_runtime_api.h>
-
+#include <vector>
 #include <string>
 #include <cstdlib>
 #include <fstream>
@@ -12,20 +12,23 @@
 #include <NvInfer.h>
 #include <NvUffParser.h>
 
-#include "common/BatchStream.h"
-#include "common/EntropyCalibrator.h"
-#include "common/argsParser.h"
-#include "common/buffers.h"
-#include "common/common.h"
-#include "common/logger.h"
-#include "common/filesystem_include.h"
+#include "BatchStream.h"
+#include "EntropyCalibrator.h"
+#include "argsParser.h"
+#include "buffers.h"
+#include "common.h"
+#include "logger.h"
+#include "filesystem_include.h"
+#include "object_class.h"
 
 struct UffModelParams {
     int inputW;
     int inputH;
 
     int batchSize{1};
-    int nClasses;
+    int nClasses{-1};
+    std::vector<ObjectClass> classes;
+    std::string classListFile;
 
     std::string engineFilePath;
     std::string uffFilePath;
@@ -81,5 +84,14 @@ struct UffModel {
 
     // Create execution context
     bool createContext();
+
+    // Read class list from file
+    // Return 0 if success, otherwise return a positive number
+    int readClassListFile(const std::string & class_list_file, std::vector<ObjectClass> &classes);
+
+   private:
+    std::string& ltrim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
+    std::string& rtrim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
+    std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
 
 };

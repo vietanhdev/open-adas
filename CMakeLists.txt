@@ -70,7 +70,10 @@ include_directories(
     "src/object_detector/common"
     "src/object_detector/tracker"
     "src/object_detector"
-    "src/lane_detector/include"
+    "src/lane_detector"
+    "src/shared/uff_models/common/include"
+    "src/shared/uff_models/unet"
+    "src/traffic_sign_classifier"
     "src/car_prop_reader/include"
     ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
@@ -86,6 +89,8 @@ add_subdirectory(src/car_prop_reader) # library to parge GPS info
 # Build lane detector
 add_subdirectory(src/lane_detector)
 
+# Build sign classifier
+add_subdirectory(src/traffic_sign_classifier)
 
 # add required source, header, ui and resource files
 add_executable(${PROJECT_NAME}
@@ -123,7 +128,11 @@ target_link_libraries(${PROJECT_NAME}
     ${OpenCV_LIBS} 
     ${CPP_FS_LIB} 
     ${SDL2_LIBRARIES}  
-    detector_with_track carprop lanedt)
+    detector_with_track
+    car_properties
+    lane_detector
+    sign_classifier
+    )
 
 # Copy files
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

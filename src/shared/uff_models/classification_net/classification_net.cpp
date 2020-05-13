@@ -1,4 +1,4 @@
-#include "unet.h"
+#include "classification_net.h"
 
 #include <cuda_runtime_api.h>
 
@@ -19,16 +19,16 @@
 #include "common.h"
 #include "logger.h"
 
-Unet::Unet(const UffModelParams& params): UffModel(params) {}
+ClassificationNet::ClassificationNet(const UffModelParams& params): UffModel(params) {}
 
 // Reads the input, pre-process, and stores in managed buffer
-bool Unet::processInput(const samplesCommon::BufferManager& buffers,
-                        const cv::Mat& img) {
+bool ClassificationNet::processInput(const samplesCommon::BufferManager& buffers, const cv::Mat& img) {
     int inputH = mParams.inputH;
     int inputW = mParams.inputW;
 
     cv::Mat resized_img;
     cv::resize(img, resized_img, cv::Size(inputW, inputH));
+    resized_img.convertTo(resized_img, CV_32FC3, 1.0/255);
 
     // put data into buffer
     float* hostDataBuffer =
@@ -38,16 +38,16 @@ bool Unet::processInput(const samplesCommon::BufferManager& buffers,
 
     for (int x = 0; x < inputW; ++x) {
         for (int y = 0; y < inputH; ++y) {
-            cv::Vec3b intensity = resized_img.at<cv::Vec3b>(y, x);
-            int blue = intensity.val[0];
-            int green = intensity.val[1];
-            int red = intensity.val[2];
+            cv::Vec3f intensity = resized_img.at<cv::Vec3f>(y, x);
+            float blue = intensity.val[0];
+            float green = intensity.val[1];
+            float red = intensity.val[2];
 
-            int j = x * inputH + y;
+            int j = y * inputH + x;
 
-            hostDataBuffer[0 * volChl + j] = float(red);
+            hostDataBuffer[0 * volChl + j] = float(blue);
             hostDataBuffer[1 * volChl + j] = float(green);
-            hostDataBuffer[2 * volChl + j] = float(blue);
+            hostDataBuffer[2 * volChl + j] = float(red);
         }
     }
 
@@ -55,22 +55,21 @@ bool Unet::processInput(const samplesCommon::BufferManager& buffers,
 }
 
 // Process output and verify result
-bool Unet::processOutput(const samplesCommon::BufferManager& buffers,
-                         cv::Mat& output_img) {
-    int inputH = mParams.inputH;
-    int inputW = mParams.inputW;
+bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffers, int & sign_type) {
 
     const float* out_buff = static_cast<float*>(
         buffers.getHostBuffer(mParams.outputTensorNames[0]));
 
-    output_img = cv::Mat(inputH, inputW, CV_32F, cv::Scalar(0));
-
-    for (int x = 0; x < inputW; ++x) {
-        for (int y = 0; y < inputH; ++y) {
-            int j = x * inputH + y;
-            output_img.at<float>(y, x) = out_buff[j];
+    sign_type = -1;
+    float max_prob = 0.0;
+    for (int i = 0; i < mParams.nClasses; ++i) {
+        cout << out_buff[i] << " " << endl;
+        if (out_buff[i] > max_prob) {
+            sign_type = i;
+            max_prob = out_buff[i];
         }
     }
+    cout << endl;
 
     return true;
 }
@@ -78,7 +77,7 @@ bool Unet::processOutput(const samplesCommon::BufferManager& buffers,
 // Runs the TensorRT inference engine
 // This function is the main execution function
 // It allocates the buffer, sets inputs and executes the engine
-bool Unet::infer(const cv::Mat& input_img, cv::Mat& output_img) {
+bool ClassificationNet::infer(const cv::Mat& input_img, int& sign_type) {
     int origin_w = input_img.size().width;
     int origin_h = input_img.size().height;
 
@@ -98,17 +97,19 @@ bool Unet::infer(const cv::Mat& input_img, cv::Mat& output_img) {
     // Memcpy from device output buffers to host output buffers
     buffers->copyOutputToHost();
 
-    cv::Mat prepared_output;
-
     // Post-process output
-    if (!processOutput(*buffers, prepared_output)) {
+    if (!processOutput(*buffers, sign_type)) {
         return false;
     }
 
-    // Resize output_img to original size
-    cv::resize(prepared_output, prepared_output, cv::Size(origin_w, origin_h));
-
-    output_img = prepared_output;
-
     return true;
+}
+
+std::string ClassificationNet::getClassName(int class_id) {
+    for (size_t i = 0; i < mParams.classes.size(); ++i) {
+        if (mParams.classes[i].id == class_id) {
+            return mParams.classes[i].name;
+        }
+    }
+    return "";
 }

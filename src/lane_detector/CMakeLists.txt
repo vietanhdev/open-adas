@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
-project(lanedt)
+project(lane_detector)
 
 find_package(CUDA REQUIRED)
-
 
 find_path(TENSORRT_INCLUDE_DIR NvInfer.h
         HINTS ${TENSORRT_ROOT} ${CUDA_TOOLKIT_ROOT_DIR}
@@ -26,24 +25,32 @@ message(STATUS ${TENSORRT_ROOT})
 include_directories(${CUDA_INCLUDE_DIRS}
                     ${TENSORRT_INCLUDE_DIR}
                     ${OpenCV_INCLUDE_DIRS}
-                    ./include/common
-                    ./include
+                    ../shared/uff_models/common/include
+                    ../shared/uff_models/unet
                     )
 
-file(GLOB CPP_SRC common/*.cpp)
-cuda_add_library(lanedt ${CPP_SRC} lane_detector.cpp unet.cpp uff_model.cpp)
+file(GLOB UFF_MODEL_CPP ../shared/uff_models/common/*.cpp)
+file(GLOB UNET_CPP ../shared/uff_models/unet/*.cpp)
+
+cuda_add_library(lane_detector lane_detector.cpp ${UFF_MODEL_CPP} ${UNET_CPP})
 
 # Use C++ 17
-target_compile_features(lanedt PRIVATE cxx_std_17)
+target_compile_features(lane_detector PRIVATE cxx_std_17)
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
     set (CPP_FS_LIB "stdc++fs")
 endif()
 
-target_link_libraries(lanedt
+target_link_libraries(lane_detector
         ${TENSORRT_LIBRARY_INFER}
         ${OpenCV_LIBS}
         ${CPP_FS_LIB}
         nvparsers
         nvonnxparser
         nvinfer_plugin
+)
+
+
+cuda_add_executable(test_lane_detector test_lane_detector.cpp)
+target_link_libraries(test_lane_detector
+        lane_detector
 )

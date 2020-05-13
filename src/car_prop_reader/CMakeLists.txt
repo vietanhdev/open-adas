@@ -8,9 +8,9 @@ include_directories(include)
 
 file(GLOB CPP_SRC *.cpp)
 
-add_library(carprop STATIC ${CPP_SRC})
-target_link_libraries(carprop NemaTode)
+add_library(car_properties STATIC ${CPP_SRC})
+target_link_libraries(car_properties NemaTode)
 
 add_executable(test_car_prop_reader test_car_prop_reader.cpp)
-target_link_libraries(test_car_prop_reader carprop)
+target_link_libraries(test_car_prop_reader car_properties)
 

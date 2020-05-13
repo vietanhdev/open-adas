@@ -1,5 +1,7 @@
-#include <cuda_runtime_api.h>
+#ifndef UNET_H
+#define UNET_H
 
+#include <cuda_runtime_api.h>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -11,13 +13,13 @@
 #include <NvInfer.h>
 #include <NvUffParser.h>
 
-#include "common/BatchStream.h"
-#include "common/EntropyCalibrator.h"
-#include "common/argsParser.h"
-#include "common/buffers.h"
-#include "common/common.h"
-#include "common/logger.h"
-#include "common/filesystem_include.h"
+#include "BatchStream.h"
+#include "EntropyCalibrator.h"
+#include "argsParser.h"
+#include "buffers.h"
+#include "common.h"
+#include "logger.h"
+#include "filesystem_include.h"
 
 #include "uff_model.h"
 
@@ -39,3 +41,5 @@ struct Unet : UffModel {
     bool processOutput(const samplesCommon::BufferManager& buffers,
                        cv::Mat& output_img);
 };
+
+#endif

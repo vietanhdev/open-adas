@@ -22,4 +22,12 @@
 #define SMARTCAM_LANE_DETECTION_TENSORRT_PLAN \
     "models/lane_detection/config02_model_.103-0.399921.engine"
 
+#define SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_MODEL \
+    "models/traffic_sign/traffic_sign_classification.uff"
+#define SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_TENSORRT_PLAN \
+    "models/traffic_sign/traffic_sign_classification.engine"
+#define SMARTCAM_TRAFFIC_SIGN_CLASS_LIST \
+    "models/traffic_sign/classes.txt"
+
+
 #endif
