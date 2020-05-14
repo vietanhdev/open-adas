@@ -33,7 +33,6 @@ std::vector<Detection> ObjectDetector::detect(const cv::Mat &img) {
     auto inputData = prepareImage(frame, net->forwardFace);
 
     net->doInference(inputData.data(), outputData.get());
-    net->printTime();
 
     int num_det = static_cast<int>(outputData[0]);
 

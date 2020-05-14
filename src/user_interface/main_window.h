@@ -30,6 +30,7 @@
 #include "input_source.h"
 #include "simulation.h"
 #include "car_status.h"
+#include "timer.h"
 
 namespace Ui {
 class MainWindow;
@@ -80,6 +81,7 @@ class MainWindow : public QMainWindow {
    public:
     void setInputSource(InputSource input_source);
     void setSimulation(Simulation *simulation);
+
 };
 
 #endif  // MAINWINDOW_H

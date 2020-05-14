@@ -9,6 +9,7 @@
 
 #include "lane_detector.h"
 #include "object_detector.h"
+#include "timer.h"
 
 class CarStatus {
    private:
@@ -30,13 +31,17 @@ class CarStatus {
 
     std::atomic<float> car_speed; // km/h
 
+    // Time durations
+    std::mutex time_mutex;
+    Timer::time_duration_t object_detection_time;
+    Timer::time_duration_t lane_detection_time;
+
    public:
     void setCurrentImage(const cv::Mat &img);
     cv::Mat getCurrentImage();
 
     void setDetectedObjects(const std::vector<Detection> &objects);
     std::vector<Detection> getDetectedObjects();
-
 
     void setDetectedLaneLines(const std::vector<LaneLine> &lane_lines, 
         const cv::Mat& lane_line_mask,
@@ -54,6 +59,11 @@ class CarStatus {
     void setCarSpeed(float speed);
 
     cv::Mat resizeByMaxSize(const cv::Mat &img, int max_size);
+
+    void setObjectDetectionTime(Timer::time_duration_t duration);
+    Timer::time_duration_t getObjectDetectionTime();
+    void setLaneDetectionTime(Timer::time_duration_t duration);
+    Timer::time_duration_t getLaneDetectionTime();
 
 };
 #endif

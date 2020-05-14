@@ -96,3 +96,21 @@ cv::Mat CarStatus::resizeByMaxSize(const cv::Mat &img, int max_size) {
     }
 
 }
+
+
+void CarStatus::setObjectDetectionTime(Timer::time_duration_t duration) {
+    std::lock_guard<std::mutex> guard(time_mutex);
+    object_detection_time = object_detection_time * 0.8 + duration * 0.2;
+}
+Timer::time_duration_t CarStatus::getObjectDetectionTime() {
+    std::lock_guard<std::mutex> guard(time_mutex);
+    return object_detection_time;
+}
+void CarStatus::setLaneDetectionTime(Timer::time_duration_t duration) {
+    std::lock_guard<std::mutex> guard(time_mutex);
+    lane_detection_time = lane_detection_time * 0.8 + duration * 0.2;
+}
+Timer::time_duration_t CarStatus::getLaneDetectionTime() {
+    std::lock_guard<std::mutex> guard(time_mutex);
+    return lane_detection_time;
+}

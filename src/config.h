@@ -9,6 +9,7 @@
 // Show lane debug images
 // #define DEBUG_LANE_DETECTOR_SHOW_LINES
 #define DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
+#define DEBUG_SHOW_FPS
 
 #define SMARTCAM_OBJECT_DETECTION_MODEL \
     "models/object_detection/ctdet_bdd_rescdn18.onnx"
