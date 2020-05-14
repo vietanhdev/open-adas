@@ -65,6 +65,7 @@ class MainWindow : public QMainWindow {
     std::shared_ptr<LaneDetector> lane_detector;
     std::shared_ptr<CarGPSReader> car_gps_reader;
 
+   public:
     CarStatus car_status;
 
    private:

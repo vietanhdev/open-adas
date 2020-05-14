@@ -124,15 +124,15 @@ void MainWindow::startVideoGrabber() {
     Mat draw_frame;
 
     while (true) {
-        frame = simulation->getCurrentImage();
+
+        frame = car_status.getCurrentImage();
 
         if (!frame.empty()) {
             
             // Resize frame
-            frame =  resizeByMaxSize(frame, IMG_MAX_SIZE);
+            frame = resizeByMaxSize(frame, IMG_MAX_SIZE);
 
             // Processing
-            car_status.setCurrentImage(frame);
             draw_frame = car_status.getCurrentImage();
 
             std::vector<LaneLine> detected_lane_lines = car_status.getDetectedLaneLines();
@@ -231,7 +231,6 @@ void MainWindow::refreshCams() {
         cams.push_back(Camera(v4l_id, identifier));
     }
 
-    // available_cams = cams;
 }
 
 

@@ -15,16 +15,18 @@ void Simulation::setupAndConnectComponents() {
     connect(this->playBtn, SIGNAL(released()), this, SLOT(playBtnClicked()));
 }
 
-Simulation::Simulation(QWidget *parent)
+Simulation::Simulation(CarStatus *car_status, QWidget *parent)
     : QWidget(parent) {
     setupAndConnectComponents();
+    this->car_status = car_status;
 }
 
 
-Simulation::Simulation(std::string input_video_path, std::string input_data_path, QWidget *parent): QWidget(parent)  {
+Simulation::Simulation(CarStatus *car_status, std::string input_video_path, std::string input_data_path, QWidget *parent): QWidget(parent)  {
     setupAndConnectComponents();
     setVideoPath(input_video_path);
     setDataFilePath(input_data_path);
+    this->car_status = car_status;
 }
 
 
@@ -168,7 +170,7 @@ void Simulation::playingThread(Simulation * this_ptr) {
         if (frame.empty())
             break;
 
-        this_ptr->setCurrentImage(frame);
+        this_ptr->car_status->setCurrentImage(frame);
 
         std::this_thread::sleep_for(std::chrono::microseconds(int(1.0 / sim_data.playing_fps * 1e6)));
 
@@ -284,16 +286,6 @@ void Simulation::setPlaying(bool playing) {
     } else {
         playBtn->setText("Play");
     }
-}
-
-cv::Mat Simulation::getCurrentImage() {
-    std::lock_guard<std::mutex> guard(current_img_mutex);
-    return current_img.clone();
-}
-
-void Simulation::setCurrentImage(const cv::Mat &img) {
-    std::lock_guard<std::mutex> guard(current_img_mutex);
-    current_img = img.clone();
 }
 
 void Simulation::setCarSpeed(float speed) {

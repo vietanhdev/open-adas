@@ -29,6 +29,7 @@
 #include "config.h"
 #include "ui_simulation.h"
 #include "simulation_data.h"
+#include "car_status.h"
 
 class Simulation : public QWidget, private Ui::Simulation {
     Q_OBJECT
@@ -40,16 +41,14 @@ class Simulation : public QWidget, private Ui::Simulation {
     std::mutex path_mutex;
     std::string video_path;
     std::string data_file_path;
-    std::mutex current_img_mutex;
-    cv::Mat current_img;
+    CarStatus *car_status;
 
    public:
-    explicit Simulation(QWidget *parent = nullptr);
-    explicit Simulation(std::string input_video_path, std::string input_data_path, QWidget *parent = nullptr);
+    explicit Simulation(CarStatus *car_status, QWidget *parent = nullptr);
+    explicit Simulation(CarStatus *car_status, std::string input_video_path, std::string input_data_path, QWidget *parent = nullptr);
     void setupAndConnectComponents();
     void stopPlaying();
     void startPlaying();
-    cv::Mat getCurrentImage();
     void setCarSpeed(float);
     float getCarSpeed();
 
@@ -66,7 +65,6 @@ class Simulation : public QWidget, private Ui::Simulation {
     std::string getDataFilePath();
     bool isPlaying();
     void setPlaying(bool playing);
-    void setCurrentImage(const cv::Mat &img);
 
     int readSimulationData(std::string video_path, std::string data_file_path, SimulationData &sim_data);
    
