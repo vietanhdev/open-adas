@@ -80,3 +80,5 @@ CMakeLists.txt.user
 
 /data/videos
 !/data/videos/.gitkeep
+
+/lib

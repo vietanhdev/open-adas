@@ -17,18 +17,15 @@ link_directories(${OpenCV_LIBRARIES_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast")
 list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES -Xcompiler -fPIC")
 
-add_subdirectory(libs/onnx-tensorrt)
-
 include_directories(${CUDA_INCLUDE_DIRS}
                     ${TENSORRT_INCLUDE_DIR}
                     ${OpenCV_INCLUDE_DIRS}
-                    ./include
-                    ./libs/onnx-tensorrt
-                    ..
+                    ../shared/onnx_models/include
+                    ../shared/onnx_models/onnx-tensorrt
                     )
 
-file(GLOB CPP_SRC object_detector/*.cpp)
-file(GLOB CU_SRC object_detector/*.cu)
+file(GLOB CPP_SRC ../shared/onnx_models/*.cpp *.cpp)
+file(GLOB CU_SRC ../shared/onnx_models/*.cu)
 cuda_add_library(object_detector SHARED ${CPP_SRC} ${CU_SRC})
 # Use C++ 17
 target_compile_features(object_detector PRIVATE cxx_std_17)

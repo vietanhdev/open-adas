@@ -12,7 +12,6 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -62,14 +61,14 @@ set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 include_directories(
     "src"
-    "src/utils/include"
+    "src/shared/utils/include"
 
     "src/user_interface"
     "src/simulation"
     "src/user_interface/dark_theme"
 
-    "src/object_detector/include"
     "src/object_detector"
+    "src/shared/onnx_models/include"
 
     "src/traffic_sign_classifier"
 
@@ -85,6 +84,7 @@ include_directories(
 
 
 # Build object detector & tracker
+add_subdirectory(src/shared/onnx_models/onnx-tensorrt)
 add_subdirectory(src/object_detector)
 
 # Build car prop reader
@@ -101,9 +101,9 @@ add_executable(${PROJECT_NAME}
     "resources.qrc"
     "src/main.cpp"
 
-    "src/utils/utility.cpp"
-    "src/utils/file_storage.cpp"
-    "src/utils/timer.cpp"
+    "src/shared/utils/utility.cpp"
+    "src/shared/utils/file_storage.cpp"
+    "src/shared/utils/timer.cpp"
 
     "src/user_interface/main_window.cpp"
     "src/user_interface/main_window.ui"

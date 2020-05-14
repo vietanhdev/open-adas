@@ -15,7 +15,7 @@ ObjectDetector::ObjectDetector() {
         cout << "TensorRT plan file not found. Creating a new plan file at: " << SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN << endl;
         if (SMARTCAM_OBJECT_DETECTION_MODE == std::string("FLOAT32")) {
             net = new ctdet::ctdetNet(SMARTCAM_OBJECT_DETECTION_MODEL, "", ctdet::RUN_MODE::FLOAT32);
-        } else if (SMARTCAM_OBJECT_DETECTION_MODE == std::string("FLOAT32")) {
+        } else if (SMARTCAM_OBJECT_DETECTION_MODE == std::string("FLOAT16")) {
             net = new ctdet::ctdetNet(SMARTCAM_OBJECT_DETECTION_MODEL, "", ctdet::RUN_MODE::FLOAT16);
         } else {
             cout << "TensorRT mode " << SMARTCAM_OBJECT_DETECTION_MODE << " is not supported now. Please build model using `build_tensorrt_engine`" << endl;
