@@ -15,6 +15,7 @@ LaneDetector::LaneDetector() {
     params.forceRebuildEngine = false;
     params.inputTensorNames.push_back(INPUT_NODE);
     params.outputTensorNames.push_back(OUTPUT_NODE);
+    params.fp16 = true;
 
     auto test = gLogger.defineTest("LaneDetector", 0, NULL);
     gLogger.reportTestStart(test);
