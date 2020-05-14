@@ -32,7 +32,7 @@ include_directories(${CUDA_INCLUDE_DIRS}
 file(GLOB UFF_MODEL_CPP ../shared/uff_models/common/*.cpp)
 file(GLOB NET_CPP ../shared/uff_models/classification_net/*.cpp)
 
-cuda_add_library(sign_classifier sign_classifier.cpp ${UFF_MODEL_CPP} ${NET_CPP})
+cuda_add_library(sign_classifier SHARED sign_classifier.cpp ${UFF_MODEL_CPP} ${NET_CPP})
 
 # Use C++ 17
 target_compile_features(sign_classifier PRIVATE cxx_std_17)

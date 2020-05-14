@@ -63,13 +63,15 @@ bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffer
     sign_type = -1;
     float max_prob = 0.0;
     for (int i = 0; i < mParams.nClasses; ++i) {
-        cout << out_buff[i] << " " << endl;
         if (out_buff[i] > max_prob) {
             sign_type = i;
             max_prob = out_buff[i];
         }
     }
-    cout << endl;
+
+    if (max_prob < 0.9) {
+        sign_type = 2;
+    }
 
     return true;
 }

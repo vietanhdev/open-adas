@@ -71,6 +71,7 @@ include_directories(
     "src/shared/onnx_models/include"
 
     "src/traffic_sign_classifier"
+    "src/shared/uff_models/classification_net"
 
     "src/lane_detector"
     "src/shared/uff_models/common/include"
@@ -134,7 +135,6 @@ target_link_libraries(${PROJECT_NAME}
     ${SDL2_LIBRARIES}  
     object_detector
     lane_detector
-    sign_classifier
     car_status
     car_gps
 )

@@ -11,13 +11,13 @@ cv::Mat CarStatus::getCurrentImage() {
     return current_img.clone();
 }
 
-void CarStatus::setDetectedObjects(const std::vector<Detection> &objects) {
+void CarStatus::setDetectedObjects(const std::vector<TrafficObject> &objects) {
     std::lock_guard<std::mutex> guard(detected_objects_mutex);
     detected_objects = objects;
 }
 
-std::vector<Detection> CarStatus::getDetectedObjects() {
-    std::vector<Detection> objects;
+std::vector<TrafficObject> CarStatus::getDetectedObjects() {
+    std::vector<TrafficObject> objects;
     std::lock_guard<std::mutex> guard(detected_objects_mutex);
     objects = detected_objects;
     return objects;

@@ -116,7 +116,7 @@ std::vector<cv::Vec4i> LaneDetector::detectAndReduceLines(
     }
 
     // draw original detected lines
-    for (int i = 0; i < linesWithoutSmall.size(); i++) {
+    for (size_t i = 0; i < linesWithoutSmall.size(); i++) {
         cv::Vec4i& detectedLine = linesWithoutSmall[i];
         line(detected_lines_img, cv::Point(detectedLine[0], detectedLine[1]),
              cv::Point(detectedLine[2], detectedLine[3]), colors[labels[i]], 2);
@@ -124,7 +124,7 @@ std::vector<cv::Vec4i> LaneDetector::detectAndReduceLines(
 
     // build point clouds out of each equivalence classes
     std::vector<std::vector<Point2i>> pointClouds(equilavenceClassesCount);
-    for (int i = 0; i < linesWithoutSmall.size(); i++) {
+    for (size_t i = 0; i < linesWithoutSmall.size(); i++) {
         cv::Vec4i& detectedLine = linesWithoutSmall[i];
         pointClouds[labels[i]].push_back(
             Point2i(detectedLine[0], detectedLine[1]));

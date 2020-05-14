@@ -5,6 +5,8 @@
 #ifndef CTDET_TRT_CTDETCONFIG_H
 #define CTDET_TRT_CTDETCONFIG_H
 
+#include <vector>
+
 namespace ctdet {
 
     constexpr static float visThresh = 0.5;
@@ -16,7 +18,8 @@ namespace ctdet {
     constexpr static int classNum = 10;
     constexpr static float mean[]= {0.408, 0.447, 0.470};
     constexpr static float std[] = {0.289, 0.274, 0.278};
-    constexpr static char *className[]= {(char*)"person", (char*)"rider", (char*)"car", (char*)"bus", (char*)"truck", (char*)"bike", (char*)"motor", (char*)"traffic_light", (char*)"traffic_sign", (char*)"train"};
+    static std::string className[] = {"person", "rider", "car", "bus", "truck", "bike", "motor", "traffic_light", "traffic_sign", "train"};
+
 
 }
 #endif //CTDET_TRT_CTDETCONFIG_H

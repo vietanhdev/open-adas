@@ -26,7 +26,7 @@ class CarStatus {
     std::mutex lane_detection_results_mutex;
 
     // Object detection result
-    std::vector<Detection> detected_objects;
+    std::vector<TrafficObject> detected_objects;
     std::mutex detected_objects_mutex;
 
     std::atomic<float> car_speed; // km/h
@@ -40,8 +40,8 @@ class CarStatus {
     void setCurrentImage(const cv::Mat &img);
     cv::Mat getCurrentImage();
 
-    void setDetectedObjects(const std::vector<Detection> &objects);
-    std::vector<Detection> getDetectedObjects();
+    void setDetectedObjects(const std::vector<TrafficObject> &objects);
+    std::vector<TrafficObject> getDetectedObjects();
 
     void setDetectedLaneLines(const std::vector<LaneLine> &lane_lines, 
         const cv::Mat& lane_line_mask,

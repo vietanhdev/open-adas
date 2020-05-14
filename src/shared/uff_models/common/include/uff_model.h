@@ -1,3 +1,6 @@
+#ifndef UFF_MODEL_H
+#define UFF_MODEL_H
+
 #include <cuda_runtime_api.h>
 #include <vector>
 #include <string>
@@ -95,3 +98,5 @@ struct UffModel {
     std::string& trim(std::string& str, const std::string& chars = "\t\n\v\f\r ");
 
 };
+
+#endif

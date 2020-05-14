@@ -25,6 +25,7 @@ class TrafficSignClassifier {
 
     int getSignId(const cv::Mat& input_img);
     std::string getSignName(const cv::Mat& input_img);
+    std::string getSignName(int class_id);
 
 };
 

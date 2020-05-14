@@ -51,7 +51,7 @@ void MainWindow::objectDetectionThread(
         }
 
         Timer::time_point_t begin_time = Timer::getCurrentTime();
-        std::vector<Detection> objects = object_detector->detect(clone_img);
+        std::vector<TrafficObject> objects = object_detector->detect(clone_img);
         car_status->setObjectDetectionTime(Timer::calcTimePassed(begin_time));
         car_status->setDetectedObjects(objects);
 
@@ -195,8 +195,7 @@ void MainWindow::startVideoGrabber() {
                 
             }
 
-
-            std::vector<Detection> detected_objects = car_status.getDetectedObjects();
+            std::vector<TrafficObject> detected_objects = car_status.getDetectedObjects();
 
             if (!detected_objects.empty()) {
                 object_detector->drawDetections(

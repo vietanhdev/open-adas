@@ -131,10 +131,9 @@ struct landmarks{
     float x;
     float y;
 };
-struct Detection{
+struct Detection {
     //x1 y1 x2 y2
     Box bbox;
-    //float objectness;
     int classId;
     float prob;
     landmarks marks[5];

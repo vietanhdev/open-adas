@@ -16,7 +16,7 @@ TrafficSignClassifier::TrafficSignClassifier() {
     params.forceRebuildEngine = false;
     params.inputTensorNames.push_back(INPUT_NODE);
     params.outputTensorNames.push_back(OUTPUT_NODE);
-    params.fp16 = false;
+    params.fp16 = true;
     params.int8 = false;
 
     auto test = gLogger.defineTest("TrafficSignClassifier", 0, NULL);
@@ -34,9 +34,9 @@ int TrafficSignClassifier::getSignId(const cv::Mat& input_img) {
 }
 
 std::string TrafficSignClassifier::getSignName(const cv::Mat& input_img) {
-    int result;
-    if (!model->infer(input_img, result)) {
-        cerr << "Error on running traffic sign classification model." << endl;
-    }
-    return model->getClassName(result);
+    return model->getClassName(getSignId(input_img));
+}
+
+std::string TrafficSignClassifier::getSignName(int class_id) {
+    return model->getClassName(class_id);
 }
