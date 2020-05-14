@@ -2,7 +2,8 @@
 
 void CarStatus::setCurrentImage(const cv::Mat &img) {
     std::lock_guard<std::mutex> guard(current_img_mutex);
-    current_img = img.clone();
+    cv::Mat resized = resizeByMaxSize(img, IMG_MAX_SIZE);
+    current_img = resized.clone();
 }
 
 cv::Mat CarStatus::getCurrentImage() {
@@ -64,3 +65,34 @@ cv::Mat CarStatus::getReducedLinesViz() {
     return reduced_line_img.clone();
 }
 
+
+float CarStatus::getCarSpeed() {
+    return car_speed;
+}
+
+void CarStatus::setCarSpeed(float speed) {
+    car_speed = speed;
+}
+
+cv::Mat CarStatus::resizeByMaxSize(const cv::Mat &img, int max_size) {
+
+    int width = img.cols;
+    int height = img.rows;
+
+    if ((width < max_size && height < max_size) || max_size <= 0) {
+        return img;
+    }
+
+    if (width > height) {
+        float resize_ratio = (float)max_size / width;
+        cv::Mat resized_img;
+        cv::resize(img, resized_img, cv::Size(), resize_ratio, resize_ratio);
+        return resized_img;
+    } else {
+        float resize_ratio = (float)max_size / height;
+        cv::Mat resized_img;
+        cv::resize(img, resized_img, cv::Size(), resize_ratio, resize_ratio);
+        return resized_img;
+    }
+
+}

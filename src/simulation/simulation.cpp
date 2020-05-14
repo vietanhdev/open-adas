@@ -290,9 +290,6 @@ void Simulation::setPlaying(bool playing) {
 
 void Simulation::setCarSpeed(float speed) {
     car_speed = speed;
+    car_status->setCarSpeed(speed);
     speedLabel->setText(QString::number(speed));
-}
-
-float Simulation::getCarSpeed() {
-    return car_speed;
 }

@@ -5,13 +5,13 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
+#include <atomic>
 
 #include "lane_detector.h"
 #include "object_detector.h"
 
 class CarStatus {
    private:
-    float speed;  // km/h
 
     // Current image
     cv::Mat current_img;
@@ -27,6 +27,8 @@ class CarStatus {
     // Object detection result
     std::vector<Detection> detected_objects;
     std::mutex detected_objects_mutex;
+
+    std::atomic<float> car_speed; // km/h
 
    public:
     void setCurrentImage(const cv::Mat &img);
@@ -47,6 +49,11 @@ class CarStatus {
     cv::Mat getLineMask();
     cv::Mat getDetectedLinesViz();
     cv::Mat getReducedLinesViz();
+
+    float getCarSpeed();
+    void setCarSpeed(float speed);
+
+    cv::Mat resizeByMaxSize(const cv::Mat &img, int max_size);
 
 };
 #endif

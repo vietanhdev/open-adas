@@ -3,7 +3,6 @@
 #include "config.h"
 
 using namespace cv;
-using namespace ml_cam;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -120,20 +119,14 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 void MainWindow::startVideoGrabber() {
 
-    Mat frame;
-    Mat draw_frame;
 
+    Mat draw_frame;
     while (true) {
 
-        frame = car_status.getCurrentImage();
+        // Processing
+        draw_frame = car_status.getCurrentImage();
 
-        if (!frame.empty()) {
-            
-            // Resize frame
-            frame = resizeByMaxSize(frame, IMG_MAX_SIZE);
-
-            // Processing
-            draw_frame = car_status.getCurrentImage();
+        if (!draw_frame.empty()) {
 
             std::vector<LaneLine> detected_lane_lines = car_status.getDetectedLaneLines();
                 

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <QApplication>
 #include <iostream>
+#include <atomic>
 #include <opencv2/opencv.hpp>
 
 #include "dark_style.h"
