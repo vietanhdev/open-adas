@@ -15,8 +15,11 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char *argv[]) {
+    
+    // Increase volume
+    system("pactl -- set-sink-volume 0 150%");
+    
     QApplication a(argc, argv);
-
     const std::string keys =
         "{help h usage ? |      | print this message   }"
         "{input_source   |simulation| input source. 'simulation' or 'camera'   }"
@@ -41,7 +44,7 @@ int main(int argc, char *argv[]) {
     // Create our mainwindow instance
     MainWindow *main_window = new MainWindow;
     main_window->show();
-    // main_window->showFullScreen();
+    main_window->showFullScreen();
 
     // Prevent multithreading error on OpenCV
     // TODO: Fix this bug without setting n_threads to 1

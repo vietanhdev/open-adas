@@ -78,7 +78,7 @@ CMakeLists.txt.user
 /models
 !/models/.gitkeep
 
-/data/videos
+/data/
 !/data/videos/.gitkeep
 
 /lib
