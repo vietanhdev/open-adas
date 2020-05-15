@@ -16,15 +16,13 @@ using namespace cv;
 
 int main(int argc, char *argv[]) {
     
-    // Increase volume
-    // system("pactl -- set-sink-volume 0 150%");
-    
     QApplication a(argc, argv);
     const std::string keys =
         "{help h usage ? |      | print this message   }"
         "{input_source   |simulation| input source. 'simulation' or 'camera'   }"
         "{input_video_path  |      | path to video file for simulation }"
         "{input_data_path   |      | path to data file for simulation  }"
+        "{on_dev_machine   | false | on development machine  }"
         ;
 
     CommandLineParser parser(argc, argv, keys);
@@ -37,6 +35,19 @@ int main(int argc, char *argv[]) {
     std::string input_source = parser.get<std::string>("input_source");
     std::string input_video_path = parser.get<std::string>("input_video_path");
     std::string input_data_path = parser.get<std::string>("input_data_path");
+
+    bool on_dev_machine = parser.get<bool>("on_dev_machine");
+
+    // If not on development machine
+    // (on Jetson Nano)
+    if (!on_dev_machine) {
+        // Increase volume
+        system("pactl -- set-sink-volume 0 120%");
+        // Remove cursor
+        QApplication::setOverrideCursor(Qt::BlankCursor);
+    }
+
+    
 
     // Style our application with custom dark style
     a.setStyle(new DarkStyle);
