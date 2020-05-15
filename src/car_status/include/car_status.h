@@ -6,13 +6,20 @@
 #include <string>
 #include <vector>
 #include <atomic>
+#include <iostream>
 
 #include "lane_detector.h"
 #include "object_detector.h"
 #include "timer.h"
+#include "speed_limit.h"
 
 class CarStatus {
    private:
+
+    // Start time of this car status
+    // Reset when calling reset()
+    Timer::time_point_t start_time;
+    std::mutex start_time_mutex;
 
     // Current image
     cv::Mat current_img;
@@ -36,7 +43,16 @@ class CarStatus {
     Timer::time_duration_t object_detection_time;
     Timer::time_duration_t lane_detection_time;
 
+    // Speed limit
+    MaxSpeedLimit speed_limit;
+    std::mutex speed_limit_mutex;
+
    public:
+
+    CarStatus();
+    void reset();
+    Timer::time_point_t getStartTime();
+
     void setCurrentImage(const cv::Mat &img);
     cv::Mat getCurrentImage();
 
@@ -64,6 +80,10 @@ class CarStatus {
     Timer::time_duration_t getObjectDetectionTime();
     void setLaneDetectionTime(Timer::time_duration_t duration);
     Timer::time_duration_t getLaneDetectionTime();
+
+    MaxSpeedLimit getMaxSpeedLimit();
+    void removeSpeedLimit();
+    void triggerSpeedLimit(int speed);
 
 };
 #endif

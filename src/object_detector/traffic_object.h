@@ -11,10 +11,10 @@ class TrafficObject {
     Box bbox;
     int classId;
     float prob;
-    std::string extended_type{""}; // Extended type. For traffic sign
+    std::string traffic_sign_type{""}; // Extended type. For traffic sign
 
-    TrafficObject(const Detection &detection, std::string extended_type) : 
-    bbox(detection.bbox), classId(detection.classId), prob(detection.prob), extended_type(extended_type) {}
+    TrafficObject(const Detection &detection, std::string traffic_sign_type) : 
+    bbox(detection.bbox), classId(detection.classId), prob(detection.prob), traffic_sign_type(traffic_sign_type) {}
 };
 
 #endif

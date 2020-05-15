@@ -1,5 +1,24 @@
 #include "car_status.h"
 
+using namespace std;
+
+CarStatus::CarStatus() {
+    std::lock_guard<std::mutex> guard(start_time_mutex);
+    start_time = Timer::getCurrentTime();
+}
+
+void CarStatus::reset() {
+    std::lock_guard<std::mutex> guard(start_time_mutex);
+    std::lock_guard<std::mutex> guard2(speed_limit_mutex);
+    start_time = Timer::getCurrentTime();
+    speed_limit = MaxSpeedLimit();
+}
+
+Timer::time_point_t CarStatus::getStartTime() {
+    std::lock_guard<std::mutex> guard(start_time_mutex);
+    return start_time;
+}
+
 void CarStatus::setCurrentImage(const cv::Mat &img) {
     std::lock_guard<std::mutex> guard(current_img_mutex);
     cv::Mat resized = resizeByMaxSize(img, IMG_MAX_SIZE);
@@ -102,15 +121,45 @@ void CarStatus::setObjectDetectionTime(Timer::time_duration_t duration) {
     std::lock_guard<std::mutex> guard(time_mutex);
     object_detection_time = object_detection_time * 0.8 + duration * 0.2;
 }
+
 Timer::time_duration_t CarStatus::getObjectDetectionTime() {
     std::lock_guard<std::mutex> guard(time_mutex);
     return object_detection_time;
 }
+
 void CarStatus::setLaneDetectionTime(Timer::time_duration_t duration) {
     std::lock_guard<std::mutex> guard(time_mutex);
     lane_detection_time = lane_detection_time * 0.8 + duration * 0.2;
 }
+
 Timer::time_duration_t CarStatus::getLaneDetectionTime() {
     std::lock_guard<std::mutex> guard(time_mutex);
     return lane_detection_time;
+}
+
+// Get max speed limit
+MaxSpeedLimit CarStatus::getMaxSpeedLimit() {
+    std::lock_guard<std::mutex> guard(speed_limit_mutex);
+    MaxSpeedLimit ret_speed_limit = speed_limit;
+    speed_limit.has_warned = true;
+    return ret_speed_limit;
+}
+
+void CarStatus::removeSpeedLimit() {
+    std::lock_guard<std::mutex> guard(speed_limit_mutex);
+    speed_limit.has_warned = true;
+    speed_limit.speed_limit = -1;
+}
+
+void CarStatus::triggerSpeedLimit(int speed) {
+    std::lock_guard<std::mutex> guard(speed_limit_mutex);
+
+    if (speed != speed_limit.speed_limit || 
+        Timer::calcTimePassed(speed_limit.begin_time) > 60000) {
+        speed_limit.has_warned = false;
+        speed_limit.speed_limit = speed;
+        speed_limit.begin_time = Timer::getCurrentTime();
+        cout << "MAX SPEED LIMIT: " << speed << endl;
+    }
+
 }

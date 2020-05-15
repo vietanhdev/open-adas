@@ -45,7 +45,7 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img) {
     // Do traffic sign classification
     std::vector<TrafficObject> traffic_objects;
     for (size_t i = 0; i < detected_objects.size(); ++i) {
-        std::string extended_type = "";
+        std::string traffic_sign_type = "";
         if (detected_objects[i].classId == 8) { // Traffic sign
             cv::Rect roi(
                 cv::Point(detected_objects[i].bbox.x1, detected_objects[i].bbox.y1),
@@ -53,16 +53,12 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img) {
             cv::Mat crop = img(roi);
 
             std::string sign_name = sign_classifier.getSignName(crop);
-            extended_type = sign_name;
-
-            if (extended_type != "OTHER") {
-                cout << extended_type << endl;
-            }
+            traffic_sign_type = sign_name;
             
         }
         
         traffic_objects.push_back(
-            TrafficObject(detected_objects[i], extended_type)
+            TrafficObject(detected_objects[i], traffic_sign_type)
         );
     }
 
@@ -78,7 +74,7 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
     for (const auto &item : result) {
         std::string label;
         std::stringstream stream;
-        stream << ctdet::className[item.classId] << ":" << item.extended_type  << " " << item.prob << std::endl;
+        stream << ctdet::className[item.classId] << ":" << item.traffic_sign_type  << " " << item.prob << std::endl;
         std::getline(stream,label);
 
         auto size = cv::getTextSize(label,cv::FONT_HERSHEY_COMPLEX,label_scale,1,&base_line);

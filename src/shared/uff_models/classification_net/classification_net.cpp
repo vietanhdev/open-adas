@@ -69,7 +69,7 @@ bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffer
         }
     }
 
-    if (max_prob < 0.9) {
+    if (max_prob < 0.6) {
         sign_type = 2;
     }
 

@@ -14,6 +14,9 @@ namespace ml_cam {
     QImage Mat2QImage(cv::Mat const& src);
     cv::Mat QImage2Mat(QImage const& src);
 
+    void place_overlay(cv::Mat &image, const cv::Mat &overlay,
+    int x, int y);
+
 }
 
 #endif // UTILITY_H

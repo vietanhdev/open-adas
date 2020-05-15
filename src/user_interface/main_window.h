@@ -1,8 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <SDL.h>
-
 #include <QCloseEvent>
 #include <QDebug>
 #include <QGraphicsPixmapItem>
@@ -31,6 +29,9 @@
 #include "simulation.h"
 #include "car_status.h"
 #include "timer.h"
+#include "traffic_sign_monitor.h"
+#include "speed_limit.h"
+#include "traffic_sign_images.h"
 
 namespace Ui {
 class MainWindow;
@@ -44,6 +45,7 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
     void startVideoGrabber();
     void refreshCams();
+    static void playAudio(std::string audio_file);
 
    protected:
     void closeEvent(QCloseEvent *event);
@@ -66,6 +68,12 @@ class MainWindow : public QMainWindow {
     std::shared_ptr<LaneDetector> lane_detector;
     std::shared_ptr<CarGPSReader> car_gps_reader;
 
+    MaxSpeedLimit speed_limit;
+    std::mutex speed_limit_mutex;
+
+    // Images
+    TrafficSignImages traffic_sign_images;
+
    public:
     CarStatus car_status;
 
@@ -77,10 +85,13 @@ class MainWindow : public QMainWindow {
         std::shared_ptr<LaneDetector> lane_detector, CarStatus *);
     static void carPropReaderThread(
         std::shared_ptr<CarGPSReader> car_gps_reader);
+    static void speedWarningThread(CarStatus *car_status, MainWindow *main_window);
 
    public:
     void setInputSource(InputSource input_source);
     void setSimulation(Simulation *simulation);
+    void setSpeedLimit(MaxSpeedLimit speed_limit);
+    MaxSpeedLimit getSpeedLimit();
 
 };
 

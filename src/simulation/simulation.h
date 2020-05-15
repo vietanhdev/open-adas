@@ -1,8 +1,6 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-#include <SDL.h>
-
 #include <QCloseEvent>
 #include <QDebug>
 #include <QGraphicsPixmapItem>

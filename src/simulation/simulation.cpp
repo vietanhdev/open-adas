@@ -155,6 +155,9 @@ void Simulation::playingThread(Simulation * this_ptr) {
         sim_data.capture.set(cv::CAP_PROP_POS_FRAMES, sim_data.begin_frame);
     }
 
+    // Reset car status
+    this_ptr->car_status->reset();
+
     while (this_ptr->isPlaying()) {
         
         if (current_frame_id > sim_data.end_frame) {

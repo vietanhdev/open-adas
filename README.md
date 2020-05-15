@@ -36,11 +36,6 @@ sudo /sbin/ldconfig -v
 https://linuxize.com/post/how-to-install-opencv-on-ubuntu-18-04/
 ```
 
-- Install SDL2 lib
-```
-sudo apt-get install libsdl2-dev
-```
-
 - Install protobuf 3.6.1
 
 ```

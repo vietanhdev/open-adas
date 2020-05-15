@@ -42,8 +42,6 @@ endif()
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-find_package(SDL2 REQUIRED sdl2)
-
 # Take care of Qt dependencies
 find_package(Qt5 COMPONENTS Core Gui Widgets Test Concurrent REQUIRED)
 
@@ -78,6 +76,8 @@ include_directories(
     "src/shared/uff_models/unet"
     
     "src/car_status/include"
+
+    "src/warning_controller"
     
     ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
@@ -97,6 +97,9 @@ add_subdirectory(src/lane_detector)
 # Build sign classifier
 add_subdirectory(src/traffic_sign_classifier)
 
+# Build warning controller
+add_subdirectory(src/warning_controller)
+
 # add required source, header, ui and resource files
 add_executable(${PROJECT_NAME}
     "resources.qrc"
@@ -110,6 +113,7 @@ add_executable(${PROJECT_NAME}
     "src/user_interface/main_window.ui"
     "src/user_interface/dark_theme/dark_style.qrc"
     "src/user_interface/dark_theme/dark_style.cpp"
+    "src/user_interface/traffic_sign_images.cpp"
 
     "src/simulation/simulation.cpp"
     "src/simulation/simulation.ui"
@@ -132,11 +136,11 @@ target_link_libraries(${PROJECT_NAME}
     ${Qt5Widgets_LIBRARIES} 
     ${OpenCV_LIBS} 
     ${CPP_FS_LIB} 
-    ${SDL2_LIBRARIES}  
     object_detector
     lane_detector
     car_status
     car_gps
+    warning_controller
 )
 
 # Copy files

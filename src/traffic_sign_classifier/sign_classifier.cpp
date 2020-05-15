@@ -40,3 +40,11 @@ std::string TrafficSignClassifier::getSignName(const cv::Mat& input_img) {
 std::string TrafficSignClassifier::getSignName(int class_id) {
     return model->getClassName(class_id);
 }
+
+bool TrafficSignClassifier::isSpeedSign(std::string sign_name) {
+    if (sign_name.find("SPEED_LIMIT") != std::string::npos) {
+        return true;
+    } else {
+        return false;
+    }
+}

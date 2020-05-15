@@ -15,9 +15,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->menuBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
     connect(ui->alertBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
 
-    // Init Audio
-    SDL_Init(SDL_INIT_AUDIO);
-
     object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
     car_gps_reader = std::make_shared<CarGPSReader>();
@@ -38,13 +35,52 @@ MainWindow::MainWindow(QWidget *parent)
     std::thread cpr_thread(&MainWindow::carPropReaderThread,
                            car_gps_reader);
     cpr_thread.detach();
+
+    std::thread speed_warning_thread(&      MainWindow::speedWarningThread, &car_status, this);
+    speed_warning_thread.detach();
+}
+
+void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_window) {
+
+    while (true) {
+
+        MaxSpeedLimit speed_limit = car_status->getMaxSpeedLimit();
+        main_window->setSpeedLimit(speed_limit);
+
+        // Play sound
+        if (!speed_limit.has_warned) {
+            if (speed_limit.speed_limit > 0) {
+                MainWindow::playAudio("traffic_signs/" + std::to_string(speed_limit.speed_limit) + ".wav");
+            } else {
+                MainWindow::playAudio("traffic_signs/00.wav");
+            }
+        }
+        
+
+        std::this_thread::sleep_for(std::chrono::microseconds(20));
+
+    }
+    
 }
 
 void MainWindow::objectDetectionThread(
     std::shared_ptr<ObjectDetector> object_detector,
     CarStatus *car_status) {
     cv::Mat clone_img;
+
+    Timer::time_point_t car_status_start_time = car_status->getStartTime();
+    TrafficSignMonitor traffic_sign_monitor(car_status);
+
     while (true) {
+
+        // Reset traffic sign monitor if car status has changed
+        // (In case of changing simulation)
+        if (car_status_start_time != car_status->getStartTime()) {
+            cout << "CarStatus has been reset!" << endl;
+            car_status_start_time = car_status->getStartTime();
+            traffic_sign_monitor = TrafficSignMonitor(car_status);
+        }
+
         clone_img = car_status->getCurrentImage();
         if (clone_img.empty()) {
             continue;
@@ -54,6 +90,7 @@ void MainWindow::objectDetectionThread(
         std::vector<TrafficObject> objects = object_detector->detect(clone_img);
         car_status->setObjectDetectionTime(Timer::calcTimePassed(begin_time));
         car_status->setDetectedObjects(objects);
+        traffic_sign_monitor.updateTrafficSign(objects);
 
     }
 }
@@ -95,26 +132,11 @@ void MainWindow::carPropReaderThread(
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::changeCamClicked() {
-    SDL_AudioSpec wavSpec;
-    Uint32 wavLength;
-    Uint8 *wavBuffer;
+    playAudio("traffic_signs/00.wav");
+}
 
-    SDL_LoadWAV("sounds/shutter-fast.wav", &wavSpec, &wavBuffer, &wavLength);
-
-    // open audio device
-    SDL_AudioDeviceID deviceId =
-        SDL_OpenAudioDevice(NULL, 0, &wavSpec, NULL, 0);
-
-    // play audio
-    int success = SDL_QueueAudio(deviceId, wavBuffer, wavLength);
-    SDL_PauseAudioDevice(deviceId, 0);
-
-    // keep window open enough to hear the sound
-    SDL_Delay(200);
-
-    // clean up
-    SDL_CloseAudioDevice(deviceId);
-    SDL_FreeWAV(wavBuffer);
+void MainWindow::playAudio(std::string audio_file) {
+    system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -201,6 +223,12 @@ void MainWindow::startVideoGrabber() {
                 object_detector->drawDetections(
                     detected_objects, draw_frame);
             }
+
+            // Show speed sign
+            MaxSpeedLimit speed_limit = getSpeedLimit();
+            if (Timer::calcTimePassed(speed_limit.begin_time) < 60000) {
+                ml_cam::place_overlay(draw_frame, traffic_sign_images.getSpeedSignImage(speed_limit.speed_limit), 50, 50);
+            }
     
             // ### Show current image
             QImage qimg(draw_frame.data, static_cast<int>(draw_frame.cols),
@@ -255,4 +283,14 @@ void MainWindow::setInputSource(InputSource input_source) {
 
 void MainWindow::setSimulation(Simulation *simulation) {
     this->simulation = simulation;
+}
+
+void MainWindow::setSpeedLimit(MaxSpeedLimit speed_limit) {
+    std::lock_guard<std::mutex> guard(speed_limit_mutex);
+    this->speed_limit = speed_limit;
+}
+
+MaxSpeedLimit MainWindow::getSpeedLimit() {
+    std::lock_guard<std::mutex> guard(speed_limit_mutex);
+    return speed_limit;
 }

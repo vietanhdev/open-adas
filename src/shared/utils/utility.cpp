@@ -104,4 +104,17 @@ cv::Mat QImage2Mat(QImage const &src) {
     return result;
 }
 
+
+void place_overlay(cv::Mat &image, const cv::Mat &overlay,
+    int x, int y) {
+
+    assert(x + overlay.cols < image.cols);
+    assert(y + overlay.rows < image.rows);
+
+    cv::Mat dest_roi;
+    dest_roi = image(cv::Rect(x, y, overlay.cols, overlay.rows));
+    overlay.copyTo(dest_roi);
+
+}
+
 }  // namespace ml_cam
