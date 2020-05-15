@@ -17,7 +17,7 @@ using namespace cv;
 int main(int argc, char *argv[]) {
     
     // Increase volume
-    system("pactl -- set-sink-volume 0 150%");
+    // system("pactl -- set-sink-volume 0 150%");
     
     QApplication a(argc, argv);
     const std::string keys =
@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
         
         simulation->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
         simulation->show();
+        simulation->showFullScreen();
 
         // Set simulation
         main_window->setInputSource(InputFromSimulation);

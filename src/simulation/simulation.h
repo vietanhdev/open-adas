@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QPixmap>
 #include <QShortcut>
+#include <QListWidgetItem>
 #include <algorithm>
 #include <memory>
 #include <mutex>
@@ -28,6 +29,16 @@
 #include "ui_simulation.h"
 #include "simulation_data.h"
 #include "car_status.h"
+#include "filesystem_include.h"
+
+
+struct SimData {
+    std::string video_path;
+    std::string data_path;
+
+    SimData(std::string video_path, std::string data_path) :
+        video_path(video_path), data_path(data_path) {}
+};
 
 class Simulation : public QWidget, private Ui::Simulation {
     Q_OBJECT
@@ -41,6 +52,9 @@ class Simulation : public QWidget, private Ui::Simulation {
     std::string data_file_path;
     CarStatus *car_status;
 
+    std::vector<SimData> sim_data;
+    std::vector<int> selected_sim_data_indices;
+
    public:
     explicit Simulation(CarStatus *car_status, QWidget *parent = nullptr);
     explicit Simulation(CarStatus *car_status, std::string input_video_path, std::string input_data_path, QWidget *parent = nullptr);
@@ -53,6 +67,8 @@ class Simulation : public QWidget, private Ui::Simulation {
     void selectVideoBtnClicked();
     void selectDataFileBtnClicked();
     void playBtnClicked();
+    void simDataList_onselectionchange();
+    void closeBtnClicked();
 
    private:
     static void playingThread(Simulation * this_ptr);

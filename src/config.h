@@ -30,5 +30,7 @@
 #define SMARTCAM_TRAFFIC_SIGN_CLASS_LIST \
     "models/traffic_sign/classes.txt"
 
+#define SMARTCAM_SIMULATION_LIST \
+    "data/sim_list.txt"
 
 #endif

@@ -10,9 +10,36 @@ void Simulation::setupAndConnectComponents() {
     setupUi(this);
 
     // Connect buttons
-    connect(this->selectVideoBtn, SIGNAL(released()), this, SLOT(selectVideoBtnClicked()));
-    connect(this->selectDataFileBtn, SIGNAL(released()), this, SLOT(selectDataFileBtnClicked()));
     connect(this->playBtn, SIGNAL(released()), this, SLOT(playBtnClicked()));
+    connect(this->simDataList, SIGNAL(itemSelectionChanged()), this,
+            SLOT(simDataList_onselectionchange()));
+    connect(this->closeBtn, SIGNAL(released()), this, SLOT(closeBtnClicked()));
+    
+
+    // Read simulation data
+    std::ifstream sim_list_file(SMARTCAM_SIMULATION_LIST);
+
+    std::string line;
+    std::getline(sim_list_file, line);
+    int n_simulations = std::stoi(line);
+
+    for (size_t i = 0; i < n_simulations; ++i) {
+        std::string video_path;
+        std::string data_path;
+        std::getline(sim_list_file, video_path);
+        std::getline(sim_list_file, data_path);
+
+        sim_data.push_back(SimData(video_path, data_path));
+
+        std::string video_name = fs::path(video_path).filename();
+        QString simulation_name_qs = QString::fromUtf8(video_name.c_str());
+        QListWidgetItem *new_sim_data = new QListWidgetItem(
+            QIcon(":/resources/images/play.png"),
+            simulation_name_qs);
+        new_sim_data->setData(Qt::UserRole, QVariant(static_cast<int>(i)));
+        this->simDataList->addItem(new_sim_data);
+    }
+
 }
 
 Simulation::Simulation(CarStatus *car_status, QWidget *parent)
@@ -33,6 +60,8 @@ Simulation::Simulation(CarStatus *car_status, std::string input_video_path, std:
 int Simulation::readSimulationData(std::string video_path, std::string data_file_path, SimulationData &sim_data) {
 
     sim_data = SimulationData();
+
+    cout << video_path << endl;
 
     // Open video
     if (!sim_data.capture.open(video_path)) {
@@ -144,8 +173,6 @@ void Simulation::playingThread(Simulation * this_ptr) {
         return;
     }
 
-    this_ptr->fpsLabel->setText(QString::number(sim_data.playing_fps));
-    
     cv::Mat frame;
     size_t current_frame_id = 0;
 
@@ -211,9 +238,24 @@ void Simulation::playBtnClicked() {
 
     if (isPlaying()) {
         stopPlaying();
-    } else {
-        startPlaying();
     }
+
+    // Load selected simulation
+    if (selected_sim_data_indices.empty()) {
+        QMessageBox::critical(
+        this, "Notification",
+        "Please choose simulation data first.");
+    } else {
+        int selected_sim_data_id = selected_sim_data_indices[0];
+        cout << "VIDEO PATH: " << sim_data[selected_sim_data_id].video_path << endl;
+        cout << "DATA PATH: " << sim_data[selected_sim_data_id].data_path << endl;
+        setVideoPath(sim_data[selected_sim_data_id].video_path);
+        setDataFilePath(sim_data[selected_sim_data_id].data_path);
+    }
+
+    startPlaying();
+
+    this->hide();
 
 }
 
@@ -283,16 +325,25 @@ bool Simulation::isPlaying() {
 
 void Simulation::setPlaying(bool playing) {
     is_playing = playing;
-
-    if (is_playing) {
-        playBtn->setText("Stop");
-    } else {
-        playBtn->setText("Play");
-    }
 }
 
 void Simulation::setCarSpeed(float speed) {
     car_speed = speed;
     car_status->setCarSpeed(speed);
-    speedLabel->setText(QString::number(speed));
+}
+
+void Simulation::simDataList_onselectionchange() {
+    QList<QListWidgetItem *> selected_sim_data = this->simDataList->selectedItems();
+
+    // Save selected simulation data
+    selected_sim_data_indices.clear();
+    for (int i = 0; i < selected_sim_data.count(); ++i) {
+        selected_sim_data_indices.push_back(
+            selected_sim_data[i]->data(Qt::UserRole).toInt());
+    }
+}
+
+
+void Simulation::closeBtnClicked() {
+    this->hide();
 }

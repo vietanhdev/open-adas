@@ -53,6 +53,7 @@ class MainWindow : public QMainWindow {
 
    private slots:
     void changeCamClicked();
+    void openSimulationSelector();
 
    private:
     Ui::MainWindow *ui;

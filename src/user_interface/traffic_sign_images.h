@@ -5,8 +5,8 @@
 #include <opencv2/opencv.hpp>
 
 struct TrafficSignImage {
-    const int IMG_WIDTH = 64;
-    const int IMG_HEIGHT = 64;
+    const int IMG_WIDTH = 48;
+    const int IMG_HEIGHT = 48;
     int speed;
     cv::Mat image;
     TrafficSignImage(int speed, std::string img_path, std::string default_img_path): speed(speed) {

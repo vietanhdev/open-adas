@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>732</width>
-    <height>126</height>
+    <width>800</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -31,24 +31,11 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <widget class="QPushButton" name="selectVideoBtn">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>80</y>
-     <width>141</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Select video File</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>7</y>
+     <x>10</x>
+     <y>427</y>
      <width>181</width>
      <height>21</height>
     </rect>
@@ -66,8 +53,8 @@ color: #000;
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>30</y>
+     <x>10</x>
+     <y>450</y>
      <width>181</width>
      <height>21</height>
     </rect>
@@ -82,106 +69,24 @@ color: #000;
     <string>Sim. data file path:  </string>
    </property>
   </widget>
-  <widget class="QPushButton" name="selectDataFileBtn">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>80</y>
-     <width>141</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Select data file</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="playBtn">
    <property name="geometry">
     <rect>
-     <x>490</x>
-     <y>80</y>
-     <width>141</width>
-     <height>31</height>
+     <x>546</x>
+     <y>428</y>
+     <width>161</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
     <string>Play</string>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>161</width>
-     <height>101</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Speed</string>
-   </property>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>50</y>
-      <width>40</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>km/h</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="speedLabel">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>40</y>
-      <width>81</width>
-      <height>50</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>28</pointsize>
-     </font>
-    </property>
-    <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
-    </property>
-    <property name="text">
-     <string>00</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>53</y>
-     <width>181</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background: #AAAAAA;
-padding: 2px;
-color: #000;
-</string>
-   </property>
-   <property name="text">
-    <string>Playing FPS:</string>
-   </property>
-  </widget>
   <widget class="QLineEdit" name="videoPathLabel">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>7</y>
+     <x>200</x>
+     <y>427</y>
      <width>341</width>
      <height>21</height>
     </rect>
@@ -193,8 +98,8 @@ color: #000;
   <widget class="QLineEdit" name="simDataPathLabel">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>30</y>
+     <x>200</x>
+     <y>450</y>
      <width>341</width>
      <height>21</height>
     </rect>
@@ -203,17 +108,54 @@ color: #000;
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLineEdit" name="fpsLabel">
+  <widget class="QListWidget" name="simDataList">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>53</y>
-     <width>341</width>
-     <height>21</height>
+     <x>10</x>
+     <y>10</y>
+     <width>781</width>
+     <height>411</height>
     </rect>
    </property>
-   <property name="readOnly">
+   <property name="cursor" stdset="0">
+    <cursorShape>CrossCursor</cursorShape>
+   </property>
+   <property name="whatsThis">
+    <string notr="true"/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>80</width>
+     <height>80</height>
+    </size>
+   </property>
+   <property name="flow">
+    <enum>QListView::LeftToRight</enum>
+   </property>
+   <property name="isWrapping" stdset="0">
     <bool>true</bool>
+   </property>
+   <property name="resizeMode">
+    <enum>QListView::Adjust</enum>
+   </property>
+   <property name="viewMode">
+    <enum>QListView::IconMode</enum>
+   </property>
+   <property name="uniformItemSizes">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="closeBtn">
+   <property name="geometry">
+    <rect>
+     <x>710</x>
+     <y>428</y>
+     <width>81</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Close</string>
    </property>
   </widget>
  </widget>

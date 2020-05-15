@@ -12,8 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->scene()->addItem(&pixmap);
 
     // Connect buttons
-    connect(ui->menuBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
-    connect(ui->alertBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
+    connect(ui->menuBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
+    // connect(ui->alertBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
 
     object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
@@ -227,7 +227,7 @@ void MainWindow::startVideoGrabber() {
             // Show speed sign
             MaxSpeedLimit speed_limit = getSpeedLimit();
             if (Timer::calcTimePassed(speed_limit.begin_time) < 60000) {
-                ml_cam::place_overlay(draw_frame, traffic_sign_images.getSpeedSignImage(speed_limit.speed_limit), 50, 50);
+                ml_cam::place_overlay(draw_frame, traffic_sign_images.getSpeedSignImage(speed_limit.speed_limit), 32, 32);
             }
     
             // ### Show current image
@@ -237,6 +237,8 @@ void MainWindow::startVideoGrabber() {
                         QImage::Format_RGB888);
             pixmap.setPixmap(QPixmap::fromImage(qimg.rgbSwapped()));
             ui->graphicsView->fitInView(&pixmap, Qt::KeepAspectRatio);
+
+            ui->speedLabel->setText(QString("Speed: ") + QString::number(car_status.getCarSpeed()) + QString(" km/h"));
         }
 
         qApp->processEvents();
@@ -293,4 +295,10 @@ void MainWindow::setSpeedLimit(MaxSpeedLimit speed_limit) {
 MaxSpeedLimit MainWindow::getSpeedLimit() {
     std::lock_guard<std::mutex> guard(speed_limit_mutex);
     return speed_limit;
+}
+
+void MainWindow::openSimulationSelector() {
+    // this->hide();
+    this->simulation->show();
+    this->simulation->showFullScreen();
 }
