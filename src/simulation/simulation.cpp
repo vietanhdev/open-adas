@@ -251,11 +251,10 @@ void Simulation::playBtnClicked() {
         cout << "DATA PATH: " << sim_data[selected_sim_data_id].data_path << endl;
         setVideoPath(sim_data[selected_sim_data_id].video_path);
         setDataFilePath(sim_data[selected_sim_data_id].data_path);
+
+        startPlaying();
+        this->hide();
     }
-
-    startPlaying();
-
-    this->hide();
 
 }
 
