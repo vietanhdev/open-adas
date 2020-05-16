@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define IMG_MAX_SIZE 384 
+#define IMG_MAX_SIZE 512 
 
 // #define DISABLE_LANE_DETECTOR
 #define SMARTCAM_DEBUG
@@ -29,6 +29,11 @@
     "models/traffic_sign/traffic_sign_classification.engine"
 #define SMARTCAM_TRAFFIC_SIGN_CLASS_LIST \
     "models/traffic_sign/classes.txt"
+#define MAX_SPEED_SIGN_VALID_TIME 30*60*1000
+#define TIME_TO_RENOTIFY_A_SAME_TRAFFIC_SIGN 60*1000
+#define OVERSPEED_WARNING_AFTER_TRAFFIC_SIGN 6 * 1000
+#define OVERSPEED_WARNING_INTERVAL 15 * 1000
+
 
 #define SMARTCAM_SIMULATION_LIST \
     "data/sim_list.txt"

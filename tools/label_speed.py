@@ -25,7 +25,7 @@ cap = cv2.VideoCapture(args.video)
 if (cap.isOpened()== False): 
   print("Error opening video stream or file")
 
-cv2.namedWindow(title_window)
+cv2.namedWindow(title_window, cv2.WINDOW_NORMAL)
 cv2.createTrackbar("Speed", title_window , 0, alpha_slider_max, on_trackbar)
 # Show some stuff
 on_trackbar(0)
@@ -55,7 +55,7 @@ while(cap.isOpened()):
         
 
         # Press Q on keyboard to  exit
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(50) & 0xFF == ord('q'):
             break
 
     # Break the loop

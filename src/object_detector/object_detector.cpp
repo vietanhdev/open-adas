@@ -27,7 +27,7 @@ ObjectDetector::ObjectDetector() {
     outputData = std::unique_ptr<float[]>(new float[net->outputBufferSize]);
 }
 
-std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img) {
+std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::Mat &original_img) {
 
     cv::Mat frame(img);
     auto inputData = prepareImage(frame, net->forwardFace);
@@ -43,14 +43,19 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img) {
     postProcess(detected_objects, img, net->forwardFace);
 
     // Do traffic sign classification
+    float fx = static_cast<float>(original_img.cols) / img.cols;
+    float fy = static_cast<float>(original_img.rows) / img.rows;
     std::vector<TrafficObject> traffic_objects;
     for (size_t i = 0; i < detected_objects.size(); ++i) {
         std::string traffic_sign_type = "";
         if (detected_objects[i].classId == 8) { // Traffic sign
             cv::Rect roi(
-                cv::Point(detected_objects[i].bbox.x1, detected_objects[i].bbox.y1),
-                cv::Point(detected_objects[i].bbox.x2, detected_objects[i].bbox.y2));
-            cv::Mat crop = img(roi);
+                cv::Point(
+                    static_cast<int>(fx * detected_objects[i].bbox.x1), static_cast<int>(fy * detected_objects[i].bbox.y1)),
+                cv::Point(
+                    static_cast<int>(fx * detected_objects[i].bbox.x2), static_cast<int>(fy * detected_objects[i].bbox.y2))
+            );
+            cv::Mat crop = original_img(roi);
 
             std::string sign_name = sign_classifier.getSignName(crop);
             traffic_sign_type = sign_name;

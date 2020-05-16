@@ -48,14 +48,19 @@ void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_wind
         main_window->setSpeedLimit(speed_limit);
 
         // Play sound
-        if (!speed_limit.has_warned) {
+        if (speed_limit.speed_limit >= 0 &&
+            !speed_limit.has_notified) {
             if (speed_limit.speed_limit > 0) {
                 MainWindow::playAudio("traffic_signs/" + std::to_string(speed_limit.speed_limit) + ".wav");
             } else {
                 MainWindow::playAudio("traffic_signs/00.wav");
             }
         }
-        
+
+        if (speed_limit.overspeed_warning &&
+            !speed_limit.overspeed_warning_has_notified) {
+            MainWindow::playAudio("traffic_signs/warning_overspeed.wav");
+        }
 
         std::this_thread::sleep_for(std::chrono::microseconds(20));
 
@@ -66,7 +71,8 @@ void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_wind
 void MainWindow::objectDetectionThread(
     std::shared_ptr<ObjectDetector> object_detector,
     CarStatus *car_status) {
-    cv::Mat clone_img;
+    cv::Mat image;
+    cv::Mat original_image;
 
     Timer::time_point_t car_status_start_time = car_status->getStartTime();
     TrafficSignMonitor traffic_sign_monitor(car_status);
@@ -81,13 +87,13 @@ void MainWindow::objectDetectionThread(
             traffic_sign_monitor = TrafficSignMonitor(car_status);
         }
 
-        clone_img = car_status->getCurrentImage();
-        if (clone_img.empty()) {
+        car_status->getCurrentImage(image, original_image);
+        if (image.empty()) {
             continue;
         }
 
         Timer::time_point_t begin_time = Timer::getCurrentTime();
-        std::vector<TrafficObject> objects = object_detector->detect(clone_img);
+        std::vector<TrafficObject> objects = object_detector->detect(image, original_image);
         car_status->setObjectDetectionTime(Timer::calcTimePassed(begin_time));
         car_status->setDetectedObjects(objects);
         traffic_sign_monitor.updateTrafficSign(objects);
@@ -226,7 +232,7 @@ void MainWindow::startVideoGrabber() {
 
             // Show speed sign
             MaxSpeedLimit speed_limit = getSpeedLimit();
-            if (Timer::calcTimePassed(speed_limit.begin_time) < 60000) {
+            if (speed_limit.speed_limit > 0) {
                 ml_cam::place_overlay(draw_frame, traffic_sign_images.getSpeedSignImage(speed_limit.speed_limit), 32, 32);
             }
     

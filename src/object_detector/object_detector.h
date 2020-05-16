@@ -21,7 +21,7 @@ class ObjectDetector {
 
    public:
     ObjectDetector();
-    std::vector<TrafficObject> detect(const cv::Mat &img);
+    std::vector<TrafficObject> detect(const cv::Mat &img, const cv::Mat &original_img);
     void drawDetections(const std::vector<TrafficObject> & result,cv::Mat& img);
 };
 

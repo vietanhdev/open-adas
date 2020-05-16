@@ -73,7 +73,6 @@ int main(int argc, char *argv[]) {
             simulation = new Simulation(&main_window->car_status, input_video_path, input_data_path);
         }
         
-        simulation->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
         simulation->show();
         simulation->showFullScreen();
 

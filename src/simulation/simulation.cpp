@@ -129,7 +129,7 @@ int Simulation::readSimulationData(std::string video_path, std::string data_file
                     sim_data.speed_data.push_back(
                         SpeedData(begin_frame, end_frame, speed));
 
-                    assert(begin_frame < end_frame);
+                    assert(begin_frame <= end_frame);
 
                     for (size_t i = begin_frame; i <= end_frame; ++i) {
                         sim_data.frame_to_speed[i] = speed;

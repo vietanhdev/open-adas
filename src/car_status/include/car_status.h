@@ -23,6 +23,7 @@ class CarStatus {
 
     // Current image
     cv::Mat current_img;
+    cv::Mat current_img_origin_size;
     std::mutex current_img_mutex;
 
     // Lane detection result
@@ -54,6 +55,7 @@ class CarStatus {
     Timer::time_point_t getStartTime();
 
     void setCurrentImage(const cv::Mat &img);
+    void getCurrentImage(cv::Mat &image, cv::Mat &original_image);
     cv::Mat getCurrentImage();
 
     void setDetectedObjects(const std::vector<TrafficObject> &objects);

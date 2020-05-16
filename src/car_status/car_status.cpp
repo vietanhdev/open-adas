@@ -23,12 +23,20 @@ void CarStatus::setCurrentImage(const cv::Mat &img) {
     std::lock_guard<std::mutex> guard(current_img_mutex);
     cv::Mat resized = resizeByMaxSize(img, IMG_MAX_SIZE);
     current_img = resized.clone();
+    current_img_origin_size = img.clone();
 }
 
 cv::Mat CarStatus::getCurrentImage() {
     std::lock_guard<std::mutex> guard(current_img_mutex);
     return current_img.clone();
 }
+
+void CarStatus::getCurrentImage(cv::Mat &image, cv::Mat &original_image) {
+    std::lock_guard<std::mutex> guard(current_img_mutex);
+    image = current_img.clone();
+    original_image = current_img_origin_size.clone();
+}
+
 
 void CarStatus::setDetectedObjects(const std::vector<TrafficObject> &objects) {
     std::lock_guard<std::mutex> guard(detected_objects_mutex);
@@ -140,23 +148,56 @@ Timer::time_duration_t CarStatus::getLaneDetectionTime() {
 // Get max speed limit
 MaxSpeedLimit CarStatus::getMaxSpeedLimit() {
     std::lock_guard<std::mutex> guard(speed_limit_mutex);
+
+    // Turn off speed limit if expired
+    if (Timer::calcTimePassed(speed_limit.begin_time) > MAX_SPEED_SIGN_VALID_TIME) {
+        speed_limit.speed_limit = -1;
+    }
+
+    // Check for overspeed
+    if (speed_limit.speed_limit > 0 &&
+        getCarSpeed() > speed_limit.speed_limit &&
+        !speed_limit.overspeed_warning && 
+        Timer::calcTimePassed(speed_limit.begin_time) >  OVERSPEED_WARNING_AFTER_TRAFFIC_SIGN
+    ) {
+        speed_limit.overspeed_warning = true;
+        speed_limit.overspeed_warning_has_notified = false;
+        speed_limit.overspeed_warning_notified_time = Timer::getCurrentTime();
+    
+    // If the car speed is become normal, 
+    // turn off warning
+    } else if (getCarSpeed() <= speed_limit.speed_limit) {
+        speed_limit.overspeed_warning = false;
+
+    // Turn on notification again if last notification time
+    // is larger than SPEED_WARNING_INTERVAL
+    } else if (speed_limit.overspeed_warning_has_notified && 
+       Timer::calcTimePassed(speed_limit.overspeed_warning_notified_time) > OVERSPEED_WARNING_INTERVAL ) {
+        speed_limit.overspeed_warning_has_notified = false;
+    }
+
     MaxSpeedLimit ret_speed_limit = speed_limit;
-    speed_limit.has_warned = true;
+
+    // After return a speed limit, turn all notification off
+    speed_limit.has_notified = true;
+    speed_limit.overspeed_warning_has_notified = true;
+
     return ret_speed_limit;
 }
 
 void CarStatus::removeSpeedLimit() {
     std::lock_guard<std::mutex> guard(speed_limit_mutex);
-    speed_limit.has_warned = true;
-    speed_limit.speed_limit = -1;
+    speed_limit.has_notified = false;
+    speed_limit.speed_limit = 0;
+    cout << "END OF SPEED LIMIT" << endl;
 }
 
 void CarStatus::triggerSpeedLimit(int speed) {
     std::lock_guard<std::mutex> guard(speed_limit_mutex);
 
     if (speed != speed_limit.speed_limit || 
-        Timer::calcTimePassed(speed_limit.begin_time) > 60000) {
-        speed_limit.has_warned = false;
+        Timer::calcTimePassed(speed_limit.begin_time) > TIME_TO_RENOTIFY_A_SAME_TRAFFIC_SIGN) {
+        speed_limit.has_notified = false;
         speed_limit.speed_limit = speed;
         speed_limit.begin_time = Timer::getCurrentTime();
         cout << "MAX SPEED LIMIT: " << speed << endl;
