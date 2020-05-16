@@ -1,6 +1,6 @@
 #include "sign_classifier.h"
 
-#include "../config.h"
+#include "config.h"
 
 using namespace cv;
 

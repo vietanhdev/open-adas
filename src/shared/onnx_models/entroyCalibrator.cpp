@@ -4,7 +4,7 @@
 
 #include "entroyCalibrator.h"
 #include "ctdet_utils.h"
-#include "ctdetConfig.h"
+#include "config_object_detection.h"
 #include <fstream>
 #include <iterator>
 namespace nvinfer1
@@ -51,7 +51,7 @@ namespace nvinfer1
             auto inputData = prepareImage(img,forwardFace);
             if (inputData.size() != inputCount)
             {
-                std::cout << "InputSize error. check include/ctdetConfig.h" << std::endl;
+                std::cout << "InputSize error. check include/config_object_detection.h" << std::endl;
                 return false;
             }
             //assert(inputData.size() == inputCount);

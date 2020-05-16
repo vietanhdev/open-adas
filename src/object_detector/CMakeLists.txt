@@ -24,9 +24,11 @@ list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES -Xcompiler -fPIC")
 include_directories(${CUDA_INCLUDE_DIRS}
                     ${TENSORRT_INCLUDE_DIR}
                     ${OpenCV_INCLUDE_DIRS}
+                    ../shared/utils/include
                     ../shared/onnx_models/include
                     ../shared/onnx_models/onnx-tensorrt
                     ../traffic_sign_classifier
+                    ../config/
                     )
 
 file(GLOB CPP_SRC ../shared/onnx_models/*.cpp *.cpp)

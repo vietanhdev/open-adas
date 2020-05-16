@@ -2,7 +2,7 @@
 // Created by cao on 19-10-26.
 //
 #include "ctdet_utils.h"
-#include "ctdetConfig.h"
+#include "config_object_detection.h"
 #include <sstream>
 
 

@@ -59,6 +59,7 @@ set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 include_directories(
     "src"
+    "src/config"
     "src/shared/utils/include"
 
     "src/user_interface"

@@ -25,6 +25,7 @@ message(STATUS ${TENSORRT_ROOT})
 include_directories(${CUDA_INCLUDE_DIRS}
 					${TENSORRT_INCLUDE_DIR}
 					${OpenCV_INCLUDE_DIRS}
+					../config
 					../shared/uff_models/common/include
 					../shared/uff_models/classification_net
 					)

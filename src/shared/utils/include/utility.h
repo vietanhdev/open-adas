@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <stdlib.h>
 #include <iostream>
+#include <string>
 #include <QImage>
 
 namespace ml_cam {

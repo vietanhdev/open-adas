@@ -12,9 +12,9 @@
 #define DEBUG_SHOW_FPS
 
 #define SMARTCAM_OBJECT_DETECTION_MODEL \
-    "models/object_detection/ctdet_bdd_resnet18_384.onnx"
+    "models/object_detection/ctdet_bdd_resnet18_512.onnx"
 #define SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN \
-    "models/object_detection/ctdet_bdd_resnet18_384.engine"
+    "models/object_detection/ctdet_bdd_resnet18_512.engine"
 // Mode: FLOAT32, FLOAT16. INT in the future
 #define SMARTCAM_OBJECT_DETECTION_MODE "FLOAT16"
 

@@ -5,7 +5,7 @@
 #ifndef CTDET_TRT_PYTHON_API_H
 #define CTDET_TRT_PYTHON_API_H
 #include "ctdet_utils.h"
-#include "ctdetConfig.h"
+#include "config_object_detection.h"
 typedef struct
 {
     int num;

@@ -1,6 +1,6 @@
 #include "lane_detector.h"
 
-#include "../config.h"
+#include "config.h"
 
 using namespace cv;
 

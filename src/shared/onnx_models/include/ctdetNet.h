@@ -11,7 +11,7 @@
 #include <numeric>
 #include "NvInferPlugin.h"
 #include "NvOnnxParser.h"
-#include "ctdetConfig.h"
+#include "config_object_detection.h"
 #include "ctdet_utils.h"
 #include "NvOnnxParserRuntime.h"
 

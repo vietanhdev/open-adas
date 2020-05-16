@@ -23,6 +23,8 @@ class ObjectDetector {
     ObjectDetector();
     std::vector<TrafficObject> detect(const cv::Mat &img, const cv::Mat &original_img);
     void drawDetections(const std::vector<TrafficObject> & result,cv::Mat& img);
+
+    bool isInStrVector(const std::string &value, const std::vector<std::string> &array);
 };
 
 #endif  // OBJECT_DETECTOR_H

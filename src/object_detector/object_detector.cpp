@@ -79,7 +79,13 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
     for (const auto &item : result) {
         std::string label;
         std::stringstream stream;
-        stream << ctdet::className[item.classId] << ":" << item.traffic_sign_type  << " " << item.prob << std::endl;
+        std::string class_name = ctdet::className[item.classId];
+
+        if (!isInStrVector(class_name, ctdet::drawClassNames)) {
+            continue;
+        }
+        
+        stream << class_name << ":" << item.traffic_sign_type  << " " << item.prob << std::endl;
         std::getline(stream,label);
 
         auto size = cv::getTextSize(label,cv::FONT_HERSHEY_COMPLEX,label_scale,1,&base_line);
@@ -93,4 +99,9 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
                 cv::FONT_HERSHEY_COMPLEX, label_scale , cv::Scalar(0,0,255), box_think/2, 8, 0);
 
     }
+}
+
+
+bool ObjectDetector::isInStrVector(const std::string &value, const std::vector<std::string> &array) {
+    return std::find(array.begin(), array.end(), value) != array.end();
 }

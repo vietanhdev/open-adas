@@ -27,6 +27,7 @@ include_directories(${CUDA_INCLUDE_DIRS}
                     ${OpenCV_INCLUDE_DIRS}
                     ../shared/uff_models/common/include
                     ../shared/uff_models/unet
+                    ../config
                     )
 
 file(GLOB UFF_MODEL_CPP ../shared/uff_models/common/*.cpp)
