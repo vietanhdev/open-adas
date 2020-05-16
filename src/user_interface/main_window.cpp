@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Connect buttons
     connect(ui->menuBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
-    // connect(ui->alertBtn, SIGNAL(released()), this, SLOT(changeCamClicked()));
+    connect(ui->muteBtn, SIGNAL(released()), this, SLOT(toggleMute()));
 
     object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
@@ -51,15 +51,15 @@ void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_wind
         if (speed_limit.speed_limit >= 0 &&
             !speed_limit.has_notified) {
             if (speed_limit.speed_limit > 0) {
-                MainWindow::playAudio("traffic_signs/" + std::to_string(speed_limit.speed_limit) + ".wav");
+                main_window->playAudio("traffic_signs/" + std::to_string(speed_limit.speed_limit) + ".wav");
             } else {
-                MainWindow::playAudio("traffic_signs/00.wav");
+                main_window->playAudio("traffic_signs/00.wav");
             }
         }
 
         if (speed_limit.overspeed_warning &&
             !speed_limit.overspeed_warning_has_notified) {
-            MainWindow::playAudio("traffic_signs/warning_overspeed.wav");
+            main_window->playAudio("traffic_signs/warning_overspeed.wav");
         }
 
         std::this_thread::sleep_for(std::chrono::microseconds(20));
@@ -142,7 +142,8 @@ void MainWindow::changeCamClicked() {
 }
 
 void MainWindow::playAudio(std::string audio_file) {
-    system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
+    if (!is_mute)
+        system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -307,4 +308,16 @@ void MainWindow::openSimulationSelector() {
     // this->hide();
     this->simulation->show();
     this->simulation->showFullScreen();
+}
+
+void MainWindow::toggleMute() {
+
+    if (is_mute) {
+        is_mute = false;
+        this->ui->muteBtn->setIcon(QIcon(":/resources/images/volume.png"));
+    } else {
+        is_mute = true;
+        this->ui->muteBtn->setIcon(QIcon(":/resources/images/mute.png"));
+    }
+
 }
