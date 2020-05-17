@@ -8,8 +8,8 @@ namespace ctdet {
     constexpr static float visThresh = 0.4;
     constexpr static int kernelSize = 3;  /// nms maxpool size
 
-    constexpr static int input_w = 512;
-    constexpr static int input_h = 512;
+    constexpr static int input_w = 384;
+    constexpr static int input_h = 384;
     constexpr static int channel = 3;
     constexpr static int classNum = 10;
     constexpr static float mean[]= {0.408, 0.447, 0.470};

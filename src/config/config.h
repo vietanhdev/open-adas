@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define IMG_MAX_SIZE 512 
+#define IMG_MAX_SIZE 384
 
 // #define DISABLE_LANE_DETECTOR
 #define SMARTCAM_DEBUG
@@ -12,9 +12,9 @@
 #define DEBUG_SHOW_FPS
 
 #define SMARTCAM_OBJECT_DETECTION_MODEL \
-    "models/object_detection/ctdet_bdd_resnet18_512.onnx"
+    "models/object_detection/ctdet_bdd_resnet18_384.onnx"
 #define SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN \
-    "models/object_detection/ctdet_bdd_resnet18_512.engine"
+    "models/object_detection/ctdet_bdd_resnet18_384.engine"
 // Mode: FLOAT32, FLOAT16. INT in the future
 #define SMARTCAM_OBJECT_DETECTION_MODE "FLOAT16"
 
