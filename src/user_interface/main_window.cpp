@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Connect buttons
     connect(ui->menuBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
     connect(ui->muteBtn, SIGNAL(released()), this, SLOT(toggleMute()));
+    connect(ui->alertBtn, SIGNAL(released()), this, SLOT(toggleAlert()));
 
     object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
@@ -59,7 +60,7 @@ void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_wind
 
         if (speed_limit.overspeed_warning &&
             !speed_limit.overspeed_warning_has_notified) {
-            main_window->playAudio("traffic_signs/warning_overspeed.wav");
+            main_window->alert("traffic_signs/warning_overspeed.wav");
         }
 
         std::this_thread::sleep_for(std::chrono::microseconds(20));
@@ -142,6 +143,11 @@ void MainWindow::playAudio(std::string audio_file) {
         system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
 }
 
+void MainWindow::alert(std::string audio_file) {
+    if (is_alert)
+        playAudio(audio_file);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event) {
     QApplication::quit();
     exit(0);
@@ -199,9 +205,6 @@ void MainWindow::startVideoGrabber() {
                         car_status.getLaneDetectionTime();
                     last_fps_show = Timer::getCurrentTime();
                 }
-
-                cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 1.5);
-                cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,40), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 1.5);
                 
                 #endif
 
@@ -219,6 +222,9 @@ void MainWindow::startVideoGrabber() {
                 #endif
                 
             }
+
+            cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 1.5);
+            cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,40), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 1.5);
 
             std::vector<TrafficObject> detected_objects = car_status.getDetectedObjects();
 
@@ -314,6 +320,18 @@ void MainWindow::toggleMute() {
     } else {
         is_mute = true;
         this->ui->muteBtn->setIcon(QIcon(":/resources/images/mute.png"));
+    }
+
+}
+
+void MainWindow::toggleAlert() {
+
+    if (is_alert) {
+        is_alert = false;
+        this->ui->alertBtn->setText(QString("Alert: Off"));
+    } else {
+        is_alert = true;
+        this->ui->alertBtn->setText(QString("Alert: On"));
     }
 
 }

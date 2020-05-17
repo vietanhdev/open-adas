@@ -46,6 +46,7 @@ class MainWindow : public QMainWindow {
     void startVideoGrabber();
     void refreshCams();
     void playAudio(std::string audio_file);
+    void alert(std::string audio_file);
 
    protected:
     void closeEvent(QCloseEvent *event);
@@ -54,6 +55,7 @@ class MainWindow : public QMainWindow {
    private slots:
     void openSimulationSelector();
     void toggleMute();
+    void toggleAlert();
 
    private:
     Ui::MainWindow *ui;
@@ -77,6 +79,7 @@ class MainWindow : public QMainWindow {
 
     // Audio
     std::atomic<bool> is_mute = false;
+    std::atomic<bool> is_alert = true;
 
    public:
     CarStatus car_status;
