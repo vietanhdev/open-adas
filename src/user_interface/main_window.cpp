@@ -223,8 +223,8 @@ void MainWindow::startVideoGrabber() {
                 
             }
 
-            cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 1.5);
-            cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,40), FONT_HERSHEY_PLAIN, 1,  Scalar(0,0,255,255), 1.5);
+            cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,10), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
+            cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
 
             std::vector<TrafficObject> detected_objects = car_status.getDetectedObjects();
 

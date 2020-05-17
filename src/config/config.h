@@ -29,6 +29,9 @@
     "models/traffic_sign/traffic_sign_classification_resnet18_64.engine"
 #define SMARTCAM_TRAFFIC_SIGN_CLASS_LIST \
     "models/traffic_sign/classes.txt"
+
+#define MIN_TRAFFIC_SIGN_SIZE 20
+#define SIGN_CLASSIFICATION_THRESH 0.8
 #define MAX_SPEED_SIGN_VALID_TIME 30*60*1000
 #define TIME_TO_RENOTIFY_A_SAME_TRAFFIC_SIGN 60*1000
 #define OVERSPEED_WARNING_AFTER_TRAFFIC_SIGN 6 * 1000

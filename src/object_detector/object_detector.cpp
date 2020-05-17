@@ -46,15 +46,24 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::
     float fx = static_cast<float>(original_img.cols) / img.cols;
     float fy = static_cast<float>(original_img.rows) / img.rows;
     std::vector<TrafficObject> traffic_objects;
+    int original_img_height = original_img.rows;
+    int original_img_width = original_img.cols;
     for (size_t i = 0; i < detected_objects.size(); ++i) {
         std::string traffic_sign_type = "";
         if (detected_objects[i].classId == 8) { // Traffic sign
-            cv::Rect roi(
-                cv::Point(
-                    static_cast<int>(fx * detected_objects[i].bbox.x1), static_cast<int>(fy * detected_objects[i].bbox.y1)),
-                cv::Point(
-                    static_cast<int>(fx * detected_objects[i].bbox.x2), static_cast<int>(fy * detected_objects[i].bbox.y2))
-            );
+
+            int x1 = min(original_img_width - 1, static_cast<int>(fx * detected_objects[i].bbox.x1));
+            int x2 = min(original_img_width - 1, static_cast<int>(fx * detected_objects[i].bbox.x2));
+            int y1 = min(original_img_height - 1, static_cast<int>(fy * detected_objects[i].bbox.y1));
+            int y2 = min(original_img_height - 1, static_cast<int>(fy * detected_objects[i].bbox.y2));
+            int width = x2 - x1;
+            int height = y2 - y1;
+
+            if (width < MIN_TRAFFIC_SIGN_SIZE || height < MIN_TRAFFIC_SIGN_SIZE) {
+                continue;
+            }
+
+            cv::Rect roi(x1, y1, width, height);
             cv::Mat crop = original_img(roi);
 
             std::string sign_name = sign_classifier.getSignName(crop);
@@ -74,7 +83,7 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
 {
 
     int box_think = (img.rows+img.cols) * .001 ;
-    float label_scale = img.rows * 0.0009;
+    float label_scale = 0.8;
     int base_line ;
     for (const auto &item : result) {
         std::string label;
@@ -85,10 +94,11 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
             continue;
         }
         
-        stream << class_name << ":" << item.traffic_sign_type  << " " << item.prob << std::endl;
+        stream << class_name << ":" << item.traffic_sign_type;
+        // stream << " " << item.prob << std::endl;
         std::getline(stream,label);
 
-        auto size = cv::getTextSize(label,cv::FONT_HERSHEY_COMPLEX,label_scale,1,&base_line);
+        auto size = cv::getTextSize(label,cv::FONT_HERSHEY_PLAIN,label_scale,1,&base_line);
 
         cv::rectangle(img, cv::Point(item.bbox.x1,item.bbox.y1),
                       cv::Point(item.bbox.x2 ,item.bbox.y2),
@@ -96,7 +106,7 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
         
         cv::putText(img,label,
                 cv::Point(item.bbox.x2,item.bbox.y2 - size.height),
-                cv::FONT_HERSHEY_COMPLEX, label_scale , cv::Scalar(0,0,255), box_think/2, 8, 0);
+                cv::FONT_HERSHEY_PLAIN, label_scale , cv::Scalar(0,0,255), box_think/2, 8, 0);
 
     }
 }

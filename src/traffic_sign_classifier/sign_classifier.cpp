@@ -9,7 +9,7 @@ TrafficSignClassifier::TrafficSignClassifier() {
     params.inputW = INPUT_WIDTH;
     params.inputH = INPUT_HEIGHT;
     params.batchSize = 1;
-    params.nClasses = 16;
+    params.nClasses = 15;
     params.uffFilePath = SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_MODEL;
     params.engineFilePath = SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_TENSORRT_PLAN;
     params.classListFile = SMARTCAM_TRAFFIC_SIGN_CLASS_LIST;
@@ -27,7 +27,7 @@ TrafficSignClassifier::TrafficSignClassifier() {
 
 int TrafficSignClassifier::getSignId(const cv::Mat& input_img) {
     int result;
-    if (!model->infer(input_img, result)) {
+    if (!model->infer(input_img, result, SIGN_CLASSIFICATION_THRESH)) {
         cerr << "Error on running traffic sign classification model." << endl;
     }
     return result;

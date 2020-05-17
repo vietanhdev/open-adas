@@ -28,7 +28,7 @@ struct ClassificationNet : UffModel {
     ClassificationNet(const UffModelParams& params);
 
     // Run the TensorRT inference engine
-    bool infer(const cv::Mat& input_img, int& sign_type);
+    bool infer(const cv::Mat& input_img, int& object_class, float threshold);
 
     std::string getClassName(int class_id);
 
@@ -38,8 +38,7 @@ struct ClassificationNet : UffModel {
                       const cv::Mat& input_img);
 
     // Process the output
-    bool processOutput(const samplesCommon::BufferManager& buffers,
-                       int& sign_type);
+    bool processOutput(const samplesCommon::BufferManager& buffers, int & object_class, float threshold);
 
 };
 

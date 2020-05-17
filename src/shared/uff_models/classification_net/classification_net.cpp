@@ -55,22 +55,22 @@ bool ClassificationNet::processInput(const samplesCommon::BufferManager& buffers
 }
 
 // Process output and verify result
-bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffers, int & sign_type) {
+bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffers, int & object_class, float threshold) {
 
     const float* out_buff = static_cast<float*>(
         buffers.getHostBuffer(mParams.outputTensorNames[0]));
 
-    sign_type = -1;
+    object_class = -1;
     float max_prob = 0.0;
     for (int i = 0; i < mParams.nClasses; ++i) {
         if (out_buff[i] > max_prob) {
-            sign_type = i;
+            object_class = i;
             max_prob = out_buff[i];
         }
     }
 
-    if (max_prob < 0.8) {
-        sign_type = 2;
+    if (max_prob < threshold) {
+        object_class = -1;
     }
 
     return true;
@@ -79,7 +79,7 @@ bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffer
 // Runs the TensorRT inference engine
 // This function is the main execution function
 // It allocates the buffer, sets inputs and executes the engine
-bool ClassificationNet::infer(const cv::Mat& input_img, int& sign_type) {
+bool ClassificationNet::infer(const cv::Mat& input_img, int& object_class, float threshold) {
     int origin_w = input_img.size().width;
     int origin_h = input_img.size().height;
 
@@ -100,7 +100,7 @@ bool ClassificationNet::infer(const cv::Mat& input_img, int& sign_type) {
     buffers->copyOutputToHost();
 
     // Post-process output
-    if (!processOutput(*buffers, sign_type)) {
+    if (!processOutput(*buffers, object_class, threshold)) {
         return false;
     }
 
