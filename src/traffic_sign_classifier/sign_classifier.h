@@ -10,10 +10,11 @@
 #include "classification_net.h"
 
 class TrafficSignClassifier {
+
    private:
     const int INPUT_WIDTH = 64;
     const int INPUT_HEIGHT = 64;
-    const std::string INPUT_NODE = "resnet50_input";
+    const std::string INPUT_NODE = "data";
     const std::string OUTPUT_NODE = "dense/Softmax";
 
     std::shared_ptr<ClassificationNet> model;

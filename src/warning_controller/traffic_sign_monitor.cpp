@@ -70,7 +70,7 @@ void TrafficSignMonitor::updateTrafficSign(const std::vector<TrafficObject> &tra
             last_traffic_sign = sign_type;
         } else {
             Timer::time_duration_t traffic_sign_time = Timer::calcTimePassed(last_traffic_sign_time);
-            if (traffic_sign_time > 100 && traffic_sign_time < 10000) {         
+            if (traffic_sign_time > 250 && traffic_sign_time < 10000) {         
                 triggerSignStatus(sign_type);
             }
         }

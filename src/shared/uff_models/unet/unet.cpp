@@ -95,6 +95,15 @@ bool Unet::infer(const cv::Mat& input_img, cv::Mat& output_img) {
         return false;
     }
 
+    // // Memcpy from host input buffers to device input buffers
+    // buffers->copyInputToDeviceAsync();
+    // context->enqueue(mParams.batchSize,
+    //     buffers->getDeviceBindings().data(), 0, nullptr);
+    // // Memcpy from device output buffers to host output buffers
+    // buffers->copyOutputToHostAsync();
+    // // wait until the work is finished
+    // cudaStreamSynchronize(stream);
+
     // Memcpy from device output buffers to host output buffers
     buffers->copyOutputToHost();
 

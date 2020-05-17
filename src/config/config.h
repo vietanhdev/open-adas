@@ -24,9 +24,9 @@
     "models/lane_detection/config02_model_.103-0.399921.engine"
 
 #define SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_MODEL \
-    "models/traffic_sign/traffic_sign_classification.uff"
+    "models/traffic_sign/traffic_sign_classification_resnet18_64.uff"
 #define SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_TENSORRT_PLAN \
-    "models/traffic_sign/traffic_sign_classification.engine"
+    "models/traffic_sign/traffic_sign_classification_resnet18_64.engine"
 #define SMARTCAM_TRAFFIC_SIGN_CLASS_LIST \
     "models/traffic_sign/classes.txt"
 #define MAX_SPEED_SIGN_VALID_TIME 30*60*1000
