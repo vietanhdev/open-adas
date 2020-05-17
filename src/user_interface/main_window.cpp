@@ -137,10 +137,6 @@ void MainWindow::carPropReaderThread(
 
 MainWindow::~MainWindow() { delete ui; }
 
-void MainWindow::changeCamClicked() {
-    playAudio("traffic_signs/00.wav");
-}
-
 void MainWindow::playAudio(std::string audio_file) {
     if (!is_mute)
         system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());

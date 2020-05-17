@@ -52,7 +52,6 @@ class MainWindow : public QMainWindow {
     void loadEffects();
 
    private slots:
-    void changeCamClicked();
     void openSimulationSelector();
     void toggleMute();
 
