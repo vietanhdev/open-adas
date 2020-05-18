@@ -71,18 +71,18 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
-        <item alignment="Qt::AlignLeft|Qt::AlignTop">
+        <item>
          <widget class="QPushButton" name="alertBtn">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+           <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
             <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
+            <verstretch>3</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
             <width>194</width>
-            <height>64</height>
+            <height>38</height>
            </size>
           </property>
           <property name="styleSheet">
