@@ -202,6 +202,12 @@
              </property>
              <item>
               <widget class="QScrollBar" name="verticalScrollBar">
+               <property name="maximum">
+                <number>1000</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
@@ -230,6 +236,12 @@
            </item>
            <item>
             <widget class="QScrollBar" name="horizontalScrollBar">
+             <property name="maximum">
+              <number>1000</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
@@ -313,6 +325,19 @@
              </property>
              <property name="text">
               <string>Bottom-Left</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="getImageBtn">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Get Image Again</string>
              </property>
             </widget>
            </item>

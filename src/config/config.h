@@ -17,6 +17,7 @@
     "models/object_detection/ctdet_bdd_resnet18_384.engine"
 // Mode: FLOAT32, FLOAT16. INT in the future
 #define SMARTCAM_OBJECT_DETECTION_MODE "FLOAT16"
+#define MIN_OBJECT_SIZE 10
 
 #define SMARTCAM_LANE_DETECTION_MODEL \
     "models/lane_detection/config02_model_.103-0.399921.uff"

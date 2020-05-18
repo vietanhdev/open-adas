@@ -49,7 +49,14 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::
     int original_img_height = original_img.rows;
     int original_img_width = original_img.cols;
     for (size_t i = 0; i < detected_objects.size(); ++i) {
+        
+        if (detected_objects[i].bbox.x2 - detected_objects[i].bbox.x1 < MIN_OBJECT_SIZE ||
+        detected_objects[i].bbox.y2 - detected_objects[i].bbox.y1 < MIN_OBJECT_SIZE) {
+            continue;
+        }
+
         std::string traffic_sign_type = "";
+
         if (detected_objects[i].classId == 8) { // Traffic sign
 
             int x1 = min(original_img_width - 1, static_cast<int>(fx * detected_objects[i].bbox.x1));
