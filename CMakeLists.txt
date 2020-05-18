@@ -62,9 +62,10 @@ include_directories(
     "src/config"
     "src/shared/utils/include"
 
+    "src/user_interface/dark_theme"
     "src/user_interface"
     "src/simulation"
-    "src/user_interface/dark_theme"
+    "src/camera_model"
 
     "src/object_detector"
     "src/shared/onnx_models/include"
@@ -118,6 +119,9 @@ add_executable(${PROJECT_NAME}
 
     "src/simulation/simulation.cpp"
     "src/simulation/simulation.ui"
+
+    "src/camera_model/camera_model.cpp"
+    "src/camera_model/camera_model.ui"
 )
 
 ADD_LIBRARY(
@@ -146,15 +150,15 @@ target_link_libraries(${PROJECT_NAME}
 
 # Copy files
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
                        ${CMAKE_SOURCE_DIR}/images $<TARGET_FILE_DIR:${PROJECT_NAME}>/images)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
                        ${CMAKE_SOURCE_DIR}/models $<TARGET_FILE_DIR:${PROJECT_NAME}>/models)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
                        ${CMAKE_SOURCE_DIR}/sounds $<TARGET_FILE_DIR:${PROJECT_NAME}>/sounds)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
