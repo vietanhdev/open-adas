@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>400</height>
+    <height>364</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -70,7 +70,7 @@
           </size>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setup camera calibration target: &lt;/span&gt;Place a carpet in the center of the front of the car. Looking at the two pictures below, you can see where the red carpet is located. This carpet should be 1.8mx1.8m in size.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setup camera calibration target: &lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Place a carpet in the center of the front of the car. Looking at the two pictures below, you can see where the red carpet is located. This carpet should be 1.8mx1.8m in size.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -145,7 +145,7 @@
           </size>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setup camera:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Camera should be placed in the middle of the vehicle. Set up the camera so that the camera sees the entire carpet and only sees a small part of the car.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setup camera:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Camera should be placed in the middle of the vehicle. Set up the camera so that the camera sees the entire carpet and only sees a small part of the car.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="scaledContents">
           <bool>true</bool>

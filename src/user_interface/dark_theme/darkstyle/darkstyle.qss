@@ -272,11 +272,11 @@ QScrollBar:vertical{
   background:palette(base);
   border-top-right-radius:2px;
   border-bottom-right-radius:2px;
-  width:16px;
+  width:24px;
   margin:0px;
 }
 QScrollBar::handle:vertical{
-  background-color:palette(alternate-base);
+  background-color:palette(highlight);
   border-radius:2px;
   min-height:20px;
   margin:2px 4px 2px 4px;
@@ -298,11 +298,11 @@ QScrollBar::sub-line:vertical{
 }
 QScrollBar:horizontal{
   background:palette(base);
-  height:16px;
+  height:24px;
   margin:0px;
 }
 QScrollBar::handle:horizontal{
-  background-color:palette(alternate-base);
+  background-color:palette(highlight);
   border-radius:2px;
   min-width:20px;
   margin:4px 2px 4px 2px;
