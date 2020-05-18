@@ -54,7 +54,6 @@ int main(int argc, char *argv[]) {
 
     // Create our mainwindow instance
     MainWindow *main_window = new MainWindow;
-    main_window->show();
     main_window->showFullScreen();
 
     // Prevent multithreading error on OpenCV
@@ -73,9 +72,6 @@ int main(int argc, char *argv[]) {
             simulation = new Simulation(&main_window->car_status, input_video_path, input_data_path);
         }
         
-        simulation->show();
-        simulation->showFullScreen();
-
         // Set simulation
         main_window->setInputSource(InputFromSimulation);
         main_window->setSimulation((Simulation*)simulation);

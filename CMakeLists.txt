@@ -66,6 +66,7 @@ include_directories(
     "src/user_interface"
     "src/simulation"
     "src/camera_model"
+    "src/camera_model/camera_wizard"
 
     "src/object_detector"
     "src/shared/onnx_models/include"
@@ -122,6 +123,14 @@ add_executable(${PROJECT_NAME}
 
     "src/camera_model/camera_model.cpp"
     "src/camera_model/camera_model.ui"
+
+    "src/camera_model/camera_wizard/camera_wizard.cpp"
+    "src/camera_model/camera_wizard/instruction_page/instruction_page.cpp"
+    "src/camera_model/camera_wizard/instruction_page/instruction_page.ui"
+    "src/camera_model/camera_wizard/measurement_page/measurement_page.cpp"
+    "src/camera_model/camera_wizard/measurement_page/measurement_page.ui"
+    "src/camera_model/camera_wizard/four_point_select_page/four_point_select_page.cpp"
+    "src/camera_model/camera_wizard/four_point_select_page/four_point_select_page.ui"
 )
 
 ADD_LIBRARY(

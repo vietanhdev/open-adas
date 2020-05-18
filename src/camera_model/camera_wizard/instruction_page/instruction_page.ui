@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CameraModel</class>
- <widget class="QWidget" name="CameraModel">
+ <class>InstructionPage</class>
+ <widget class="QWidget" name="InstructionPage">
   <property name="windowModality">
    <enum>Qt::WindowModal</enum>
   </property>
@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
-    <height>480</height>
+    <width>620</width>
+    <height>397</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -36,13 +36,34 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QLabel" name="label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>600</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Setup calibration target and camera&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setup camera calibration target: &lt;/span&gt;Place a carpet in the center of the front of the car. Looking at the two pictures below, you can see where the red carpet is located. This carpet should be 1.8mx1.8m in size.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLabel" name="label">
+       <property name="maximumSize">
+        <size>
+         <width>800</width>
+         <height>200</height>
+        </size>
+       </property>
        <property name="styleSheet">
         <string notr="true">max-width: 800px;
 max-height: 200px;
@@ -55,7 +76,7 @@ max-height: 200px;
         <enum>Qt::AutoText</enum>
        </property>
        <property name="pixmap">
-        <pixmap resource="../../resources.qrc">:/resources/images/instruction_red_carpet.png</pixmap>
+        <pixmap resource="../../../../resources.qrc">:/resources/images/instruction_red_carpet.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -84,8 +105,17 @@ max-height: 200px;
        </property>
        <item>
         <widget class="QLabel" name="label_4">
+         <property name="maximumSize">
+          <size>
+           <width>400</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setup camera:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Camera should be placed in the middle of the vehicle. Set up the camera so that the camera sees the entire carpet and only sees a small part of the car.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -94,6 +124,12 @@ max-height: 200px;
        </item>
        <item>
         <widget class="QLabel" name="label_3">
+         <property name="maximumSize">
+          <size>
+           <width>224</width>
+           <height>150</height>
+          </size>
+         </property>
          <property name="styleSheet">
           <string notr="true">max-width: 400px;
 max-height: 300px;</string>
@@ -102,7 +138,7 @@ max-height: 300px;</string>
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../../resources.qrc">:/resources/images/front_cam.png</pixmap>
+          <pixmap resource="../../../../resources.qrc">:/resources/images/front_cam.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -111,6 +147,19 @@ max-height: 300px;</string>
           <number>0</number>
          </property>
         </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
@@ -132,7 +181,7 @@ max-height: 300px;</string>
   </layout>
  </widget>
  <resources>
-  <include location="../../resources.qrc"/>
+  <include location="../../../../resources.qrc"/>
  </resources>
  <connections/>
 </ui>

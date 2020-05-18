@@ -33,7 +33,19 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="10,1">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,10,1">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Please choose simulation data and touch Play button.</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QListWidget" name="simDataList">
        <property name="cursor" stdset="0">

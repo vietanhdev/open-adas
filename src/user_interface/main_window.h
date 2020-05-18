@@ -32,6 +32,7 @@
 #include "traffic_sign_monitor.h"
 #include "speed_limit.h"
 #include "traffic_sign_images.h"
+#include "camera_wizard.h"
 
 namespace Ui {
 class MainWindow;
@@ -56,9 +57,11 @@ class MainWindow : public QMainWindow {
     void openSimulationSelector();
     void toggleMute();
     void toggleAlert();
+    void showCameraWizard();
 
    private:
     Ui::MainWindow *ui;
+    CameraWizard camera_wizard;
 
     // Input source
     InputSource input_source;

@@ -41,7 +41,7 @@ namespace nvinfer1
     }
 
     bool int8EntroyCalibrator::getBatch(void **bindings, const char **names, int nbBindings){
-        if (imageIndex + batchSize > int(imgPaths.size()))
+        if (imageIndex + batchSize > imgPaths.size())
             return false;
         // load batch
         float* ptr = batchData;

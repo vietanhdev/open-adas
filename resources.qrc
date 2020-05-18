@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/resources">
-        <file>images/camera-icon.png</file>
         <file>images/record-icon.png</file>
         <file>images/info.png</file>
         <file>images/no-effect.png</file>
@@ -11,5 +10,10 @@
         <file>images/warn.png</file>
         <file>images/volume.png</file>
         <file>images/play.png</file>
+        <file>images/setup.png</file>
+        <file>images/driving.png</file>
+        <file>images/instruction_red_carpet.png</file>
+        <file>images/front_cam.png</file>
+        <file>images/distance_measurement.png</file>
     </qresource>
 </RCC>

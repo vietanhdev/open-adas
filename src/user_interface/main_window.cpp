@@ -11,10 +11,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->addItem(&pixmap);
 
+    camera_wizard.setStyleSheet("QAbstractButton { height: 50px }");
+
     // Connect buttons
-    connect(ui->menuBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
+    connect(ui->simulationBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
     connect(ui->muteBtn, SIGNAL(released()), this, SLOT(toggleMute()));
     connect(ui->alertBtn, SIGNAL(released()), this, SLOT(toggleAlert()));
+    connect(ui->setupBtn, SIGNAL(released()), this, SLOT(showCameraWizard()));
 
     object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
@@ -307,8 +310,6 @@ MaxSpeedLimit MainWindow::getSpeedLimit() {
 }
 
 void MainWindow::openSimulationSelector() {
-    // this->hide();
-    this->simulation->show();
     this->simulation->showFullScreen();
 }
 
@@ -334,4 +335,8 @@ void MainWindow::toggleAlert() {
         this->ui->alertBtn->setText(QString("Alert: On"));
     }
 
+}
+
+void MainWindow::showCameraWizard() {
+    camera_wizard.showFullScreen();
 }
