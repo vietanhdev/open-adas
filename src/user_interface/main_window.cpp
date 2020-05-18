@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->addItem(&pixmap);
 
-    camera_wizard.setStyleSheet("QAbstractButton { height: 50px }");
+    camera_model = std::make_unique<CameraModel>(&car_status);
 
     // Connect buttons
     connect(ui->simulationBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
@@ -338,5 +338,5 @@ void MainWindow::toggleAlert() {
 }
 
 void MainWindow::showCameraWizard() {
-    camera_wizard.showFullScreen();
+    camera_model->showCameraWizard();
 }

@@ -35,7 +35,8 @@ QWizardPage *createFinishPage()
 }
 
 
-CameraWizard::CameraWizard() {
+CameraWizard::CameraWizard(CarStatus *car_status) {
+    this->car_status = car_status;
     this->addPage(createIntroPage());
     this->addPage(new InstructionPage(nullptr));
     this->addPage(new MeasurementPage(nullptr));

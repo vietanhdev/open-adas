@@ -32,7 +32,7 @@
 #include "traffic_sign_monitor.h"
 #include "speed_limit.h"
 #include "traffic_sign_images.h"
-#include "camera_wizard.h"
+#include "camera_model.h"
 
 namespace Ui {
 class MainWindow;
@@ -61,7 +61,7 @@ class MainWindow : public QMainWindow {
 
    private:
     Ui::MainWindow *ui;
-    CameraWizard camera_wizard;
+    std::unique_ptr<CameraModel> camera_model;
 
     // Input source
     InputSource input_source;
