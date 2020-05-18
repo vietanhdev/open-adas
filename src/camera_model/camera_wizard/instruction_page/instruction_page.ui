@@ -95,9 +95,7 @@
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">max-width: 800px;
-max-height: 200px;
-</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string/>
@@ -159,15 +157,20 @@ max-height: 200px;
        </item>
        <item>
         <widget class="QLabel" name="label_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="maximumSize">
           <size>
            <width>180</width>
-           <height>110</height>
+           <height>100</height>
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">max-width: 400px;
-max-height: 300px;</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string/>
