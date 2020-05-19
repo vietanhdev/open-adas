@@ -40,7 +40,7 @@ CameraWizard::CameraWizard(CarStatus *car_status) {
     this->addPage(createIntroPage());
     this->addPage(new InstructionPage(nullptr));
     this->addPage(new MeasurementPage(nullptr));
-    this->addPage(new FourPointSelectPage(nullptr));
+    this->addPage(new FourPointSelectPage(nullptr, car_status));
     this->addPage(createFinishPage());
     this->setWindowTitle("Camera Calibration Wizard");
 }

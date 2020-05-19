@@ -337,7 +337,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Get Image Again</string>
+              <string>Retake photo</string>
              </property>
             </widget>
            </item>
