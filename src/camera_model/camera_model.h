@@ -27,14 +27,12 @@
 #include <string>
 #include <thread>
 
-#include "camera_model_data.h"
 #include "camera_wizard.h"
 #include "car_status.h"
 #include "config.h"
 #include "filesystem_include.h"
 
 class CameraModel {
-
     CarStatus *car_status;
     std::unique_ptr<CameraWizard> camera_wizard;
 

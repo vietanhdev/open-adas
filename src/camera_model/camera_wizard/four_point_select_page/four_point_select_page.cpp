@@ -6,9 +6,9 @@ FourPointSelectPage::FourPointSelectPage(QWidget *parent, CarStatus *car_status)
 {
     ui->setupUi(this);
     this->car_status = car_status;
-    getNewImage();
+    getNewImageFromCam();
 
-    connect(ui->getImageBtn, SIGNAL(released()), this, SLOT(getNewImage()));
+    // connect(ui->getImageBtn, SIGNAL(released()), this, SLOT(getNewImage()));
  
     // Fields
     // registerField("carWidthInput", ui->carWidthInput);

@@ -18,13 +18,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# To automatically run MOC when building (Meta Object Compiler)
 set(CMAKE_AUTOMOC ON)
-
-# To automatically run UIC when building (User Interface Compiler)
 set(CMAKE_AUTOUIC ON)
-
-# To automatically run RCC when building (Resource Compiler)
 set(CMAKE_AUTORCC ON)
 
 find_package(CUDA REQUIRED)
@@ -67,6 +62,9 @@ include_directories(
     "src/simulation"
     "src/camera_model"
     "src/camera_model/camera_wizard"
+    "src/camera_model/camera_wizard/four_point_select_page"
+    "src/camera_model/camera_wizard/instruction_page"
+    "src/camera_model/camera_wizard/measurement_page"
 
     "src/object_detector"
     "src/shared/onnx_models/include"
@@ -103,10 +101,15 @@ add_subdirectory(src/traffic_sign_classifier)
 # Build warning controller
 add_subdirectory(src/warning_controller)
 
+if(CMAKE_VERSION VERSION_LESS "3.7.0")
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
+endif()
+
 # add required source, header, ui and resource files
 add_executable(${PROJECT_NAME}
-    "resources.qrc"
+
     "src/main.cpp"
+    "resources.qrc"
 
     "src/shared/utils/utility.cpp"
     "src/shared/utils/file_storage.cpp"
@@ -122,7 +125,6 @@ add_executable(${PROJECT_NAME}
     "src/simulation/simulation.ui"
 
     "src/camera_model/camera_model.cpp"
-    "src/camera_model/camera_model.ui"
 
     "src/camera_model/camera_wizard/camera_wizard.cpp"
     "src/camera_model/camera_wizard/instruction_page/instruction_page.cpp"
