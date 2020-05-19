@@ -16,6 +16,10 @@ class CameraWizard : public QWizard {
 
    public:
     CameraWizard(CarStatus *car_status);
+
+   private slots:
+    void onFinishButtonClicked();
+
 };
 
 #endif

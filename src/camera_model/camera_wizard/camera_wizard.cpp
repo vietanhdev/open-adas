@@ -43,4 +43,8 @@ CameraWizard::CameraWizard(CarStatus *car_status) {
     this->addPage(new FourPointSelectPage(nullptr, car_status));
     this->addPage(createFinishPage());
     this->setWindowTitle("Camera Calibration Wizard");
+    connect(this->button(QWizard::FinishButton), SIGNAL(clicked()), this, SLOT(onFinishButtonClicked()));
 }
+
+
+void CameraWizard::onFinishButtonClicked() {}

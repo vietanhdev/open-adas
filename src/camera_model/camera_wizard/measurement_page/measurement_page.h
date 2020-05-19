@@ -6,6 +6,7 @@
 #include "ui_measurement_page.h"
 
 class MeasurementPage : public QWizardPage {
+    Q_OBJECT
    private:
     Ui::MeasurementPage *ui;
    public:
