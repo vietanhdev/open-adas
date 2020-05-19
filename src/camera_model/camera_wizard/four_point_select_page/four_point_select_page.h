@@ -6,6 +6,7 @@
 #include <vector>
 #include <QImage>
 #include <QWizardPage>
+#include <QDoubleSpinBox>
 #include <opencv2/opencv.hpp>
 #include "ui_four_point_select_page.h"
 #include "car_status.h"
@@ -19,6 +20,8 @@ class FourPointSelectPage : public QWizardPage {
     Ui::FourPointSelectPage *ui;
     CarStatus *car_status;
 
+    const std::vector<std::string> prefix = {"tl_", "tr_", "br_", "bl_"};
+
     cv::Mat image;
     std::mutex image_mutex;
 
@@ -27,6 +30,8 @@ class FourPointSelectPage : public QWizardPage {
     int current_point_id;
     std::string current_point_title;
     std::mutex points_mutex;
+
+    float tl_x;
 
    public:
     FourPointSelectPage(QWidget*, CarStatus *car_status);
@@ -37,6 +42,7 @@ class FourPointSelectPage : public QWizardPage {
 
    private:
     void selectPoint(std::string title, int point_id);
+    QDoubleSpinBox *getDummyDoubleSpinBox();
 
    private slots:
     void getNewImageFromCam();

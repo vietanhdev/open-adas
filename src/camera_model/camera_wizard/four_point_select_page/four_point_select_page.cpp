@@ -10,12 +10,38 @@ FourPointSelectPage::FourPointSelectPage(QWidget *parent, CarStatus *car_status)
     this->car_status = car_status;
     getNewImageFromCam();
 
+    QDoubleSpinBox *tl_x_box = getDummyDoubleSpinBox();
+    QDoubleSpinBox *tl_y_box = getDummyDoubleSpinBox();
+    QDoubleSpinBox *tr_x_box = getDummyDoubleSpinBox();
+    QDoubleSpinBox *tr_y_box = getDummyDoubleSpinBox();
+    QDoubleSpinBox *br_x_box = getDummyDoubleSpinBox();
+    QDoubleSpinBox *br_y_box = getDummyDoubleSpinBox();
+    QDoubleSpinBox *bl_x_box = getDummyDoubleSpinBox();
+    QDoubleSpinBox *bl_y_box = getDummyDoubleSpinBox();
+    registerField("tl_x", tl_x_box, "value"); registerField("tl_y", tl_y_box, "value");
+    registerField("tr_x", tr_x_box, "value"); registerField("tr_y", tr_y_box, "value");
+    registerField("br_x", br_x_box, "value"); registerField("br_y", br_y_box, "value");
+    registerField("bl_x", bl_x_box, "value"); registerField("bl_y", bl_y_box, "value");
+
     {
         std::lock_guard<std::mutex> guard(points_mutex);
-        points.push_back(Point(0.3, 0.3));
-        points.push_back(Point(0.7, 0.3));
-        points.push_back(Point(0.7, 0.7));
-        points.push_back(Point(0.3, 0.7));
+
+        float tl_x = 0.3, tl_y = 0.3;
+        tl_x_box->setValue(tl_x); tl_y_box->setValue(tl_y);
+        points.push_back(Point(tl_x, tl_y));
+
+        float tr_x = 0.7, tr_y = 0.3;
+        tr_x_box->setValue(tr_x); tr_y_box->setValue(tr_y);
+        points.push_back(Point(tr_x, tr_y));
+
+        float br_x = 0.7, br_y = 0.7;
+        br_x_box->setValue(br_x); br_y_box->setValue(br_y);
+        points.push_back(Point(br_x, br_y));
+
+        float bl_x = 0.3, bl_y = 0.7;
+        bl_x_box->setValue(bl_x); bl_y_box->setValue(bl_y);
+        points.push_back(Point(bl_x, bl_y));
+
         current_point_id = 0;
         current_point_title = "Top-Left";
     }
@@ -29,25 +55,30 @@ FourPointSelectPage::FourPointSelectPage(QWidget *parent, CarStatus *car_status)
     connect(ui->bottomRightBtn, SIGNAL(released()), this, SLOT(selectBottomRightPoint()));
     connect(ui->bottomLeftBtn, SIGNAL(released()), this, SLOT(selectBottomLeftPoint()));
 
-    // Fields
-    // registerField("carWidthInput", ui->carWidthInput);
-    // registerField("carpetWidthInput", ui->carpetWidthInput);
-    // registerField("carToCarpetDistanceInput", ui->carToCarpetDistanceInput);
-    // registerField("carpetLengthInput", ui->carpetLengthInput);
-
     getNewImageFromCam();
     updateVisualization();
 }
 
+
+QDoubleSpinBox *FourPointSelectPage::getDummyDoubleSpinBox() {
+    QDoubleSpinBox *dummy = new QDoubleSpinBox(this);
+    dummy->setVisible(false);
+    return dummy;
+}
+
+
 void FourPointSelectPage::selectTopLeftPoint() {
     selectPoint("Top-Left", 0);
 }
+
 void FourPointSelectPage::selectTopRightPoint() {
     selectPoint("Top-Right", 1);
 }
+
 void FourPointSelectPage::selectBottomRightPoint() {
     selectPoint("Bottom-Right", 2);
 }
+
 void FourPointSelectPage::selectBottomLeftPoint() {
     selectPoint("Bottom-Left", 3);
 }
@@ -68,18 +99,22 @@ void FourPointSelectPage::pointToScrollbar() {
 }
 
 void FourPointSelectPage::updateY(int value) {
+    float fval = static_cast<float>(value) / ui->verticalScrollBar->maximum();
     {
         std::lock_guard<std::mutex> guard(points_mutex);
-        points[current_point_id].y = static_cast<float>(value) / ui->verticalScrollBar->maximum();
+        points[current_point_id].y = fval;
     }
+    setField(QString::fromStdString(prefix[current_point_id] + "y"), fval);
     updateVisualization();
 }
 
 void FourPointSelectPage::updateX(int value) {
+    float fval = static_cast<float>(value) / ui->horizontalScrollBar->maximum();
     {
         std::lock_guard<std::mutex> guard(points_mutex);
-        points[current_point_id].x = static_cast<float>(value) / ui->horizontalScrollBar->maximum();
+        points[current_point_id].x = fval;
     }
+    setField(QString::fromStdString(prefix[current_point_id] + "x"), fval);
     updateVisualization();
 }
 

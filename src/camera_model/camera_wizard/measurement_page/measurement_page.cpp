@@ -7,9 +7,9 @@ MeasurementPage::MeasurementPage(QWidget *parent) :
     ui->setupUi(this);
  
     // Fields
-    registerField("carWidthInput", ui->carWidthInput);
-    registerField("carpetWidthInput", ui->carpetWidthInput);
-    registerField("carToCarpetDistanceInput", ui->carToCarpetDistanceInput);
-    registerField("carpetLengthInput", ui->carpetLengthInput);
+    registerField("carWidth", ui->carWidthInput, "value", SIGNAL(valueChanged(double)));
+    registerField("carpetWidth", ui->carpetWidthInput, "value", SIGNAL(valueChanged(double)));
+    registerField("carToCarpetDistance", ui->carToCarpetDistanceInput, "value", SIGNAL(valueChanged(double)));
+    registerField("carpetLength", ui->carpetLengthInput, "value", SIGNAL(valueChanged(double)));
 
 }

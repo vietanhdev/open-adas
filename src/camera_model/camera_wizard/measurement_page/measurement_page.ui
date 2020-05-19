@@ -125,7 +125,28 @@
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="carWidthInput"/>
+            <widget class="QDoubleSpinBox" name="carWidthInput">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>32</horstretch>
+               <verstretch>32</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>64</width>
+               <height>48</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_6">
@@ -146,7 +167,22 @@
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="carpetWidthInput"/>
+            <widget class="QDoubleSpinBox" name="carpetWidthInput">
+             <property name="minimumSize">
+              <size>
+               <width>64</width>
+               <height>48</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_7">
@@ -167,7 +203,22 @@
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="carToCarpetDistanceInput"/>
+            <widget class="QDoubleSpinBox" name="carToCarpetDistanceInput">
+             <property name="minimumSize">
+              <size>
+               <width>64</width>
+               <height>48</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_8">
@@ -188,7 +239,28 @@
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="carpetLengthInput"/>
+            <widget class="QDoubleSpinBox" name="carpetLengthInput">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>64</width>
+               <height>48</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QLabel" name="label_9">

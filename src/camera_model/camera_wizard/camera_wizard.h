@@ -13,6 +13,7 @@
 class CameraWizard : public QWizard {
     Q_OBJECT
     CarStatus *car_status;
+    std::shared_ptr<MeasurementPage> measurement_page;
 
    public:
     CameraWizard(CarStatus *car_status);
