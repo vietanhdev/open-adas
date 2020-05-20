@@ -31,6 +31,8 @@ class BirdViewModel {
                    float car_to_carpet_distance, float carpet_length,
                    FourPoints four_image_points);
     cv::Mat transformImage(const cv::Mat &img);
+    void transformPoints(const std::vector<cv::Point2f> &points, std::vector<cv::Point2f> &dst_points);
+    float getDistanceToCar(float y);
 
 };
 

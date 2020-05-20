@@ -3,12 +3,13 @@
 void BirdViewModel::calibrate(float car_width, float carpet_width,
                float car_to_carpet_distance, float carpet_length,
                FourPoints four_image_points) {
+
     std::lock_guard<std::mutex> guard(mtx);
 
     width_pixel_to_meter_ratio =
-        carpet_width / four_points.tr.x - four_points.tl.x;
+        carpet_width / (four_points.tr.x - four_points.tl.x);
     height_pixel_to_meter_ratio =
-        carpet_length / four_points.br.y - four_points.tr.y;
+        carpet_length / (four_points.br.y - four_points.tr.y);
     car_y_in_pixel =
         four_points.br.y + car_to_carpet_distance / height_pixel_to_meter_ratio;
     car_width_in_pixel = car_width / width_pixel_to_meter_ratio;
@@ -38,4 +39,26 @@ cv::Mat BirdViewModel::transformImage(const cv::Mat &img) {
     cv::warpPerspective(img, dst, birdview_transform_matrix,
                         cv::Size(birdview_img_width, birdview_img_height));
     return dst;
+}
+
+
+void BirdViewModel::transformPoints(const std::vector<cv::Point2f> &points, std::vector<cv::Point2f> &dst_points) {
+    std::lock_guard<std::mutex> guard(mtx);
+
+    birdview_transform_matrix = cv::getPerspectiveTransform(
+        four_image_points.to_vector(),
+        four_points.to_vector());
+
+    perspectiveTransform(points, dst_points, birdview_transform_matrix);
+
+}
+
+float BirdViewModel::getDistanceToCar(float y) {
+    std::lock_guard<std::mutex> guard(mtx);
+    float distance = (car_y_in_pixel - y) * height_pixel_to_meter_ratio;
+    if (distance < 0) {
+        distance = -1;
+    }
+    // std::cout << y << " " << car_y_in_pixel << std::endl;
+    return distance;
 }

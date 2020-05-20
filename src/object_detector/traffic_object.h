@@ -11,6 +11,7 @@ class TrafficObject {
     Box bbox;
     int classId;
     float prob;
+    float distance_to_my_car = -1;
     std::string traffic_sign_type{""}; // Extended type. For traffic sign
 
     TrafficObject(const Detection &detection, std::string traffic_sign_type) : 

@@ -107,10 +107,10 @@ void MainWindow::objectDetectionThread(
         Timer::time_point_t begin_time = Timer::getCurrentTime();
         std::vector<TrafficObject> objects = object_detector->detect(image, original_image);
         car_status->setObjectDetectionTime(Timer::calcTimePassed(begin_time));
-        car_status->setDetectedObjects(objects);
-
         traffic_sign_monitor.updateTrafficSign(objects);
-        collision_warning->updateData(image, objects);
+        collision_warning->calculateDistance(image, objects);
+
+        car_status->setDetectedObjects(objects);
 
     }
 }

@@ -13,7 +13,7 @@ class CollisionWarning {
 
     std::mutex mtx;
     std::condition_variable cv;
-    bool new_data_avaiable = false;
+    bool new_data_available = false;
 
     cv::Mat img;
     std::vector<TrafficObject> objects;
@@ -26,6 +26,7 @@ class CollisionWarning {
     static void processingThread(CollisionWarning* this_ptr);
 
     void updateData(const cv::Mat &img, const std::vector<TrafficObject> &objects);
+    void calculateDistance(const cv::Mat &img, std::vector<TrafficObject> &objects);
 };
 
 #endif  // COLLISION_WARNING_H

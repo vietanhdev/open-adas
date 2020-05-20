@@ -90,7 +90,7 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
 {
 
     int box_think = (img.rows+img.cols) * .001 ;
-    float label_scale = 0.8;
+    float label_scale = 0.75;
     int base_line ;
     for (const auto &item : result) {
         std::string label;
@@ -101,8 +101,7 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
             continue;
         }
         
-        stream << class_name << ":" << item.traffic_sign_type;
-        // stream << " " << item.prob << std::endl;
+        stream << std::fixed << std::setprecision(1) << item.distance_to_my_car;
         std::getline(stream,label);
 
         auto size = cv::getTextSize(label,cv::FONT_HERSHEY_PLAIN,label_scale,1,&base_line);
@@ -112,8 +111,8 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
                       cv::Scalar(0,255,0), box_think*2, 8, 0);
         
         cv::putText(img,label,
-                cv::Point(item.bbox.x2,item.bbox.y2 - size.height),
-                cv::FONT_HERSHEY_PLAIN, label_scale , cv::Scalar(0,0,255), box_think/2, 8, 0);
+                cv::Point(item.bbox.x1, item.bbox.y2 - size.height),
+                cv::FONT_HERSHEY_PLAIN, label_scale , cv::Scalar(0,0,255), box_think/1.2, 8, 0);
 
     }
 }
