@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->addItem(&pixmap);
 
-    camera_model = std::make_unique<CameraModel>(&car_status);
+    camera_model = std::make_shared<CameraModel>(&car_status);
 
     // Connect buttons
     connect(ui->simulationBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
@@ -22,11 +22,14 @@ MainWindow::MainWindow(QWidget *parent)
     object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
     car_gps_reader = std::make_shared<CarGPSReader>();
+    collision_warning = std::make_shared<CollisionWarning>(camera_model);
 
     // Start processing threads
     std::thread od_thread(&MainWindow::objectDetectionThread, 
         object_detector,
-        &car_status);
+        &car_status,
+        collision_warning.get()
+        );
     od_thread.detach();
 
 #ifndef DISABLE_LANE_DETECTOR
@@ -40,8 +43,12 @@ MainWindow::MainWindow(QWidget *parent)
                            car_gps_reader);
     cpr_thread.detach();
 
-    std::thread speed_warning_thread(&      MainWindow::speedWarningThread, &car_status, this);
+    std::thread speed_warning_thread(&MainWindow::speedWarningThread, &car_status, this);
     speed_warning_thread.detach();
+
+    // std::thread collision_warning_thread(&CollisionWarning::processingThread, collision_warning.get());
+    // collision_warning_thread.detach();
+
 }
 
 void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_window) {
@@ -66,7 +73,7 @@ void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_wind
             main_window->alert("traffic_signs/warning_overspeed.wav");
         }
 
-        std::this_thread::sleep_for(std::chrono::microseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     }
     
@@ -74,7 +81,8 @@ void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_wind
 
 void MainWindow::objectDetectionThread(
     std::shared_ptr<ObjectDetector> object_detector,
-    CarStatus *car_status) {
+    CarStatus *car_status,
+    CollisionWarning *collision_warning) {
     cv::Mat image;
     cv::Mat original_image;
 
@@ -100,7 +108,9 @@ void MainWindow::objectDetectionThread(
         std::vector<TrafficObject> objects = object_detector->detect(image, original_image);
         car_status->setObjectDetectionTime(Timer::calcTimePassed(begin_time));
         car_status->setDetectedObjects(objects);
+
         traffic_sign_monitor.updateTrafficSign(objects);
+        collision_warning->updateData(image, objects);
 
     }
 }
@@ -136,6 +146,7 @@ void MainWindow::carPropReaderThread(
     std::shared_ptr<CarGPSReader> car_gps_reader) {
     while (true) {
         car_gps_reader->updateProps();
+        this_thread::sleep_for(chrono::milliseconds(2000));
     }
 }
 

@@ -51,17 +51,22 @@ CameraWizard::CameraWizard(CarStatus *car_status) {
 
 void CameraWizard::onFinishButtonClicked() {
 
-    cout << "carWidth " << field("carWidth").toFloat() << endl;
-    cout << "carpetWidth " << field("carpetWidth").toFloat() << endl;
-    cout << "carToCarpetDistance " << field("carToCarpetDistance").toFloat() << endl;
-    cout << "carpetLength " << field("carpetLength").toFloat() << endl;
-    cout << "tl_x " << field("tl_x").toFloat() << endl;
-    cout << "tl_y " << field("tl_y").toFloat() << endl;
-    cout << "tr_x " << field("tr_x").toFloat() << endl;
-    cout << "tr_y " << field("tr_y").toFloat() << endl;
-    cout << "br_x " << field("br_x").toFloat() << endl;
-    cout << "br_y " << field("br_y").toFloat() << endl;
-    cout << "bl_x " << field("bl_x").toFloat() << endl;
-    cout << "bl_y " << field("bl_y").toFloat() << endl;
+    float car_width = field("car_width").toFloat();
+    float carpet_width = field("carpet_width").toFloat();
+    float car_to_carpet_distance = field("car_to_carpet_distance").toFloat();
+    float carpet_length = field("carpet_length").toFloat();
+    float tl_x = field("tl_x").toFloat();
+    float tl_y = field("tl_y").toFloat();
+    float tr_x = field("tr_x").toFloat();
+    float tr_y = field("tr_y").toFloat();
+    float br_x = field("br_x").toFloat();
+    float br_y = field("br_y").toFloat();
+    float bl_x = field("bl_x").toFloat();
+    float bl_y = field("bl_y").toFloat();
+
+    emit updateCameraModel(
+        car_width, carpet_width, car_to_carpet_distance, carpet_length,
+        tl_x, tl_y, tr_x, tr_y, br_x, br_y, bl_x, bl_y
+    );
    
 }

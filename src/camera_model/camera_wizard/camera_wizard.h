@@ -21,6 +21,16 @@ class CameraWizard : public QWizard {
    private slots:
     void onFinishButtonClicked();
 
+   signals:
+    void updateCameraModel(
+        float car_width, float carpet_width, 
+        float car_to_carpet_distance, float carpet_length,
+        float tl_x, float tl_y,
+        float tr_x, float tr_y,
+        float br_x, float br_y,
+        float bl_x, float bl_y
+    );
+
 };
 
 #endif

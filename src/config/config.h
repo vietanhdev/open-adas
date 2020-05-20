@@ -39,7 +39,7 @@
 #define OVERSPEED_WARNING_INTERVAL 15 * 1000
 
 
-#define SMARTCAM_SIMULATION_LIST \
-    "data/sim_list.txt"
+#define SMARTCAM_SIMULATION_LIST "data/sim_list.txt"
+#define SMARTCAM_CAMERA_CALIB_FILE "data/camera_calib.txt"
 
 #endif

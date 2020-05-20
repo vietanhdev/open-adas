@@ -31,14 +31,30 @@
 #include "car_status.h"
 #include "config.h"
 #include "filesystem_include.h"
+#include "birdview_model.h"
+#include "utils.h"
 
-class CameraModel {
+class CameraModel : public QObject {
+    Q_OBJECT
     CarStatus *car_status;
     std::unique_ptr<CameraWizard> camera_wizard;
+    BirdViewModel birdview_model;
 
    public:
     explicit CameraModel(CarStatus *car_status);
     void showCameraWizard();
+    void readCalibFile(std::string file_path);
+    BirdViewModel *getBirdViewModel();
+
+   public slots:
+    void updateCameraModel(
+        float car_width, float carpet_width, 
+        float car_to_carpet_distance, float carpet_length,
+        float tl_x, float tl_y,
+        float tr_x, float tr_y,
+        float br_x, float br_y,
+        float bl_x, float bl_y
+    );
 };
 
 #endif

@@ -54,11 +54,17 @@
        <property name="whatsThis">
         <string notr="true"/>
        </property>
+       <property name="showDropIndicator" stdset="0">
+        <bool>false</bool>
+       </property>
        <property name="iconSize">
         <size>
          <width>80</width>
          <height>80</height>
         </size>
+       </property>
+       <property name="movement">
+        <enum>QListView::Static</enum>
        </property>
        <property name="flow">
         <enum>QListView::LeftToRight</enum>
@@ -76,6 +82,9 @@
         <enum>QListView::IconMode</enum>
        </property>
        <property name="uniformItemSizes">
+        <bool>true</bool>
+       </property>
+       <property name="sortingEnabled">
         <bool>true</bool>
        </property>
       </widget>

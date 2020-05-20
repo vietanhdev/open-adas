@@ -80,7 +80,6 @@ include_directories(
 
     "src/warning_controller"
     
-    ${SDL2_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
 )
 
@@ -99,7 +98,7 @@ add_subdirectory(src/lane_detector)
 add_subdirectory(src/traffic_sign_classifier)
 
 # Build warning controller
-add_subdirectory(src/warning_controller)
+# add_subdirectory(src/warning_controller)
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -125,7 +124,7 @@ add_executable(${PROJECT_NAME}
     "src/simulation/simulation.ui"
 
     "src/camera_model/camera_model.cpp"
-
+    "src/camera_model/birdview_model.cpp"
     "src/camera_model/camera_wizard/camera_wizard.cpp"
     "src/camera_model/camera_wizard/instruction_page/instruction_page.cpp"
     "src/camera_model/camera_wizard/instruction_page/instruction_page.ui"
@@ -133,6 +132,9 @@ add_executable(${PROJECT_NAME}
     "src/camera_model/camera_wizard/measurement_page/measurement_page.ui"
     "src/camera_model/camera_wizard/four_point_select_page/four_point_select_page.cpp"
     "src/camera_model/camera_wizard/four_point_select_page/four_point_select_page.ui"
+
+    "src/warning_controller/collision_warning.cpp"
+    "src/warning_controller/traffic_sign_monitor.cpp"
 )
 
 ADD_LIBRARY(
@@ -156,7 +158,6 @@ target_link_libraries(${PROJECT_NAME}
     lane_detector
     car_status
     car_gps
-    warning_controller
 )
 
 # Copy files

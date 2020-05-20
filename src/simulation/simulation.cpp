@@ -290,7 +290,9 @@ void Simulation::stopPlaying() {
         setPlaying(false);
 
         // IMPORTANT!!! Wait for playing thread to stop
-        while (playing_thread_running);
+        while (playing_thread_running) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
 
     }
 }

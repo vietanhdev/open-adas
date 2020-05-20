@@ -33,6 +33,7 @@
 #include "speed_limit.h"
 #include "traffic_sign_images.h"
 #include "camera_model.h"
+#include "collision_warning.h"
 
 namespace Ui {
 class MainWindow;
@@ -61,7 +62,7 @@ class MainWindow : public QMainWindow {
 
    private:
     Ui::MainWindow *ui;
-    std::unique_ptr<CameraModel> camera_model;
+    std::shared_ptr<CameraModel> camera_model;
 
     // Input source
     InputSource input_source;
@@ -73,6 +74,7 @@ class MainWindow : public QMainWindow {
     std::shared_ptr<ObjectDetector> object_detector;
     std::shared_ptr<LaneDetector> lane_detector;
     std::shared_ptr<CarGPSReader> car_gps_reader;
+    std::shared_ptr<CollisionWarning> collision_warning;
 
     MaxSpeedLimit speed_limit;
     std::mutex speed_limit_mutex;
@@ -90,7 +92,8 @@ class MainWindow : public QMainWindow {
    private:
 
     static void objectDetectionThread(
-        std::shared_ptr<ObjectDetector> object_detector, CarStatus *);
+        std::shared_ptr<ObjectDetector> object_detector, CarStatus *,
+        CollisionWarning *collision_warning);
     static void laneDetectionThread(
         std::shared_ptr<LaneDetector> lane_detector, CarStatus *);
     static void carPropReaderThread(

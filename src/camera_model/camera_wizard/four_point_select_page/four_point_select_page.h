@@ -10,7 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include "ui_four_point_select_page.h"
 #include "car_status.h"
-#include "../point.h"
+// #include "../point.h"
 
 class FourPointSelectPage : public QWizardPage {
 
@@ -26,7 +26,7 @@ class FourPointSelectPage : public QWizardPage {
     std::mutex image_mutex;
 
     // Top-left, top-right, bottom-right, bottom-left
-    std::vector<Point> points;
+    std::vector<cv::Point2f> points;
     int current_point_id;
     std::string current_point_title;
     std::mutex points_mutex;

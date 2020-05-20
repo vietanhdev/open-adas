@@ -1,6 +1,7 @@
 #include "four_point_select_page.h"
 
 using namespace std;
+using namespace cv;
 
 FourPointSelectPage::FourPointSelectPage(QWidget *parent, CarStatus *car_status) :
     QWizardPage(parent),
@@ -28,19 +29,19 @@ FourPointSelectPage::FourPointSelectPage(QWidget *parent, CarStatus *car_status)
 
         float tl_x = 0.3, tl_y = 0.3;
         tl_x_box->setValue(tl_x); tl_y_box->setValue(tl_y);
-        points.push_back(Point(tl_x, tl_y));
+        points.push_back(Point2f(tl_x, tl_y));
 
         float tr_x = 0.7, tr_y = 0.3;
         tr_x_box->setValue(tr_x); tr_y_box->setValue(tr_y);
-        points.push_back(Point(tr_x, tr_y));
+        points.push_back(Point2f(tr_x, tr_y));
 
         float br_x = 0.7, br_y = 0.7;
         br_x_box->setValue(br_x); br_y_box->setValue(br_y);
-        points.push_back(Point(br_x, br_y));
+        points.push_back(Point2f(br_x, br_y));
 
         float bl_x = 0.3, bl_y = 0.7;
         bl_x_box->setValue(bl_x); bl_y_box->setValue(bl_y);
-        points.push_back(Point(bl_x, bl_y));
+        points.push_back(Point2f(bl_x, bl_y));
 
         current_point_id = 0;
         current_point_title = "Top-Left";
