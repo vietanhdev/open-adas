@@ -67,6 +67,10 @@ void CollisionWarning::calculateDistance(const cv::Mat &img, std::vector<Traffic
 
 bool CollisionWarning::isInDangerSituation(const cv::Size &img_size,        
     std::vector<TrafficObject> &objects) {
+        
+    if (car_status->getCarSpeed() < MIN_SPEED_FOR_COLLISION_WARNING) {
+        return false;
+    }
 
     float danger_distance = car_status->getDangerDistance();
     cv::Mat danger_zone = camera_model->getBirdViewModel()->getDangerZone(img_size, danger_distance);
