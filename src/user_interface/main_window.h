@@ -87,18 +87,18 @@ class MainWindow : public QMainWindow {
     std::atomic<bool> is_alert = true;
 
    public:
-    CarStatus car_status;
+    std::shared_ptr<CarStatus> car_status;
 
    private:
 
     static void objectDetectionThread(
-        std::shared_ptr<ObjectDetector> object_detector, CarStatus *,
+        std::shared_ptr<ObjectDetector> object_detector, std::shared_ptr<CarStatus> ,
         CollisionWarning *collision_warning);
     static void laneDetectionThread(
-        std::shared_ptr<LaneDetector> lane_detector, CarStatus *);
+        std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus> );
     static void carPropReaderThread(
         std::shared_ptr<CarGPSReader> car_gps_reader);
-    static void speedWarningThread(CarStatus *car_status, MainWindow *main_window);
+    static void speedWarningThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window);
 
    public:
     void setInputSource(InputSource input_source);

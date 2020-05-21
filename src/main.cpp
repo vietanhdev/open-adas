@@ -67,9 +67,9 @@ int main(int argc, char *argv[]) {
         QWidget *simulation;
 
         if (input_video_path == "" && input_data_path == "") {
-            simulation = new Simulation(&main_window->car_status);
+            simulation = new Simulation(main_window->car_status);
         } else {
-            simulation = new Simulation(&main_window->car_status, input_video_path, input_data_path);
+            simulation = new Simulation(main_window->car_status, input_video_path, input_data_path);
         }
         
         // Set simulation

@@ -22,8 +22,8 @@ Timer::time_point_t CarStatus::getStartTime() {
 void CarStatus::setCurrentImage(const cv::Mat &img) {
     std::lock_guard<std::mutex> guard(current_img_mutex);
     cv::Mat resized = resizeByMaxSize(img, IMG_MAX_SIZE);
-    current_img = resized.clone();
-    current_img_origin_size = img.clone();
+    current_img = resized;
+    img.copyTo(current_img_origin_size);
 }
 
 cv::Mat CarStatus::getCurrentImage() {
@@ -31,10 +31,15 @@ cv::Mat CarStatus::getCurrentImage() {
     return current_img.clone();
 }
 
+void CarStatus::getCurrentImage(cv::Mat &image) {
+    std::lock_guard<std::mutex> guard(current_img_mutex);
+    return current_img.copyTo(image);
+}
+
 void CarStatus::getCurrentImage(cv::Mat &image, cv::Mat &original_image) {
     std::lock_guard<std::mutex> guard(current_img_mutex);
-    image = current_img.clone();
-    original_image = current_img_origin_size.clone();
+    current_img.copyTo(image);
+    current_img_origin_size.copyTo(original_image);
 }
 
 

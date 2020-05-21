@@ -36,7 +36,7 @@ QWizardPage *createFinishPage()
 }
 
 
-CameraWizard::CameraWizard(CarStatus *car_status) {
+CameraWizard::CameraWizard(std::shared_ptr<CarStatus> car_status) {
     measurement_page = std::make_shared<MeasurementPage>(nullptr);
     this->car_status = car_status;
     this->addPage(createIntroPage());

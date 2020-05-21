@@ -12,11 +12,11 @@
 
 class CameraWizard : public QWizard {
     Q_OBJECT
-    CarStatus *car_status;
+    std::shared_ptr<CarStatus> car_status;
     std::shared_ptr<MeasurementPage> measurement_page;
 
    public:
-    CameraWizard(CarStatus *car_status);
+    CameraWizard(std::shared_ptr<CarStatus> car_status);
 
    private slots:
     void onFinishButtonClicked();

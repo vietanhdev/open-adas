@@ -1,7 +1,10 @@
 #include "collision_warning.h"
 
-CollisionWarning::CollisionWarning(std::shared_ptr<CameraModel> camera_model) {
+CollisionWarning::CollisionWarning(std::shared_ptr<CameraModel> camera_model, 
+    std::shared_ptr<CarStatus> car_status
+) {
     this->camera_model = camera_model;
+    this->car_status = car_status;
 }
 
 void CollisionWarning::processingThread(CollisionWarning *this_ptr) {
@@ -24,7 +27,7 @@ void CollisionWarning::processingThread(CollisionWarning *this_ptr) {
 
 void CollisionWarning::updateData(const cv::Mat &img, const std::vector<TrafficObject> &objects) {
     std::unique_lock<std::mutex> lck(mtx);
-    this->img = img.clone();
+    img.copyTo(this->img);
     this->objects = objects;
     new_data_available = true;
     cv.notify_all();

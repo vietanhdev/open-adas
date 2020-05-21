@@ -4,7 +4,7 @@
 using namespace std;
 using namespace cv;
 
-CameraModel::CameraModel(CarStatus *car_status) {
+CameraModel::CameraModel(std::shared_ptr<CarStatus> car_status) {
 
     this->car_status = car_status;
     this->camera_wizard = std::make_unique<CameraWizard>(this->car_status);

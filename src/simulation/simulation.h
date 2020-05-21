@@ -50,14 +50,14 @@ class Simulation : public QWidget, private Ui::Simulation {
     std::mutex path_mutex;
     std::string video_path;
     std::string data_file_path;
-    CarStatus *car_status;
+    std::shared_ptr<CarStatus> car_status;
 
     std::vector<SimData> sim_data;
     std::vector<int> selected_sim_data_indices;
 
    public:
-    explicit Simulation(CarStatus *car_status, QWidget *parent = nullptr);
-    explicit Simulation(CarStatus *car_status, std::string input_video_path, std::string input_data_path, QWidget *parent = nullptr);
+    explicit Simulation(std::shared_ptr<CarStatus> car_status, QWidget *parent = nullptr);
+    explicit Simulation(std::shared_ptr<CarStatus> car_status, std::string input_video_path, std::string input_data_path, QWidget *parent = nullptr);
     void setupAndConnectComponents();
     void stopPlaying();
     void startPlaying();

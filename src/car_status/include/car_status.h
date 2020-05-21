@@ -57,6 +57,7 @@ class CarStatus {
     void setCurrentImage(const cv::Mat &img);
     void getCurrentImage(cv::Mat &image, cv::Mat &original_image);
     cv::Mat getCurrentImage();
+    void getCurrentImage(cv::Mat &image); // Better performance
 
     void setDetectedObjects(const std::vector<TrafficObject> &objects);
     std::vector<TrafficObject> getDetectedObjects();

@@ -42,14 +42,14 @@ void Simulation::setupAndConnectComponents() {
 
 }
 
-Simulation::Simulation(CarStatus *car_status, QWidget *parent)
+Simulation::Simulation(std::shared_ptr<CarStatus> car_status, QWidget *parent)
     : QWidget(parent) {
     setupAndConnectComponents();
     this->car_status = car_status;
 }
 
 
-Simulation::Simulation(CarStatus *car_status, std::string input_video_path, std::string input_data_path, QWidget *parent): QWidget(parent)  {
+Simulation::Simulation(std::shared_ptr<CarStatus> car_status, std::string input_video_path, std::string input_data_path, QWidget *parent): QWidget(parent)  {
     setupAndConnectComponents();
     setVideoPath(input_video_path);
     setDataFilePath(input_data_path);

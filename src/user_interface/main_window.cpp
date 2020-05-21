@@ -11,23 +11,23 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->addItem(&pixmap);
 
-    camera_model = std::make_shared<CameraModel>(&car_status);
-
     // Connect buttons
     connect(ui->simulationBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
     connect(ui->muteBtn, SIGNAL(released()), this, SLOT(toggleMute()));
     connect(ui->alertBtn, SIGNAL(released()), this, SLOT(toggleAlert()));
     connect(ui->setupBtn, SIGNAL(released()), this, SLOT(showCameraWizard()));
 
+    car_status = std::make_shared<CarStatus>();
+    camera_model = std::make_shared<CameraModel>(car_status);
     object_detector = std::make_shared<ObjectDetector>();
     lane_detector = std::make_shared<LaneDetector>();
     car_gps_reader = std::make_shared<CarGPSReader>();
-    collision_warning = std::make_shared<CollisionWarning>(camera_model);
+    collision_warning = std::make_shared<CollisionWarning>(camera_model, car_status);
 
     // Start processing threads
     std::thread od_thread(&MainWindow::objectDetectionThread, 
         object_detector,
-        &car_status,
+        car_status,
         collision_warning.get()
         );
     od_thread.detach();
@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
 #ifndef DISABLE_LANE_DETECTOR
     std::thread ld_thread(&MainWindow::laneDetectionThread, 
         lane_detector,
-        &car_status);
+        car_status);
     ld_thread.detach();
 #endif
 
@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
                            car_gps_reader);
     cpr_thread.detach();
 
-    std::thread speed_warning_thread(&MainWindow::speedWarningThread, &car_status, this);
+    std::thread speed_warning_thread(&MainWindow::speedWarningThread, car_status, this);
     speed_warning_thread.detach();
 
     // std::thread collision_warning_thread(&CollisionWarning::processingThread, collision_warning.get());
@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
-void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_window) {
+void MainWindow::speedWarningThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window) {
 
     while (true) {
 
@@ -81,8 +81,9 @@ void MainWindow::speedWarningThread(CarStatus *car_status, MainWindow *main_wind
 
 void MainWindow::objectDetectionThread(
     std::shared_ptr<ObjectDetector> object_detector,
-    CarStatus *car_status,
+    std::shared_ptr<CarStatus> car_status,
     CollisionWarning *collision_warning) {
+        
     cv::Mat image;
     cv::Mat original_image;
 
@@ -100,6 +101,7 @@ void MainWindow::objectDetectionThread(
         }
 
         car_status->getCurrentImage(image, original_image);
+
         if (image.empty()) {
             continue;
         }
@@ -116,10 +118,11 @@ void MainWindow::objectDetectionThread(
 }
 
 void MainWindow::laneDetectionThread(
-    std::shared_ptr<LaneDetector> lane_detector, CarStatus *car_status) {
+    std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus> car_status) {
     cv::Mat clone_img;
     while (true) {
-        clone_img = car_status->getCurrentImage();
+
+        car_status->getCurrentImage(clone_img);
         if (clone_img.empty()) {
             continue;
         }
@@ -172,22 +175,22 @@ void MainWindow::startVideoGrabber() {
     Mat draw_frame;
     Timer::time_point_t last_fps_show = Timer::getCurrentTime();
     Timer::time_duration_t object_detection_time =
-         car_status.getObjectDetectionTime();
+         car_status->getObjectDetectionTime();
     Timer::time_duration_t lane_detection_time =
-         car_status.getLaneDetectionTime();
+         car_status->getLaneDetectionTime();
     while (true) {
 
         // Processing
-        draw_frame = car_status.getCurrentImage();
+        car_status->getCurrentImage(draw_frame);
 
         if (!draw_frame.empty()) {
 
-            std::vector<LaneLine> detected_lane_lines = car_status.getDetectedLaneLines();
+            std::vector<LaneLine> detected_lane_lines = car_status->getDetectedLaneLines();
                 
             if (!detected_lane_lines.empty()) {
 
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
-                cv::Mat lane_line_mask_copy = car_status.getLineMask();
+                cv::Mat lane_line_mask_copy = car_status->getLineMask();
                 #endif
 
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINES
@@ -214,9 +217,9 @@ void MainWindow::startVideoGrabber() {
 
                 if (Timer::calcTimePassed(last_fps_show) > 1000) {
                     object_detection_time =
-                        car_status.getObjectDetectionTime();
+                        car_status->getObjectDetectionTime();
                     lane_detection_time =
-                        car_status.getLaneDetectionTime();
+                        car_status->getLaneDetectionTime();
                     last_fps_show = Timer::getCurrentTime();
                 }
                 
@@ -240,7 +243,7 @@ void MainWindow::startVideoGrabber() {
             cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,10), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
             cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
 
-            std::vector<TrafficObject> detected_objects = car_status.getDetectedObjects();
+            std::vector<TrafficObject> detected_objects = car_status->getDetectedObjects();
 
             if (!detected_objects.empty()) {
                 object_detector->drawDetections(
@@ -261,7 +264,7 @@ void MainWindow::startVideoGrabber() {
             pixmap.setPixmap(QPixmap::fromImage(qimg.rgbSwapped()));
             ui->graphicsView->fitInView(&pixmap, Qt::KeepAspectRatio);
 
-            ui->speedLabel->setText(QString("Speed: ") + QString::number(car_status.getCarSpeed()) + QString(" km/h"));
+            ui->speedLabel->setText(QString("Speed: ") + QString::number(car_status->getCarSpeed()) + QString(" km/h"));
         }
 
         qApp->processEvents();

@@ -15,11 +15,11 @@ class TrafficSignMonitor {
     Timer::time_point_t last_no_traffic_sign_time;
     bool sign_existing = false;
 
-    CarStatus *car_status;
+    std::shared_ptr<CarStatus> car_status;
 
    public:
     
-    TrafficSignMonitor(CarStatus *car_status);
+    TrafficSignMonitor(std::shared_ptr<CarStatus> car_status);
 
     // Get largest traffic sign from traffic objects
     // Return sign type for largest sign or empty string if no sign

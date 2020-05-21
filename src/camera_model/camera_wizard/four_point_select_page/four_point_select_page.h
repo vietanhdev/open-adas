@@ -18,7 +18,7 @@ class FourPointSelectPage : public QWizardPage {
 
    private:
     Ui::FourPointSelectPage *ui;
-    CarStatus *car_status;
+    std::shared_ptr<CarStatus> car_status;
 
     const std::vector<std::string> prefix = {"tl_", "tr_", "br_", "bl_"};
 
@@ -34,8 +34,7 @@ class FourPointSelectPage : public QWizardPage {
     float tl_x;
 
    public:
-    FourPointSelectPage(QWidget*, CarStatus *car_status);
-    void setImage(const cv::Mat &image);
+    FourPointSelectPage(QWidget*, std::shared_ptr<CarStatus> car_status);
     cv::Mat getImage();
     void updateVisualization();
     void pointToScrollbar();
@@ -43,6 +42,11 @@ class FourPointSelectPage : public QWizardPage {
    private:
     void selectPoint(std::string title, int point_id);
     QDoubleSpinBox *getDummyDoubleSpinBox();
+    void getLinePointinImageBorder(const cv::Point &p1_in,
+                                                    const cv::Point &p2_in,
+                                                    cv::Point &p1_out,
+                                                    cv::Point &p2_out, int rows,
+                                                    int cols);
 
    private slots:
     void getNewImageFromCam();

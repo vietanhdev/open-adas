@@ -2,7 +2,7 @@
 
 using namespace std;
 
-TrafficSignMonitor::TrafficSignMonitor(CarStatus *car_status) {
+TrafficSignMonitor::TrafficSignMonitor(std::shared_ptr<CarStatus> car_status) {
     this->car_status = car_status;
 }
 

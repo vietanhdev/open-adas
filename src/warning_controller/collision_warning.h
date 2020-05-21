@@ -8,6 +8,7 @@
 #include <condition_variable>
 #include "traffic_object.h"
 #include "camera_model.h"
+#include "car_status.h"
 
 class CollisionWarning {
 
@@ -18,10 +19,11 @@ class CollisionWarning {
     cv::Mat img;
     std::vector<TrafficObject> objects;
     std::shared_ptr<CameraModel> camera_model;
+    std::shared_ptr<CarStatus> car_status;
 
    public:
 
-    CollisionWarning(std::shared_ptr<CameraModel> camera_model);
+    CollisionWarning(std::shared_ptr<CameraModel> camera_model, std::shared_ptr<CarStatus> car_status);
 
     static void processingThread(CollisionWarning* this_ptr);
 

@@ -36,12 +36,12 @@
 
 class CameraModel : public QObject {
     Q_OBJECT
-    CarStatus *car_status;
+    std::shared_ptr<CarStatus> car_status;
     std::unique_ptr<CameraWizard> camera_wizard;
     BirdViewModel birdview_model;
 
    public:
-    explicit CameraModel(CarStatus *car_status);
+    explicit CameraModel(std::shared_ptr<CarStatus> car_status);
     void showCameraWizard();
     void readCalibFile(std::string file_path);
     BirdViewModel *getBirdViewModel();
