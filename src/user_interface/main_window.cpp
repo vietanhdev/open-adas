@@ -110,8 +110,11 @@ void MainWindow::objectDetectionThread(
         std::vector<TrafficObject> objects = object_detector->detect(image, original_image);
         car_status->setObjectDetectionTime(Timer::calcTimePassed(begin_time));
         traffic_sign_monitor.updateTrafficSign(objects);
-        collision_warning->calculateDistance(image, objects);
 
+        if (SHOW_DISTANCES) {
+            collision_warning->calculateDistance(image, objects);
+        }   
+        
         car_status->setDetectedObjects(objects);
 
     }
@@ -239,6 +242,13 @@ void MainWindow::startVideoGrabber() {
                 #endif
                 
             }
+
+            float danger_distance = car_status->getCarSpeed() / 3.6 * 1.5;
+            cv::Mat danger_zone = camera_model->getBirdViewModel()->getDangerZone(draw_frame.size(), danger_distance);
+            cv::Mat rgb_danger_zone = cv::Mat::zeros(draw_frame.size(), CV_8UC3);
+            rgb_danger_zone.setTo(Scalar(0, 0, 255), danger_zone > 0.5);
+            cv::addWeighted(draw_frame, 1, rgb_danger_zone, 0.3, 0,
+                                    draw_frame);
 
             cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,10), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
             cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);

@@ -101,7 +101,10 @@ void ObjectDetector::drawDetections(const std::vector<TrafficObject> & result,cv
             continue;
         }
         
-        stream << std::fixed << std::setprecision(1) << item.distance_to_my_car;
+
+        if (item.distance_to_my_car != -1)
+            stream << std::fixed << std::setprecision(1) << item.distance_to_my_car;
+
         std::getline(stream,label);
 
         auto size = cv::getTextSize(label,cv::FONT_HERSHEY_PLAIN,label_scale,1,&base_line);

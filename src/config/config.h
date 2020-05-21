@@ -10,6 +10,7 @@
 // #define DEBUG_LANE_DETECTOR_SHOW_LINES
 #define DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
 #define DEBUG_SHOW_FPS
+#define SHOW_DISTANCES true
 
 #define SMARTCAM_OBJECT_DETECTION_MODEL \
     "models/object_detection/ctdet_bdd_resnet18_384.onnx"
