@@ -56,9 +56,6 @@ int main(int argc, char *argv[]) {
     MainWindow *main_window = new MainWindow;
     main_window->showFullScreen();
 
-    // Prevent multithreading error on OpenCV
-    // TODO: Fix this bug without setting n_threads to 1
-    cv::setNumThreads(1);
 
     // Set input source and start camera getter
     if (input_source == "simulation") {
