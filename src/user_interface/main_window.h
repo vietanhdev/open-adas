@@ -82,8 +82,11 @@ class MainWindow : public QMainWindow {
     MaxSpeedLimit speed_limit;
     std::mutex speed_limit_mutex;
 
+    std::atomic<bool> is_warning;
+
     // Images
     TrafficSignImages traffic_sign_images;
+    cv::Mat warning_icon;
 
     // Audio
     std::atomic<bool> is_mute = false;

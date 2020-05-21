@@ -11,6 +11,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->addItem(&pixmap);
 
+    warning_icon = cv::imread("images/warn.png");
+    cv::resize(warning_icon, warning_icon, cv::Size(48, 48));
+
     // Connect buttons
     connect(ui->simulationBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
     connect(ui->muteBtn, SIGNAL(released()), this, SLOT(toggleMute()));
@@ -50,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window) {
 
+    Timer::time_point_t last_warning_time;
+
     while (true) {
 
         MaxSpeedLimit speed_limit = car_status->getMaxSpeedLimit();
@@ -74,7 +79,13 @@ void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, Mai
         if (collision_warning_status.is_warning
             && collision_warning_status.should_notify
         ) {
-            main_window->alert("warning.ogg");
+            main_window->alert("warning.wav");
+            main_window->is_warning = true;
+            last_warning_time = Timer::getCurrentTime();
+        } else if (!collision_warning_status.is_warning &&
+            Timer::calcTimePassed(last_warning_time) > 3000
+        ) {
+            main_window->is_warning = false;
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -274,6 +285,13 @@ void MainWindow::startVideoGrabber() {
             MaxSpeedLimit speed_limit = getSpeedLimit();
             if (speed_limit.speed_limit > 0) {
                 ml_cam::place_overlay(draw_frame, traffic_sign_images.getSpeedSignImage(speed_limit.speed_limit), 32, 32);
+            }
+
+            // Show warning
+            if (is_warning) {
+                int x = draw_frame.cols - warning_icon.cols - 50;
+                int y = draw_frame.rows - warning_icon.rows - 50;
+                ml_cam::place_overlay(draw_frame, warning_icon, x, y);
             }
     
             // ### Show current image
