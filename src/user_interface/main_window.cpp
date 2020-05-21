@@ -159,8 +159,10 @@ void MainWindow::carPropReaderThread(
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::playAudio(std::string audio_file) {
-    if (!is_mute)
+    if (!is_mute && Timer::calcTimePassed(last_audio_time) > 3000) {
         system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
+        last_audio_time = Timer::getCurrentTime();
+    }
 }
 
 void MainWindow::alert(std::string audio_file) {
@@ -216,18 +218,6 @@ void MainWindow::startVideoGrabber() {
                     }
                 #endif
 
-                #ifdef DEBUG_SHOW_FPS
-
-                if (Timer::calcTimePassed(last_fps_show) > 1000) {
-                    object_detection_time =
-                        car_status->getObjectDetectionTime();
-                    lane_detection_time =
-                        car_status->getLaneDetectionTime();
-                    last_fps_show = Timer::getCurrentTime();
-                }
-                
-                #endif
-
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINES
                     if (!detected_line_img_copy.empty()) {
                         cv::namedWindow("Detected Lines", cv::WINDOW_NORMAL);
@@ -250,8 +240,21 @@ void MainWindow::startVideoGrabber() {
             cv::addWeighted(draw_frame, 1, rgb_danger_zone, 0.3, 0,
                                     draw_frame);
 
-            cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,10), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
-            cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
+            #ifdef DEBUG_SHOW_FPS
+
+                if (Timer::calcTimePassed(last_fps_show) > 1000) {
+                    object_detection_time =
+                        car_status->getObjectDetectionTime();
+                    lane_detection_time =
+                        car_status->getLaneDetectionTime();
+                    last_fps_show = Timer::getCurrentTime();
+                }
+
+                cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,10), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
+                cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
+                
+            #endif
+            
 
             std::vector<TrafficObject> detected_objects = car_status->getDetectedObjects();
 
