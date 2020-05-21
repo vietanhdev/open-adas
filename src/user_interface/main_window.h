@@ -34,6 +34,7 @@
 #include "traffic_sign_images.h"
 #include "camera_model.h"
 #include "collision_warning.h"
+#include "collision_warning_status.h"
 
 namespace Ui {
 class MainWindow;
@@ -60,9 +61,11 @@ class MainWindow : public QMainWindow {
     void toggleAlert();
     void showCameraWizard();
 
+   public:
+    std::shared_ptr<CameraModel> camera_model;
+
    private:
     Ui::MainWindow *ui;
-    std::shared_ptr<CameraModel> camera_model;
 
     // Input source
     InputSource input_source;
@@ -99,7 +102,7 @@ class MainWindow : public QMainWindow {
         std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus> );
     static void carPropReaderThread(
         std::shared_ptr<CarGPSReader> car_gps_reader);
-    static void speedWarningThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window);
+    static void warningMonitorThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window);
 
    public:
     void setInputSource(InputSource input_source);

@@ -42,10 +42,11 @@ void Simulation::setupAndConnectComponents() {
 
 }
 
-Simulation::Simulation(std::shared_ptr<CarStatus> car_status, QWidget *parent)
+Simulation::Simulation(std::shared_ptr<CarStatus> car_status, std::shared_ptr<CameraModel> camera_model, QWidget *parent)
     : QWidget(parent) {
     setupAndConnectComponents();
     this->car_status = car_status;
+    this->camera_model = camera_model;
 }
 
 
@@ -139,6 +140,29 @@ int Simulation::readSimulationData(std::string video_path, std::string data_file
                     break;
                 }
             }
+        } else if (line == "CameraCalibration") {
+
+            float car_width; float carpet_width; 
+            float car_to_carpet_distance; float carpet_length;
+            float tl_x; float tl_y;
+            float tr_x; float tr_y;
+            float br_x; float br_y;
+            float bl_x; float bl_y;
+
+            std::string line;
+            data_file >> line >> car_width;
+            data_file >> line >> carpet_width;
+            data_file >> line >> car_to_carpet_distance;
+            data_file >> line >> carpet_length;
+            data_file >> line >> tl_x >> line >> tl_y;
+            data_file >> line >> tr_x >> line >> tr_y;
+            data_file >> line >> br_x >> line >> br_y;
+            data_file >> line >> bl_x >> line >> bl_y;
+
+            camera_model->updateCameraModel(
+                car_width, carpet_width, car_to_carpet_distance, carpet_length,
+                tl_x, tl_y, tr_x, tr_y, br_x, br_y, bl_x, bl_y);
+
         }
 
         if (sim_data.begin_frame < 0) {

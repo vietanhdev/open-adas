@@ -30,7 +30,7 @@
 #include "simulation_data.h"
 #include "car_status.h"
 #include "filesystem_include.h"
-
+#include "camera_model.h"
 
 struct SimData {
     std::string video_path;
@@ -51,12 +51,13 @@ class Simulation : public QWidget, private Ui::Simulation {
     std::string video_path;
     std::string data_file_path;
     std::shared_ptr<CarStatus> car_status;
+    std::shared_ptr<CameraModel> camera_model;
 
     std::vector<SimData> sim_data;
     std::vector<int> selected_sim_data_indices;
 
    public:
-    explicit Simulation(std::shared_ptr<CarStatus> car_status, QWidget *parent = nullptr);
+    explicit Simulation(std::shared_ptr<CarStatus> car_status, std::shared_ptr<CameraModel> camera_model, QWidget *parent = nullptr);
     explicit Simulation(std::shared_ptr<CarStatus> car_status, std::string input_video_path, std::string input_data_path, QWidget *parent = nullptr);
     void setupAndConnectComponents();
     void stopPlaying();

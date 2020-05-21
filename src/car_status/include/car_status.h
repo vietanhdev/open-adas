@@ -12,6 +12,7 @@
 #include "object_detector.h"
 #include "timer.h"
 #include "speed_limit.h"
+#include "collision_warning_status.h"
 
 class CarStatus {
    private:
@@ -48,6 +49,10 @@ class CarStatus {
     MaxSpeedLimit speed_limit;
     std::mutex speed_limit_mutex;
 
+    // Collision warning
+    CollisionWarningStatus collision_warning_status;
+    std::mutex collision_warning_status_mutex;
+
    public:
 
     CarStatus();
@@ -75,7 +80,11 @@ class CarStatus {
     cv::Mat getReducedLinesViz();
 
     float getCarSpeed();
+    float getDangerDistance();
     void setCarSpeed(float speed);
+
+    void setCollisionWarning(bool is_warning);
+    CollisionWarningStatus getCollisionWarning();
 
     cv::Mat resizeByMaxSize(const cv::Mat &img, int max_size);
 

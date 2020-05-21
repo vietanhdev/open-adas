@@ -2,8 +2,9 @@
 #define SPEED_LIMIT_H
 
 #include "timer.h"
+#include "config.h"
 
-#define SPEED_LIMIT_VALID_TIME 15 * 60 * 1000
+
 
 struct MaxSpeedLimit {
     int speed_limit = -1;

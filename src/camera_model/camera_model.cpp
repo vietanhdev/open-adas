@@ -27,6 +27,11 @@ void CameraModel::showCameraWizard() {
 
 
 void CameraModel::readCalibFile(std::string file_path) {
+
+    if (!fs::exists(file_path)) {
+        return;
+    }
+
     // Read data file
     std::ifstream data_file(file_path);
 

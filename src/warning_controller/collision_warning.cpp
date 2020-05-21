@@ -1,5 +1,8 @@
 #include "collision_warning.h"
 
+
+using namespace std;
+
 CollisionWarning::CollisionWarning(std::shared_ptr<CameraModel> camera_model, 
     std::shared_ptr<CarStatus> car_status
 ) {
@@ -59,4 +62,30 @@ void CollisionWarning::calculateDistance(const cv::Mat &img, std::vector<Traffic
         float distance = camera_model->getBirdViewModel()->getDistanceToCar(max_y);
         objects[i].distance_to_my_car = distance;
     }
+}
+
+
+bool CollisionWarning::isInDangerSituation(const cv::Size &img_size,        
+    std::vector<TrafficObject> &objects) {
+
+    float danger_distance = car_status->getDangerDistance();
+    cv::Mat danger_zone = camera_model->getBirdViewModel()->getDangerZone(img_size, danger_distance);
+
+    cv::Mat object_mask(img_size, CV_8UC1, cv::Scalar(0));
+    for (size_t i = 0; i < objects.size(); ++i) {
+        cv::rectangle(object_mask, cv::Rect(
+            cv::Point(objects[i].bbox.x1, objects[i].bbox.y1), 
+            cv::Point(objects[i].bbox.x2, objects[i].bbox.y2)),
+            cv::Scalar(255), -1);
+    }
+
+    cv::Mat in_danger;
+    cv::bitwise_and(danger_zone, object_mask, in_danger);
+
+    if (cv::countNonZero(in_danger) > 20) {
+        return true;
+    }
+
+    return false;
+    
 }

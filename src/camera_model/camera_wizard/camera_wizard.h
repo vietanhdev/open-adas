@@ -5,6 +5,8 @@
 #include <QLocale>
 #include <QTranslator>
 #include <QtWidgets>
+#include <stdio.h>
+#include <fstream>
 #include "instruction_page/instruction_page.h"
 #include "measurement_page/measurement_page.h"
 #include "four_point_select_page/four_point_select_page.h"

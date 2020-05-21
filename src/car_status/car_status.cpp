@@ -102,6 +102,41 @@ float CarStatus::getCarSpeed() {
     return car_speed;
 }
 
+float CarStatus::getDangerDistance() {
+    return getCarSpeed() / 3.6 * 2.0;
+}
+
+void CarStatus::setCollisionWarning(bool is_warning) {
+    std::lock_guard<std::mutex> guard(collision_warning_status_mutex);
+    if (is_warning) {
+        if (!collision_warning_status.is_warning) {
+            collision_warning_status.is_warning = true;
+            collision_warning_status.begin_time = Timer::getCurrentTime();
+            collision_warning_status.should_notify = true;
+        }
+    } else {
+        collision_warning_status.is_warning = false;
+    }
+}
+
+CollisionWarningStatus CarStatus::getCollisionWarning() {
+    std::lock_guard<std::mutex> guard(collision_warning_status_mutex);
+
+    if (collision_warning_status.is_warning && \
+        Timer::calcTimePassed(collision_warning_status.notified_time) > COLLISION_WARNING_INTERVAL) {
+        collision_warning_status.should_notify = true;
+        collision_warning_status.notified_time = Timer::getCurrentTime();
+    }
+
+    CollisionWarningStatus ret_collision_warning_status = collision_warning_status;
+
+    if (collision_warning_status.is_warning) {
+        collision_warning_status.should_notify = false;
+    }
+
+    return ret_collision_warning_status; 
+}
+
 void CarStatus::setCarSpeed(float speed) {
     car_speed = speed;
 }

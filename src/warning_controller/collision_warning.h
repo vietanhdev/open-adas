@@ -29,6 +29,8 @@ class CollisionWarning {
 
     void updateData(const cv::Mat &img, const std::vector<TrafficObject> &objects);
     void calculateDistance(const cv::Mat &img, std::vector<TrafficObject> &objects);
+    bool isInDangerSituation(const cv::Size &img_size,        
+    std::vector<TrafficObject> &objects);
 };
 
 #endif  // COLLISION_WARNING_H

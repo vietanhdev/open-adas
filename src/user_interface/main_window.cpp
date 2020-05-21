@@ -43,15 +43,12 @@ MainWindow::MainWindow(QWidget *parent)
                            car_gps_reader);
     cpr_thread.detach();
 
-    std::thread speed_warning_thread(&MainWindow::speedWarningThread, car_status, this);
+    std::thread speed_warning_thread(&MainWindow::warningMonitorThread, car_status, this);
     speed_warning_thread.detach();
-
-    // std::thread collision_warning_thread(&CollisionWarning::processingThread, collision_warning.get());
-    // collision_warning_thread.detach();
 
 }
 
-void MainWindow::speedWarningThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window) {
+void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window) {
 
     while (true) {
 
@@ -73,7 +70,14 @@ void MainWindow::speedWarningThread(std::shared_ptr<CarStatus> car_status, MainW
             main_window->alert("traffic_signs/warning_overspeed.wav");
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        CollisionWarningStatus collision_warning_status = car_status->getCollisionWarning();
+        if (collision_warning_status.is_warning
+            && collision_warning_status.should_notify
+        ) {
+            main_window->alert("warning.ogg");
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     }
     
@@ -113,10 +117,13 @@ void MainWindow::objectDetectionThread(
 
         if (SHOW_DISTANCES) {
             collision_warning->calculateDistance(image, objects);
-        }   
-        
+        }
+
         car_status->setDetectedObjects(objects);
 
+        // Collision warning
+        car_status->setCollisionWarning(collision_warning->isInDangerSituation(image.size(), objects));
+        
     }
 }
 
@@ -233,7 +240,7 @@ void MainWindow::startVideoGrabber() {
                 
             }
 
-            float danger_distance = car_status->getCarSpeed() / 3.6 * 1.5;
+            float danger_distance = car_status->getDangerDistance();
             cv::Mat danger_zone = camera_model->getBirdViewModel()->getDangerZone(draw_frame.size(), danger_distance);
             cv::Mat rgb_danger_zone = cv::Mat::zeros(draw_frame.size(), CV_8UC3);
             rgb_danger_zone.setTo(Scalar(0, 0, 255), danger_zone > 0.5);

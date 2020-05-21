@@ -84,5 +84,7 @@ cv::Mat BirdViewModel::getDangerZone(const cv::Size img_size, float danger_dista
 
     cv::warpPerspective(danger_mask, transformed_danger_mask, inv_birdview_transform_matrix, img_size);
 
+    cv::threshold(danger_mask, danger_mask, 1, 255, cv::THRESH_BINARY);
+
     return transformed_danger_mask;
 }

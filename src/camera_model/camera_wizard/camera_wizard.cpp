@@ -64,6 +64,25 @@ void CameraWizard::onFinishButtonClicked() {
     float bl_x = field("bl_x").toFloat();
     float bl_y = field("bl_y").toFloat();
 
+    // Write new data to file
+    if( remove( SMARTCAM_CAMERA_CALIB_FILE ) != 0 )
+        cout << "Error deleting file" << endl;
+    std::ofstream calib_file;
+    calib_file.open (SMARTCAM_CAMERA_CALIB_FILE);
+    calib_file << "car_width " << car_width << endl;
+    calib_file << "carpet_width " << carpet_width << endl;
+    calib_file << "car_to_carpet_distance " << car_to_carpet_distance << endl;
+    calib_file << "carpet_length " << carpet_length << endl;
+    calib_file << "tl_x " << tl_x << endl;
+    calib_file << "tl_y " << tl_y << endl;
+    calib_file << "tr_x " << tr_x << endl;
+    calib_file << "tr_y " << tr_y << endl;
+    calib_file << "br_x " << br_x << endl;
+    calib_file << "br_y " << br_y << endl;
+    calib_file << "bl_x " << bl_x << endl;
+    calib_file << "bl_y " << bl_y << endl;
+    calib_file.close();
+
     emit updateCameraModel(
         car_width, carpet_width, car_to_carpet_distance, carpet_length,
         tl_x, tl_y, tr_x, tr_y, br_x, br_y, bl_x, bl_y
