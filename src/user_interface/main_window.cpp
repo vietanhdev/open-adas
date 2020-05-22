@@ -88,7 +88,7 @@ void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, Mai
         if (collision_warning_status.is_warning
             && collision_warning_status.should_notify
         ) {
-            main_window->alert("warning.wav");
+            main_window->alert("collision_warning.wav");
             main_window->is_warning = true;
             last_warning_time = Timer::getCurrentTime();
         } else if (!collision_warning_status.is_warning &&
