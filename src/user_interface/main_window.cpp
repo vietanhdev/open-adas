@@ -23,7 +23,11 @@ MainWindow::MainWindow(QWidget *parent)
     car_status = std::make_shared<CarStatus>();
     camera_model = std::make_shared<CameraModel>(car_status);
     object_detector = std::make_shared<ObjectDetector>();
+
+    #ifndef DISABLE_LANE_DETECTOR
     lane_detector = std::make_shared<LaneDetector>();
+    #endif
+
     car_gps_reader = std::make_shared<CarGPSReader>();
     collision_warning = std::make_shared<CollisionWarning>(camera_model, car_status);
 
@@ -208,6 +212,8 @@ void MainWindow::startVideoGrabber() {
 
         if (!draw_frame.empty()) {
 
+
+            #ifndef DISABLE_LANE_DETECTOR
             std::vector<LaneLine> detected_lane_lines = car_status->getDetectedLaneLines();
                 
             if (!detected_lane_lines.empty()) {
@@ -251,6 +257,8 @@ void MainWindow::startVideoGrabber() {
                 
             }
 
+            #endif
+
             float danger_distance = car_status->getDangerDistance();
             cv::Mat danger_zone = camera_model->getBirdViewModel()->getDangerZone(draw_frame.size(), danger_distance);
             cv::Mat rgb_danger_zone = cv::Mat::zeros(draw_frame.size(), CV_8UC3);
@@ -269,7 +277,10 @@ void MainWindow::startVideoGrabber() {
                 }
 
                 cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,10), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
+
+                #ifndef DISABLE_LANE_DETECTOR
                 cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
+                #endif
                 
             #endif
             
