@@ -4,6 +4,9 @@
 #define IMG_MAX_SIZE 512
 
 #define DISABLE_LANE_DETECTOR
+#define DISABLE_GPS_READER
+
+
 #define SMARTCAM_DEBUG
 
 // Show lane debug images

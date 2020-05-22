@@ -28,7 +28,10 @@ MainWindow::MainWindow(QWidget *parent)
     lane_detector = std::make_shared<LaneDetector>();
     #endif
 
+    #ifndef DISABLE_GPS_READER
     car_gps_reader = std::make_shared<CarGPSReader>();
+    #endif
+
     collision_warning = std::make_shared<CollisionWarning>(camera_model, car_status);
 
     // Start processing threads
@@ -46,9 +49,11 @@ MainWindow::MainWindow(QWidget *parent)
     ld_thread.detach();
 #endif
 
+#ifndef DISABLE_GPS_READER
     std::thread cpr_thread(&MainWindow::carPropReaderThread,
                            car_gps_reader);
     cpr_thread.detach();
+#endif
 
     std::thread speed_warning_thread(&MainWindow::warningMonitorThread, car_status, this);
     speed_warning_thread.detach();
