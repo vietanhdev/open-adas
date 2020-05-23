@@ -82,11 +82,16 @@ class MainWindow : public QMainWindow {
     MaxSpeedLimit speed_limit;
     std::mutex speed_limit_mutex;
 
-    std::atomic<bool> is_warning;
+    std::atomic<bool> is_collision_warning = false;
+    std::atomic<bool> is_lane_departure_warning = false;
+    std::chrono::system_clock::time_point last_collision_warning_time;
+    std::chrono::system_clock::time_point last_lane_departure_warning_time;
+    std::mutex warning_time_mutex;
 
     // Images
     TrafficSignImages traffic_sign_images;
     cv::Mat warning_icon;
+    cv::Mat lane_departure_warning_icon;
 
     // Audio
     std::atomic<bool> is_mute = false;
@@ -102,7 +107,7 @@ class MainWindow : public QMainWindow {
         std::shared_ptr<ObjectDetector> object_detector, std::shared_ptr<CarStatus> ,
         CollisionWarning *collision_warning);
     static void laneDetectionThread(
-        std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus> );
+        std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus>, MainWindow *);
     static void carPropReaderThread(
         std::shared_ptr<CarGPSReader> car_gps_reader);
     static void warningMonitorThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window);
@@ -112,6 +117,11 @@ class MainWindow : public QMainWindow {
     void setSimulation(Simulation *simulation);
     void setSpeedLimit(MaxSpeedLimit speed_limit);
     MaxSpeedLimit getSpeedLimit();
+
+    std::chrono::system_clock::time_point getLastCollisionWarningTime();
+    void setLastCollisionWarningTime(std::chrono::system_clock::time_point);
+    std::chrono::system_clock::time_point getLastLaneDepartureWarningTime();
+    void setLastLaneDepartureWarningTime(std::chrono::system_clock::time_point);
 
 };
 

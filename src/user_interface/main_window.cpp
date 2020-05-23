@@ -11,8 +11,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setScene(new QGraphicsScene(this));
     ui->graphicsView->scene()->addItem(&pixmap);
 
-    warning_icon = cv::imread("images/warn.png");
+    warning_icon = cv::imread("images/collision-warning.png");
     cv::resize(warning_icon, warning_icon, cv::Size(48, 48));
+
+    lane_departure_warning_icon = cv::imread("images/lane-departure-warning.png");
+    cv::resize(lane_departure_warning_icon, lane_departure_warning_icon, cv::Size(48, 48));
 
     // Connect buttons
     connect(ui->simulationBtn, SIGNAL(released()), this, SLOT(openSimulationSelector()));
@@ -45,7 +48,8 @@ MainWindow::MainWindow(QWidget *parent)
 #ifndef DISABLE_LANE_DETECTOR
     std::thread ld_thread(&MainWindow::laneDetectionThread, 
         lane_detector,
-        car_status);
+        car_status,
+        this);
     ld_thread.detach();
 #endif
 
@@ -61,8 +65,6 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window) {
-
-    Timer::time_point_t last_warning_time;
 
     while (true) {
 
@@ -89,12 +91,19 @@ void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, Mai
             && collision_warning_status.should_notify
         ) {
             main_window->alert("collision_warning.wav");
-            main_window->is_warning = true;
-            last_warning_time = Timer::getCurrentTime();
+            main_window->is_collision_warning = true;
+            main_window->setLastCollisionWarningTime(Timer::getCurrentTime());
         } else if (!collision_warning_status.is_warning &&
-            Timer::calcTimePassed(last_warning_time) > 3000
+            Timer::calcTimePassed(main_window->getLastCollisionWarningTime()) > 3000
         ) {
-            main_window->is_warning = false;
+            main_window->is_collision_warning = false;
+        }
+
+        if (main_window->is_lane_departure_warning
+            && Timer::calcTimePassed(main_window->last_lane_departure_warning_time) > LANE_DEPARTURE_WARNING_INTERVAL
+        ) {
+            main_window->alert("lane_departure_warning.wav");
+            main_window->setLastLaneDepartureWarningTime(Timer::getCurrentTime());
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -148,8 +157,9 @@ void MainWindow::objectDetectionThread(
 }
 
 void MainWindow::laneDetectionThread(
-    std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus> car_status) {
+    std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus> car_status, MainWindow *main_window) {
     cv::Mat clone_img;
+    bool lane_departure;
     while (true) {
 
         car_status->getCurrentImage(clone_img);
@@ -163,15 +173,17 @@ void MainWindow::laneDetectionThread(
         cv::Mat reduced_line_img;
 
         Timer::time_point_t begin_time = Timer::getCurrentTime();
-        std::vector<LaneLine> detected_lines = lane_detector->detectLaneLines(clone_img, lane_line_mask, detected_line_img, reduced_line_img);
+        std::vector<LaneLine> detected_lines = lane_detector->detectLaneLines(clone_img, lane_line_mask, detected_line_img, reduced_line_img, lane_departure);
         car_status->setLaneDetectionTime(Timer::calcTimePassed(begin_time));
         car_status->setDetectedLaneLines(detected_lines, lane_line_mask, detected_line_img, reduced_line_img);
         #else
         Timer::time_point_t begin_time = Timer::getCurrentTime();
-        std::vector<LaneLine> detected_lines = lane_detector->detectLaneLines(clone_img);
+        std::vector<LaneLine> detected_lines = lane_detector->detectLaneLines(clone_img, lane_departure);
         car_status->setLaneDetectionTime(Timer::calcTimePassed(begin_time));
         car_status->setDetectedLaneLines(detected_lines);
         #endif 
+
+        main_window->is_lane_departure_warning = lane_departure;
     }
 }
 
@@ -186,10 +198,10 @@ void MainWindow::carPropReaderThread(
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::playAudio(std::string audio_file) {
-    if (!is_mute && Timer::calcTimePassed(last_audio_time) > 3000) {
+    // if (!is_mute && Timer::calcTimePassed(last_audio_time) > 3000) {
         system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
         last_audio_time = Timer::getCurrentTime();
-    }
+    // }
 }
 
 void MainWindow::alert(std::string audio_file) {
@@ -303,11 +315,12 @@ void MainWindow::startVideoGrabber() {
                 ml_cam::place_overlay(draw_frame, traffic_sign_images.getSpeedSignImage(speed_limit.speed_limit), 32, 32);
             }
 
-            // Show warning
-            if (is_warning) {
-                int x = draw_frame.cols - warning_icon.cols - 50;
-                int y = draw_frame.rows - warning_icon.rows - 50;
-                ml_cam::place_overlay(draw_frame, warning_icon, x, y);
+            // Show warnings
+            if (is_collision_warning) {
+                ml_cam::place_overlay(draw_frame, warning_icon, 32, 88);
+            }
+            if (is_lane_departure_warning || Timer::calcTimePassed(getLastLaneDepartureWarningTime()) < 2500) {
+                ml_cam::place_overlay(draw_frame, lane_departure_warning_icon, 32, 144);
             }
     
             // ### Show current image
@@ -407,4 +420,24 @@ void MainWindow::toggleAlert() {
 
 void MainWindow::showCameraWizard() {
     camera_model->showCameraWizard();
+}
+
+std::chrono::system_clock::time_point MainWindow::getLastCollisionWarningTime() {
+    std::lock_guard<std::mutex> guard(warning_time_mutex);
+    return last_collision_warning_time;
+}
+
+void MainWindow::setLastCollisionWarningTime(std::chrono::system_clock::time_point time_point) {
+    std::lock_guard<std::mutex> guard(warning_time_mutex);
+    last_collision_warning_time = time_point;
+}
+
+std::chrono::system_clock::time_point MainWindow::getLastLaneDepartureWarningTime() {
+    std::lock_guard<std::mutex> guard(warning_time_mutex);
+    return last_lane_departure_warning_time;
+}
+
+void MainWindow::setLastLaneDepartureWarningTime(std::chrono::system_clock::time_point time_point) {
+    std::lock_guard<std::mutex> guard(warning_time_mutex);
+    last_lane_departure_warning_time = time_point;
 }

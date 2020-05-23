@@ -44,14 +44,14 @@ cv::Mat BirdViewModel::transformImage(const cv::Mat &img) {
 }
 
 
-void BirdViewModel::transformPoints(const std::vector<cv::Point2f> &points, std::vector<cv::Point2f> &dst_points) {
+void BirdViewModel::transformPoints(const std::vector<cv::Point2f> &normalized_points, std::vector<cv::Point2f> &normalized_dst_points) {
     std::lock_guard<std::mutex> guard(mtx);
 
     birdview_transform_matrix = cv::getPerspectiveTransform(
         four_image_points.to_vector(),
         four_points.to_vector());
 
-    perspectiveTransform(points, dst_points, birdview_transform_matrix);
+    perspectiveTransform(normalized_points, normalized_dst_points, birdview_transform_matrix);
 
 }
 

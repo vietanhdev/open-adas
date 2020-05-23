@@ -54,7 +54,11 @@ int main(int argc, char *argv[]) {
 
     // Create our mainwindow instance
     MainWindow *main_window = new MainWindow;
-    main_window->showFullScreen();
+    if (!on_dev_machine) {
+        main_window->showFullScreen();
+    } else {
+        main_window->show();
+    }
 
 
     // Set input source and start camera getter

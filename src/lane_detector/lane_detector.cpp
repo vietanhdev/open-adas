@@ -1,6 +1,7 @@
 #include "lane_detector.h"
-
 #include "config.h"
+
+// Used line merging method from https://stackoverflow.com/questions/30746327/get-a-single-line-representation-for-multiple-close-by-lines-clustered-together/30904076
 
 using namespace cv;
 
@@ -35,76 +36,199 @@ cv::Mat LaneDetector::getLaneMask(const cv::Mat& input_img) {
 // For debug purpose
 std::vector<LaneLine> LaneDetector::detectLaneLines(
     const cv::Mat& input_img, cv::Mat& line_mask, cv::Mat& detected_lines_img,
-    cv::Mat& reduced_lines_img) {
-    // Get binary lane mask
+    cv::Mat& reduced_lines_img, bool &lane_departure) {
+
+    // === Get binary lane mask ===
     line_mask = getLaneMask(input_img);
 
-    // Detect and reduce lines
+    // === Detect and reduce lines ===
     std::vector<cv::Vec4i> lines =
         detectAndReduceLines(line_mask, detected_lines_img, reduced_lines_img);
 
-    // Classify lines
-    // TODO: Write classify function
+    // Filter short lines
+    std::vector<cv::Vec4i> filtered_lines;
+    int img_height = input_img.rows;
+    for (size_t i = 0; i < lines.size(); ++i) {
+        int line_length = sqrt(pow(lines[i][2] - lines[i][0], 2)
+            + pow(lines[i][3] - lines[i][1], 2));
+        if (line_length > 0.2 * img_height) {
+            filtered_lines.push_back(lines[i]);
+        }
+    }
+    lines = filtered_lines;
+
+
+    // Filter all horizontal lines
+    int n_filtered_horizontal_lines = 0;
+    int n_horizontal_lines_20_degrees = 0;
+    // std::vector<cv::Vec4i> filtered_lines;
+    filtered_lines.clear();
+    for (size_t i = 0; i < lines.size(); ++i) {
+        double angle = atan2(lines[i][3] - lines[i][1], lines[i][2] - lines[i][0]) * 180.0 / CV_PI;
+        if (angle < 0) angle = angle + 360;
+        if (angle > 180) angle = 360 - angle;
+        if (angle < 150 && angle > 30) {
+            filtered_lines.push_back(lines[i]);
+        } else {
+            ++n_filtered_horizontal_lines;
+        }
+        if (angle > 160 || angle > 20) {
+            ++n_horizontal_lines_20_degrees;
+        }
+    }
+    lines = filtered_lines;
+
+    
+
+    // === Classify lines ===
+    // Extend lines
+    for (size_t i = 0; i < lines.size(); i++) {
+        cv::Point p1 = Point(lines[i][0], lines[i][1]);
+        cv::Point p2 = Point(lines[i][2], lines[i][3]);
+        getLinePointinImageBorder(p1, p2, p1, p2, reduced_lines_img.rows, reduced_lines_img.cols);
+        lines[i] = cv::Vec4i(p1.x, p1.y, p2.x, p2.y);
+    }
     std::vector<LaneLine> lane_lines;
     for (size_t i = 0; i < lines.size(); i++) {
         lane_lines.push_back(LaneLine(lines[i], OtherLaneLine));
     }
+    cv::Mat line_segmentation = Mat::zeros(detected_lines_img.rows, detected_lines_img.cols, CV_8UC1);
+    for (int i = 0; i < lane_lines.size(); ++i) {
+        cv::Point p1 = Point(lane_lines[i].line[0], lane_lines[i].line[1]);
+        cv::Point p2 = Point(lane_lines[i].line[2], lane_lines[i].line[3]);
+        cv::line(line_segmentation, p1, p2, cv::Scalar(i+1), 1);
+    }
+
+    // Search for lines
+    int center_point = line_segmentation.cols / 2;
+    bool found_left = false; float left_pos;
+    bool found_right = false; float right_pos;
+
+    // For left line - Search on bottom edge
+    int last_row = line_segmentation.rows - 1;
+    for (int x = center_point; x >= 0; --x) {
+        int line_id = static_cast<int>(line_segmentation.at<uchar>(cv::Point(x, last_row))) - 1;
+        left_pos = x - center_point;
+        if (line_id >= 0) {
+            found_left = true;
+            lane_lines[line_id].type = LeftLaneLine;
+            break;
+        }
+    }
+
+    // If not found, search on left edge
+    if (!found_left) {
+        for (int y = last_row; y >= 0.95*last_row; --y) {
+            int line_id = static_cast<int>(line_segmentation.at<uchar>(cv::Point(0, y))) - 1;
+            if (line_id >= 0) {
+                found_left = true;
+                left_pos = -center_point - (last_row - y);
+                lane_lines[line_id].type = LeftLaneLine;
+                break;
+            }
+        }
+    }
+
+    // For right line - Search on bottom edge
+    for (int x = center_point + 1; x < line_segmentation.cols; ++x) {
+        int line_id = static_cast<int>(line_segmentation.at<uchar>(cv::Point(x, last_row))) - 1;
+        right_pos = x - center_point;
+        if (line_id >= 0) {
+            found_right = true;
+            lane_lines[line_id].type = RightLaneLine;
+            break;
+        }
+    }
+
+    // If not found, search on right edge
+    if (!found_right) {
+        for (int y = last_row; y >= 0.95*last_row; --y) {
+            int line_id = static_cast<int>(line_segmentation.at<uchar>(cv::Point(line_segmentation.cols-1, y))) - 1;
+            if (line_id >= 0) {
+                found_right = true;
+                left_pos = center_point + (last_row - y);
+                lane_lines[line_id].type = RightLaneLine;
+                break;
+            }
+        }
+    }
+
+    // === Lane departure warning ===
+    lane_departure = false;
+    if (found_left && found_right
+        && n_filtered_horizontal_lines < 3
+        && lane_lines.size() < 6) {
+
+        // Normalize left pos, right pos to range(-xx.xx -> xx.xx)
+        left_pos /= center_point;
+        right_pos /= center_point;
+
+        if ((abs(left_pos) < 0.25 && abs(right_pos) > 0.5)
+        || (abs(left_pos) > 0.5 && abs(right_pos) < 0.25)) {
+            lane_departure = true;
+        }
+
+    }
+
+    // === Visualize ===
+    reduced_lines_img = Mat::zeros(detected_lines_img.rows, detected_lines_img.cols, CV_8UC3);
+    for (LaneLine line : lane_lines) {
+        cv::Point p1 = Point(line.line[0], line.line[1]);
+        cv::Point p2 = Point(line.line[2], line.line[3]);
+        cv::Scalar color(50, 50, 50);
+        if (line.type == LeftLaneLine) {
+            color = cv::Scalar(255, 0, 0);
+        } else if (line.type == RightLaneLine) {
+            color = cv::Scalar(0, 0, 255);
+        }
+        cv::line(reduced_lines_img, p1, p2, color, 2);
+    }
+    if (lane_departure) {
+        cv::putText(reduced_lines_img, "LANE DEPARTURE", Point2f(reduced_lines_img.cols / 2,reduced_lines_img.rows / 2), FONT_HERSHEY_PLAIN, 1.2,  Scalar(0,0,255,255), 1.5);
+    }
+
 
     return lane_lines;
 }
 
 // Lane detect function
-std::vector<LaneLine> LaneDetector::detectLaneLines(const cv::Mat& input_img) {
+std::vector<LaneLine> LaneDetector::detectLaneLines(const cv::Mat& input_img, bool &lane_departure) {
     cv::Mat line_mask, detected_lines_img, reduced_lines_img;
     std::vector<LaneLine> lane_lines = detectLaneLines(
-        input_img, line_mask, detected_lines_img, reduced_lines_img);
+        input_img, line_mask, detected_lines_img, reduced_lines_img, lane_departure);
 
     return lane_lines;
 }
 
 std::vector<cv::Vec4i> LaneDetector::detectAndReduceLines(
-    const cv::Mat& laneProb, cv::Mat& detected_lines_img,
+    const cv::Mat& lane_prob, cv::Mat& detected_lines_img,
     cv::Mat& reduced_lines_img) {
-    cv::Mat thresh = cv::Mat::zeros(laneProb.size(), CV_8UC1);
-    thresh.setTo(Scalar(255), laneProb > 0.5);
+    cv::Mat thresh = cv::Mat::zeros(lane_prob.size(), CV_8UC1);
+    thresh.setTo(Scalar(255), lane_prob > 0.6);
 
     detected_lines_img = Mat::zeros(thresh.rows, thresh.cols, CV_8UC3);
     reduced_lines_img = detected_lines_img.clone();
 
     // Delect lines in any reasonable way
     std::vector<cv::Vec4i> lines;
+
     // Apply Hough Transform
-    HoughLinesP(thresh, lines, 1, CV_PI / 180, 50, 10, 250);
-
-    // Remove small lines
-    std::vector<cv::Vec4i> linesWithoutSmall;
-    std::copy_if(lines.begin(), lines.end(),
-                 std::back_inserter(linesWithoutSmall), [](Vec4f line) {
-                     float length =
-                         sqrtf((line[2] - line[0]) * (line[2] - line[0]) +
-                               (line[3] - line[1]) * (line[3] - line[1]));
-                     return length > 30;
-                 });
-
-    // std::cout << "Detected: " << linesWithoutSmall.size() << std::endl;
+    HoughLinesP(thresh, lines, 1, CV_PI / 180, 40, 5, 50);
 
     // partition via our partitioning function
     std::vector<int> labels;
     int equilavenceClassesCount = cv::partition(
-        linesWithoutSmall, labels, [](const cv::Vec4i l1, const cv::Vec4i l2) {
+        lines, labels, [](const cv::Vec4i l1, const cv::Vec4i l2) {
             return extendedBoundingRectangleLineEquivalence(
                 l1, l2,
                 // line extension length - as fraction of original line width
                 0.1,
                 // maximum allowed angle difference for lines to be considered
                 // in same equivalence class
-                3.0,
+                2.0,
                 // thickness of bounding rectangle around each line
                 20);
         });
-
-    // std::cout << "Equivalence classes: " << equilavenceClassesCount
-    //           << std::endl;
 
     // grab a random colour for each equivalence class
     RNG rng(215526);
@@ -116,16 +240,16 @@ std::vector<cv::Vec4i> LaneDetector::detectAndReduceLines(
     }
 
     // draw original detected lines
-    for (size_t i = 0; i < linesWithoutSmall.size(); i++) {
-        cv::Vec4i& detectedLine = linesWithoutSmall[i];
+    for (size_t i = 0; i < lines.size(); i++) {
+        cv::Vec4i& detectedLine = lines[i];
         line(detected_lines_img, cv::Point(detectedLine[0], detectedLine[1]),
              cv::Point(detectedLine[2], detectedLine[3]), colors[labels[i]], 2);
     }
 
     // build point clouds out of each equivalence classes
     std::vector<std::vector<Point2i>> pointClouds(equilavenceClassesCount);
-    for (size_t i = 0; i < linesWithoutSmall.size(); i++) {
-        cv::Vec4i& detectedLine = linesWithoutSmall[i];
+    for (size_t i = 0; i < lines.size(); i++) {
+        cv::Vec4i& detectedLine = lines[i];
         pointClouds[labels[i]].push_back(
             Point2i(detectedLine[0], detectedLine[1]));
         pointClouds[labels[i]].push_back(
@@ -133,7 +257,7 @@ std::vector<cv::Vec4i> LaneDetector::detectAndReduceLines(
     }
 
     // fit line to each equivalence class point cloud
-    std::vector<cv::Vec4i> reducedLines = std::accumulate(
+    std::vector<cv::Vec4i> reduced_lines = std::accumulate(
         pointClouds.begin(), pointClouds.end(), std::vector<cv::Vec4i>{},
         [](std::vector<cv::Vec4i> target,
            const std::vector<Point2i>& _pointCloud) {
@@ -161,13 +285,9 @@ std::vector<cv::Vec4i> LaneDetector::detectAndReduceLines(
             target.push_back(cv::Vec4i(minXP->x, y1, maxXP->x, y2));
             return target;
         });
+    lines = reduced_lines;
 
-    for (cv::Vec4i reduced : reducedLines) {
-        line(reduced_lines_img, Point(reduced[0], reduced[1]),
-             Point(reduced[2], reduced[3]), Scalar(255, 255, 255), 2);
-    }
-
-    return reducedLines;
+    return lines;
 }
 
 cv::Vec2d LaneDetector::linearParameters(cv::Vec4i line) {
@@ -261,4 +381,39 @@ bool LaneDetector::extendedBoundingRectangleLineEquivalence(
                             false) == 1 ||
            pointPolygonTest(lineBoundingContour, cv::Point(el2[2], el2[3]),
                             false) == 1;
+}
+
+void LaneDetector::getLinePointinImageBorder(const cv::Point &p1_in,
+                                                    const cv::Point &p2_in,
+                                                    cv::Point &p1_out,
+                                                    cv::Point &p2_out, int rows,
+                                                    int cols) {
+    double m =
+        (double)(p1_in.y - p2_in.y) /
+        (double)(p1_in.x - p2_in.x + std::numeric_limits<double>::epsilon());
+    double b = p1_in.y - (m * p1_in.x);
+
+    std::vector<cv::Point> border_point;
+    double x, y;
+    // test for the line y = 0
+    y = 0;
+    x = (y - b) / m;
+    if (x > 0 && x < cols) border_point.push_back(cv::Point(x, y));
+
+    // test for the line y = img.rows
+    y = rows;
+    x = (y - b) / m;
+    if (x > 0 && x < cols) border_point.push_back(cv::Point(x, y));
+
+    // check intersection with horizontal lines x = 0
+    x = 0;
+    y = m * x + b;
+    if (y > 0 && y < rows) border_point.push_back(cv::Point(x, y));
+
+    x = cols;
+    y = m * x + b;
+    if (y > 0 && y < rows) border_point.push_back(cv::Point(x, y));
+
+    p1_out = border_point[0];
+    p2_out = border_point[1];
 }
