@@ -45,8 +45,9 @@ std::vector<LaneLine> LaneDetector::detectLaneLines(
     std::vector<cv::Vec4i> lines =
         detectAndReduceLines(line_mask, detected_lines_img, reduced_lines_img);
 
-    // Filter short lines
     std::vector<cv::Vec4i> filtered_lines;
+
+    // Filter short lines
     int img_height = input_img.rows;
     for (size_t i = 0; i < lines.size(); ++i) {
         int line_length = sqrt(pow(lines[i][2] - lines[i][0], 2)
@@ -56,7 +57,6 @@ std::vector<LaneLine> LaneDetector::detectLaneLines(
         }
     }
     lines = filtered_lines;
-
 
     // Filter all horizontal lines
     int n_filtered_horizontal_lines = 0;
@@ -155,7 +155,32 @@ std::vector<LaneLine> LaneDetector::detectLaneLines(
 
     // === Lane departure warning ===
     lane_departure = false;
-    if (found_left && found_right
+
+    // Remove expired tracking
+    int n_remove = 0;
+    for (size_t i = 0; i < dual_line_checking_time.size(); ++i) {
+        if (Timer::calcTimePassed(dual_line_checking_time[i]) > 3000) {
+            ++n_remove;
+        } else {
+            break;
+        }
+    }
+    if (n_remove > 0) {
+        dual_line_checking_time.erase(dual_line_checking_time.begin() + n_remove - 1);
+        is_dual_line.erase(is_dual_line.begin() + n_remove - 1);
+    }
+    dual_line_checking_time.push_back(Timer::getCurrentTime());
+    is_dual_line.push_back(found_left && found_right);
+
+    //  Calculate ratio of frames containing good line condition
+    float good_frame_ratio = 0;
+    if (is_dual_line.size() > 5) {
+        int n_frames_good_lines = std::count(is_dual_line.begin(), is_dual_line.end(), true);
+        good_frame_ratio = static_cast<float>(n_frames_good_lines) / is_dual_line.size();
+    }
+    
+    if (good_frame_ratio > 0.6
+        && found_left && found_right
         && n_filtered_horizontal_lines < 3
         && lane_lines.size() < 6) {
 
@@ -163,8 +188,8 @@ std::vector<LaneLine> LaneDetector::detectLaneLines(
         left_pos /= center_point;
         right_pos /= center_point;
 
-        if ((abs(left_pos) < 0.25 && abs(right_pos) > 0.5)
-        || (abs(left_pos) > 0.5 && abs(right_pos) < 0.25)) {
+        if ((abs(left_pos) < 0.3 && abs(right_pos) > 0.5)
+        || (abs(left_pos) > 0.5 && abs(right_pos) < 0.3)) {
             lane_departure = true;
         }
 
@@ -204,7 +229,7 @@ std::vector<cv::Vec4i> LaneDetector::detectAndReduceLines(
     const cv::Mat& lane_prob, cv::Mat& detected_lines_img,
     cv::Mat& reduced_lines_img) {
     cv::Mat thresh = cv::Mat::zeros(lane_prob.size(), CV_8UC1);
-    thresh.setTo(Scalar(255), lane_prob > 0.6);
+    thresh.setTo(Scalar(255), lane_prob > 0.5);
 
     detected_lines_img = Mat::zeros(thresh.rows, thresh.cols, CV_8UC3);
     reduced_lines_img = detected_lines_img.clone();

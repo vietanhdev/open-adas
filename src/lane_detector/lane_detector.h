@@ -19,7 +19,8 @@ class LaneDetector {
     const std::string OUTPUT_NODE = "sigmoid/Sigmoid";
     std::shared_ptr<Unet> model;
 
-    std::vector<Timer::time_point_t> lane_departure_time;
+    std::vector<Timer::time_point_t> dual_line_checking_time;
+    std::vector<bool> is_dual_line;
 
    public:
     bool ready = false;

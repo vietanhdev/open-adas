@@ -95,7 +95,7 @@ padding-left: 10px;</string>
           </property>
           <property name="icon">
            <iconset resource="../../resources.qrc">
-            <normaloff>:/resources/images/collision-warning.png</normaloff>:/resources/images/collision-warning.png</iconset>
+            <normaloff>:/resources/images/warning.png</normaloff>:/resources/images/warning.png</iconset>
           </property>
           <property name="iconSize">
            <size>

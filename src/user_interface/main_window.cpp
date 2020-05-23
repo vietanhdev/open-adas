@@ -183,7 +183,12 @@ void MainWindow::laneDetectionThread(
         car_status->setDetectedLaneLines(detected_lines);
         #endif 
 
-        main_window->is_lane_departure_warning = lane_departure;
+        if (car_status->getCarSpeed() >= MIN_SPEED_FOR_LANE_DEPARTURE_WARNING) {
+            main_window->is_lane_departure_warning = lane_departure;
+        } else {
+            main_window->is_lane_departure_warning = false;
+        }
+
     }
 }
 
@@ -198,10 +203,10 @@ void MainWindow::carPropReaderThread(
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::playAudio(std::string audio_file) {
-    // if (!is_mute && Timer::calcTimePassed(last_audio_time) > 3000) {
+    if (!is_mute && Timer::calcTimePassed(last_audio_time) > 2000) {
         system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
         last_audio_time = Timer::getCurrentTime();
-    // }
+    }
 }
 
 void MainWindow::alert(std::string audio_file) {
@@ -276,12 +281,14 @@ void MainWindow::startVideoGrabber() {
 
             #endif
 
-            float danger_distance = car_status->getDangerDistance();
-            cv::Mat danger_zone = camera_model->getBirdViewModel()->getDangerZone(draw_frame.size(), danger_distance);
-            cv::Mat rgb_danger_zone = cv::Mat::zeros(draw_frame.size(), CV_8UC3);
-            rgb_danger_zone.setTo(Scalar(0, 0, 255), danger_zone > 0.5);
-            cv::addWeighted(draw_frame, 1, rgb_danger_zone, 0.3, 0,
-                                    draw_frame);
+            if (car_status->getCarSpeed() >= MIN_SPEED_FOR_COLLISION_WARNING) {
+                float danger_distance = car_status->getDangerDistance();
+                cv::Mat danger_zone = camera_model->getBirdViewModel()->getDangerZone(draw_frame.size(), danger_distance);
+                cv::Mat rgb_danger_zone = cv::Mat::zeros(draw_frame.size(), CV_8UC3);
+                rgb_danger_zone.setTo(Scalar(0, 0, 255), danger_zone > 0.5);
+                cv::addWeighted(draw_frame, 1, rgb_danger_zone, 0.3, 0,
+                                        draw_frame);
+            }
 
             #ifdef DEBUG_SHOW_FPS
 
@@ -319,7 +326,7 @@ void MainWindow::startVideoGrabber() {
             if (is_collision_warning) {
                 ml_cam::place_overlay(draw_frame, warning_icon, 32, 88);
             }
-            if (is_lane_departure_warning || Timer::calcTimePassed(getLastLaneDepartureWarningTime()) < 2500) {
+            if (is_lane_departure_warning || Timer::calcTimePassed(getLastLaneDepartureWarningTime()) < 4000) {
                 ml_cam::place_overlay(draw_frame, lane_departure_warning_icon, 32, 144);
             }
     
