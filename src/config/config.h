@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define IMG_MAX_SIZE 448
+#define IMG_MAX_SIZE 384
 
 // #define DISABLE_LANE_DETECTOR
 #define DISABLE_GPS_READER

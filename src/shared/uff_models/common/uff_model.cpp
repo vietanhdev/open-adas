@@ -153,7 +153,7 @@ bool UffModel::build() {
     }
     constructNetwork(parser, network);
     builder->setMaxBatchSize(mParams.batchSize);
-    config->setMaxWorkspaceSize(1_GiB << 2);
+    config->setMaxWorkspaceSize(1_GiB);
     config->setFlag(BuilderFlag::kGPU_FALLBACK);
     if (mParams.fp16) {
         config->setFlag(BuilderFlag::kFP16);

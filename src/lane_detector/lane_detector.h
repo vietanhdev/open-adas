@@ -13,8 +13,8 @@
 
 class LaneDetector {
    private:
-    const int INPUT_WIDTH = 448;
-    const int INPUT_HEIGHT = 448;
+    const int INPUT_WIDTH = 384;
+    const int INPUT_HEIGHT = 384;
     const std::string INPUT_NODE = "data";
     const std::string OUTPUT_NODE = "sigmoid/Sigmoid";
     std::shared_ptr<Unet> model;
