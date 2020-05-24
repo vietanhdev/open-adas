@@ -204,7 +204,10 @@ MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::playAudio(std::string audio_file) {
     if (!is_mute && Timer::calcTimePassed(last_audio_time) > 2000) {
-        system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
+        QSound sound(QString(":/resources/sounds/") + QString::fromStdString(audio_file));
+        sound.play();
+        QEventLoop loop;
+        loop.exec();
         last_audio_time = Timer::getCurrentTime();
     }
 }

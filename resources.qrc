@@ -15,5 +15,23 @@
         <file>images/instruction_red_carpet.png</file>
         <file>images/front_cam.png</file>
         <file>images/distance_measurement.png</file>
+        <file>sounds/traffic_signs/00.wav</file>
+        <file>sounds/traffic_signs/10.wav</file>
+        <file>sounds/traffic_signs/100.wav</file>
+        <file>sounds/traffic_signs/110.wav</file>
+        <file>sounds/traffic_signs/120.wav</file>
+        <file>sounds/traffic_signs/20.wav</file>
+        <file>sounds/traffic_signs/30.wav</file>
+        <file>sounds/traffic_signs/40.wav</file>
+        <file>sounds/traffic_signs/5.wav</file>
+        <file>sounds/traffic_signs/50.wav</file>
+        <file>sounds/traffic_signs/60.wav</file>
+        <file>sounds/traffic_signs/70.wav</file>
+        <file>sounds/traffic_signs/80.wav</file>
+        <file>sounds/traffic_signs/90.wav</file>
+        <file>sounds/traffic_signs/convert_to_wav.sh</file>
+        <file>sounds/traffic_signs/warning_overspeed.wav</file>
+        <file>sounds/collision_warning.wav</file>
+        <file>sounds/lane_departure_warning.wav</file>
     </qresource>
 </RCC>

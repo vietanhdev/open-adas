@@ -38,7 +38,7 @@ find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Take care of Qt dependencies
-find_package(Qt5 COMPONENTS Core Gui Widgets Test Concurrent REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets Test Concurrent Multimedia REQUIRED)
 
 # The Qt5Widgets_INCLUDES also includes the include directories for
 # dependencies QtCore and QtGui
@@ -152,6 +152,7 @@ endif()
 # Link required libs
 target_link_libraries(${PROJECT_NAME} 
     ${Qt5Widgets_LIBRARIES} 
+    ${Qt5Multimedia_LIBRARIES} 
     ${OpenCV_LIBS} 
     ${CPP_FS_LIB} 
     object_detector

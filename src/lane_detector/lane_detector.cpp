@@ -93,7 +93,7 @@ std::vector<LaneLine> LaneDetector::detectLaneLines(
         lane_lines.push_back(LaneLine(lines[i], OtherLaneLine));
     }
     cv::Mat line_segmentation = Mat::zeros(detected_lines_img.rows, detected_lines_img.cols, CV_8UC1);
-    for (int i = 0; i < lane_lines.size(); ++i) {
+    for (size_t i = 0; i < lane_lines.size(); ++i) {
         cv::Point p1 = Point(lane_lines[i].line[0], lane_lines[i].line[1]);
         cv::Point p2 = Point(lane_lines[i].line[2], lane_lines[i].line[3]);
         cv::line(line_segmentation, p1, p2, cv::Scalar(i+1), 1);
@@ -101,8 +101,8 @@ std::vector<LaneLine> LaneDetector::detectLaneLines(
 
     // Search for lines
     int center_point = line_segmentation.cols / 2;
-    bool found_left = false; float left_pos;
-    bool found_right = false; float right_pos;
+    bool found_left = false; float left_pos = -1;
+    bool found_right = false; float right_pos = 1;
 
     // For left line - Search on bottom edge
     int last_row = line_segmentation.rows - 1;
