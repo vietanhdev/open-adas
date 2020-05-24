@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         QApplication::setOverrideCursor(Qt::BlankCursor);
     }
 
-    
+    cv::setNumThreads(1);
 
     // Style our application with custom dark style
     a.setStyle(new DarkStyle);

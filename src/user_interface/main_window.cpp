@@ -189,6 +189,8 @@ void MainWindow::laneDetectionThread(
             main_window->is_lane_departure_warning = false;
         }
 
+        this_thread::sleep_for(chrono::milliseconds(80));
+
     }
 }
 
@@ -204,7 +206,9 @@ MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::playAudio(std::string audio_file) {
     if (!is_mute && Timer::calcTimePassed(last_audio_time) > 2000) {
-        system(("canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
+        // Play a silent sound first to give HDMI enough time to 
+        // start audio service
+        system(("canberra-gtk-play -f sounds/silent.wav;canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
         last_audio_time = Timer::getCurrentTime();
     }
 }

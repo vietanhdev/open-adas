@@ -103,7 +103,7 @@ float CarStatus::getCarSpeed() {
 }
 
 float CarStatus::getDangerDistance() {
-    return getCarSpeed() / 3.6 * 1.0;
+    return getCarSpeed() / 3.6 * 1.5;
 }
 
 void CarStatus::setCollisionWarning(bool is_warning) {
