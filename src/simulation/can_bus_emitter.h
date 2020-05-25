@@ -22,7 +22,6 @@ class CanBusEmitter {
    private:
     int s;  // socket
     struct canfd_frame cf;
-    char *traffic_log = DEFAULT_CAN_TRAFFIC;
     struct ifreq ifr;
     int door_pos = DEFAULT_DOOR_POS;
     int signal_pos = DEFAULT_SIGNAL_POS;
@@ -32,7 +31,6 @@ class CanBusEmitter {
     int speed_len = DEFAULT_SPEED_POS + 2;
     int difficulty = DEFAULT_DIFFICULTY;
     char *model = NULL;
-    int gControllerType = USB_CONTROLLER;
     int lock_enabled = 0;
     int unlock_enabled = 0;
     char door_state = 0xf;

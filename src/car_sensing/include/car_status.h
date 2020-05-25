@@ -13,6 +13,7 @@
 #include "timer.h"
 #include "speed_limit.h"
 #include "collision_warning_status.h"
+#include "can_lib.h"
 
 class CarStatus {
    private:

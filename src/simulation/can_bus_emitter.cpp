@@ -74,15 +74,7 @@ CanBusEmitter::CanBusEmitter() {
     }
 }
 
-// Adds data dir to file name
-// Uses a single pointer so not to have a memory leak
-// returns point to data_files or NULL if append is too large
-char *CanBusEmitter::get_data(char *fname) {
-    if (strlen(DATA_DIR) + strlen(fname) > 255) return NULL;
-    strncpy(data_file, DATA_DIR, 255);
-    strncat(data_file, fname, 255 - strlen(data_file));
-    return data_file;
-}
+
 
 void CanBusEmitter::send_pkt(int mtu) {
     if (write(s, &cf, mtu) != mtu) {

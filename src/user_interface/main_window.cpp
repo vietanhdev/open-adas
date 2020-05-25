@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
     car_gps_reader = std::make_shared<CarGPSReader>();
     #endif
 
+    can_reader = std::make_shared<CANReader>();
+
     collision_warning = std::make_shared<CollisionWarningController>(camera_model, car_status);
 
     // Start processing threads
@@ -53,11 +55,13 @@ MainWindow::MainWindow(QWidget *parent)
     ld_thread.detach();
 #endif
 
-#ifndef DISABLE_GPS_READER
+
     std::thread cpr_thread(&MainWindow::carPropReaderThread,
-                           car_gps_reader);
+                           car_gps_reader,
+                           can_reader,
+                           car_status
+                           );
     cpr_thread.detach();
-#endif
 
     std::thread speed_warning_thread(&MainWindow::warningMonitorThread, car_status, this);
     speed_warning_thread.detach();
@@ -195,10 +199,22 @@ void MainWindow::laneDetectionThread(
 }
 
 void MainWindow::carPropReaderThread(
-    std::shared_ptr<CarGPSReader> car_gps_reader) {
+    std::shared_ptr<CarGPSReader> car_gps_reader,
+    std::shared_ptr<CANReader> can_reader,
+    std::shared_ptr<CarStatus> car_status
+    ) {
+
     while (true) {
+
+        #ifndef DISABLE_GPS_READER
         car_gps_reader->updateProps();
-        this_thread::sleep_for(chrono::milliseconds(2000));
+        #endif
+
+        can_reader->readCANSignal();
+        car_status->setCarSpeed(can_reader->getSpeed());
+
+        this_thread::sleep_for(chrono::milliseconds(10));
+        
     }
 }
 

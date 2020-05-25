@@ -77,6 +77,8 @@ include_directories(
     "src/common/uff_models/unet"
     
     "src/car_sensing/include"
+    "src/car_sensing/libs/can_lib"
+
     "src/warning_controller"
     
     ${CUDA_INCLUDE_DIRS}
@@ -129,6 +131,8 @@ add_executable(${PROJECT_NAME}
 
     "src/warning_controller/collision_warning_controller.cpp"
     "src/warning_controller/traffic_sign_monitor.cpp"
+
+    "src/car_sensing/can_reader.cpp"
 )
 
 ADD_LIBRARY(
