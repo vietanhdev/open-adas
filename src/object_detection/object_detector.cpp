@@ -90,7 +90,7 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::
     }
 
     std::vector<std::string> sign_names = sign_classifier.getSignNames(sign_crops);
-    for (size_t i = 0; i < sign_object_ids.size(); ++i){
+    for (size_t i = 0; i < sign_object_ids.size(); ++i) {
         traffic_objects[sign_object_ids[i]].traffic_sign_type = sign_names[i];
     }
 

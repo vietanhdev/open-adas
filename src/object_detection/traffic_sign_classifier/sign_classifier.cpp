@@ -64,7 +64,6 @@ std::vector<int> TrafficSignClassifier::getSignIds(const std::vector<cv::Mat>& i
     //     }
         
     // }
-    // cout << input_imgs.size() << " " << labels.size() << endl;
 
     return labels;
 }

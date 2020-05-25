@@ -45,9 +45,9 @@ bool ClassificationNet::processInput(const samplesCommon::BufferManager& buffers
 
                 int j = y * inputH + x;
 
-                hostDataBuffer[i * volImg + 0 * volChl + j] = float(intensity.val[0]);
+                hostDataBuffer[i * volImg + 0 * volChl + j] = float(intensity.val[2]);
                 hostDataBuffer[i * volImg + 1 * volChl + j] = float(intensity.val[1]);
-                hostDataBuffer[i * volImg + 2 * volChl + j] = float(intensity.val[2]);
+                hostDataBuffer[i * volImg + 2 * volChl + j] = float(intensity.val[0]);
             }
         }
     }

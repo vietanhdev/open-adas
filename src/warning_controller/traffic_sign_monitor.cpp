@@ -17,7 +17,7 @@ std::string TrafficSignMonitor::getLargestSign(const std::vector<TrafficObject> 
 
         std::string sign_type = traffic_objects[i].traffic_sign_type;
 
-        if (sign_type == "") {
+        if (sign_type == "" || sign_type == "OTHER") {
             continue;
         }
 
