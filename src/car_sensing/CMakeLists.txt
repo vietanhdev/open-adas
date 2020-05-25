@@ -3,6 +3,19 @@ project(car_status)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast -fPIC")
 
+include_directories(
+    ../lane_detection
+    ../object_detection
+    ../object_detection/traffic_sign_classifier
+    ../common/uff_models/common/include
+    ../common/uff_models/unet
+    ../common/uff_models/classification_net
+    ../common/utils/include
+    ../common/onnx_models/include
+    ../common/onnx_models/onnx-tensorrt
+    ../configs
+)
+
 add_subdirectory(libs/NemaTode)     
 include_directories(include)
 

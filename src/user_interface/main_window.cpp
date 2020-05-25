@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     car_gps_reader = std::make_shared<CarGPSReader>();
     #endif
 
-    collision_warning = std::make_shared<CollisionWarning>(camera_model, car_status);
+    collision_warning = std::make_shared<CollisionWarningController>(camera_model, car_status);
 
     // Start processing threads
     std::thread od_thread(&MainWindow::objectDetectionThread, 
@@ -115,7 +115,7 @@ void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, Mai
 void MainWindow::objectDetectionThread(
     std::shared_ptr<ObjectDetector> object_detector,
     std::shared_ptr<CarStatus> car_status,
-    CollisionWarning *collision_warning) {
+    CollisionWarningController *collision_warning) {
         
     cv::Mat image;
     cv::Mat original_image;

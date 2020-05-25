@@ -25,13 +25,14 @@ message(STATUS ${TENSORRT_ROOT})
 include_directories(${CUDA_INCLUDE_DIRS}
                     ${TENSORRT_INCLUDE_DIR}
                     ${OpenCV_INCLUDE_DIRS}
-                    ../shared/uff_models/common/include
-                    ../shared/uff_models/unet
-                    ../config
+                    ../common/uff_models/common/include
+                    ../common/uff_models/unet
+                    ../common/utils/include
+                    ../configs
                     )
 
-file(GLOB UFF_MODEL_CPP ../shared/uff_models/common/*.cpp)
-file(GLOB UNET_CPP ../shared/uff_models/unet/*.cpp)
+file(GLOB UFF_MODEL_CPP ../common/uff_models/common/*.cpp)
+file(GLOB UNET_CPP ../common/uff_models/unet/*.cpp)
 
 cuda_add_library(lane_detector lane_detector.cpp ${UFF_MODEL_CPP} ${UNET_CPP})
 

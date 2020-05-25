@@ -19,20 +19,22 @@ list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES -Xcompiler -fPIC")
 
 
 # Build sign classifier
-# add_subdirectory(../traffic_sign_classifier)
+add_subdirectory(./traffic_sign_classifier)
 
 include_directories(${CUDA_INCLUDE_DIRS}
                     ${TENSORRT_INCLUDE_DIR}
                     ${OpenCV_INCLUDE_DIRS}
-                    ../shared/utils/include
-                    ../shared/onnx_models/include
-                    ../shared/onnx_models/onnx-tensorrt
-                    ../traffic_sign_classifier
-                    ../config/
+                    ../common/utils/include
+                    ../common/onnx_models/include
+                    ../common/onnx_models/onnx-tensorrt
+                    ../common/uff_models/common/include
+                    ../common/uff_models/classification_net
+                    ../configs/
+                    ./traffic_sign_classifier
                     )
 
-file(GLOB CPP_SRC ../shared/onnx_models/*.cpp *.cpp)
-file(GLOB CU_SRC ../shared/onnx_models/*.cu)
+file(GLOB CPP_SRC ../common/onnx_models/*.cpp *.cpp)
+file(GLOB CU_SRC ../common/onnx_models/*.cu)
 cuda_add_library(object_detector SHARED ${CPP_SRC} ${CU_SRC})
 # Use C++ 17
 target_compile_features(object_detector PRIVATE cxx_std_17)

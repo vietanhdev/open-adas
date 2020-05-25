@@ -54,30 +54,29 @@ set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 include_directories(
     "src"
-    "src/config"
-    "src/shared/utils/include"
+    "src/configs"
+    "src/common/utils/include"
 
     "src/user_interface/dark_theme"
     "src/user_interface"
     "src/simulation"
-    "src/camera_model"
-    "src/camera_model/camera_wizard"
-    "src/camera_model/camera_wizard/four_point_select_page"
-    "src/camera_model/camera_wizard/instruction_page"
-    "src/camera_model/camera_wizard/measurement_page"
+    "src/common/camera_model"
+    "src/common/camera_model/camera_wizard"
+    "src/common/camera_model/camera_wizard/four_point_select_page"
+    "src/common/camera_model/camera_wizard/instruction_page"
+    "src/common/camera_model/camera_wizard/measurement_page"
 
-    "src/object_detector"
-    "src/shared/onnx_models/include"
+    "src/object_detection"
+    "src/common/onnx_models/include"
 
-    "src/traffic_sign_classifier"
-    "src/shared/uff_models/classification_net"
+    "src/object_detection/traffic_sign_classifier"
+    "src/common/uff_models/classification_net"
 
-    "src/lane_detector"
-    "src/shared/uff_models/common/include"
-    "src/shared/uff_models/unet"
+    "src/lane_detection"
+    "src/common/uff_models/common/include"
+    "src/common/uff_models/unet"
     
-    "src/car_status/include"
-
+    "src/car_sensing/include"
     "src/warning_controller"
     
     ${CUDA_INCLUDE_DIRS}
@@ -85,20 +84,14 @@ include_directories(
 
 
 # Build object detector & tracker
-add_subdirectory(src/shared/onnx_models/onnx-tensorrt)
-add_subdirectory(src/object_detector)
+add_subdirectory(src/common/onnx_models/onnx-tensorrt)
+add_subdirectory(src/object_detection)
 
 # Build car prop reader
-add_subdirectory(src/car_status)
+add_subdirectory(src/car_sensing)
 
 # Build lane detector
-add_subdirectory(src/lane_detector)
-
-# Build sign classifier
-add_subdirectory(src/traffic_sign_classifier)
-
-# Build warning controller
-# add_subdirectory(src/warning_controller)
+add_subdirectory(src/lane_detection)
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -110,9 +103,9 @@ add_executable(${PROJECT_NAME}
     "src/main.cpp"
     "resources.qrc"
 
-    "src/shared/utils/utility.cpp"
-    "src/shared/utils/file_storage.cpp"
-    "src/shared/utils/timer.cpp"
+    "src/common/utils/utility.cpp"
+    "src/common/utils/file_storage.cpp"
+    "src/common/utils/timer.cpp"
 
     "src/user_interface/main_window.cpp"
     "src/user_interface/main_window.ui"
@@ -123,17 +116,17 @@ add_executable(${PROJECT_NAME}
     "src/simulation/simulation.cpp"
     "src/simulation/simulation.ui"
 
-    "src/camera_model/camera_model.cpp"
-    "src/camera_model/birdview_model.cpp"
-    "src/camera_model/camera_wizard/camera_wizard.cpp"
-    "src/camera_model/camera_wizard/instruction_page/instruction_page.cpp"
-    "src/camera_model/camera_wizard/instruction_page/instruction_page.ui"
-    "src/camera_model/camera_wizard/measurement_page/measurement_page.cpp"
-    "src/camera_model/camera_wizard/measurement_page/measurement_page.ui"
-    "src/camera_model/camera_wizard/four_point_select_page/four_point_select_page.cpp"
-    "src/camera_model/camera_wizard/four_point_select_page/four_point_select_page.ui"
+    "src/common/camera_model/camera_model.cpp"
+    "src/common/camera_model/birdview_model.cpp"
+    "src/common/camera_model/camera_wizard/camera_wizard.cpp"
+    "src/common/camera_model/camera_wizard/instruction_page/instruction_page.cpp"
+    "src/common/camera_model/camera_wizard/instruction_page/instruction_page.ui"
+    "src/common/camera_model/camera_wizard/measurement_page/measurement_page.cpp"
+    "src/common/camera_model/camera_wizard/measurement_page/measurement_page.ui"
+    "src/common/camera_model/camera_wizard/four_point_select_page/four_point_select_page.cpp"
+    "src/common/camera_model/camera_wizard/four_point_select_page/four_point_select_page.ui"
 
-    "src/warning_controller/collision_warning.cpp"
+    "src/warning_controller/collision_warning_controller.cpp"
     "src/warning_controller/traffic_sign_monitor.cpp"
 )
 

@@ -25,13 +25,13 @@ message(STATUS ${TENSORRT_ROOT})
 include_directories(${CUDA_INCLUDE_DIRS}
 					${TENSORRT_INCLUDE_DIR}
 					${OpenCV_INCLUDE_DIRS}
-					../config
-					../shared/uff_models/common/include
-					../shared/uff_models/classification_net
+					../../configs
+					../../common/uff_models/common/include
+					../../common/uff_models/classification_net
 					)
 
-file(GLOB UFF_MODEL_CPP ../shared/uff_models/common/*.cpp)
-file(GLOB NET_CPP ../shared/uff_models/classification_net/*.cpp)
+file(GLOB UFF_MODEL_CPP ../../common/uff_models/common/*.cpp)
+file(GLOB NET_CPP ../../common/uff_models/classification_net/*.cpp)
 
 cuda_add_library(sign_classifier SHARED sign_classifier.cpp ${UFF_MODEL_CPP} ${NET_CPP})
 

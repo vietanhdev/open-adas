@@ -1,8 +1,6 @@
-#if !defined(COLLISION_WARNING_H)
-#define COLLISION_WARNING_H
+#if !defined(COLLISION_WARNING_CONTROLLER_H)
+#define COLLISION_WARNING_CONTROLLER_H
 
-
-#include <QCloseEvent>
 #include <mutex>
 #include <opencv2/opencv.hpp>
 #include <condition_variable>
@@ -10,7 +8,7 @@
 #include "camera_model.h"
 #include "car_status.h"
 
-class CollisionWarning {
+class CollisionWarningController {
 
     std::mutex mtx;
     std::condition_variable cv;
@@ -23,9 +21,9 @@ class CollisionWarning {
 
    public:
 
-    CollisionWarning(std::shared_ptr<CameraModel> camera_model, std::shared_ptr<CarStatus> car_status);
+    CollisionWarningController(std::shared_ptr<CameraModel> camera_model, std::shared_ptr<CarStatus> car_status);
 
-    static void processingThread(CollisionWarning* this_ptr);
+    static void processingThread(CollisionWarningController* this_ptr);
 
     void updateData(const cv::Mat &img, const std::vector<TrafficObject> &objects);
     void calculateDistance(const cv::Mat &img, std::vector<TrafficObject> &objects);
@@ -33,4 +31,4 @@ class CollisionWarning {
     std::vector<TrafficObject> &objects);
 };
 
-#endif  // COLLISION_WARNING_H
+#endif  // COLLISION_WARNING_CONTROLLER_H

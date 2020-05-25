@@ -75,3 +75,5 @@ sudo ln -s /usr/local/cuda/lib64/libcublas.so /usr/lib/libcublas.so
 
 - In this project, we use code from:
     + Dark Theme for Qt5 by Juergen Skrotzky: [https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle](https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle).
+
+- ICSim

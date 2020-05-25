@@ -1,16 +1,16 @@
-#include "collision_warning.h"
+#include "collision_warning_controller.h"
 
 
 using namespace std;
 
-CollisionWarning::CollisionWarning(std::shared_ptr<CameraModel> camera_model, 
+CollisionWarningController::CollisionWarningController(std::shared_ptr<CameraModel> camera_model, 
     std::shared_ptr<CarStatus> car_status
 ) {
     this->camera_model = camera_model;
     this->car_status = car_status;
 }
 
-void CollisionWarning::processingThread(CollisionWarning *this_ptr) {
+void CollisionWarningController::processingThread(CollisionWarningController *this_ptr) {
     cv::Mat img;
     std::vector<TrafficObject> objects;
     while (true) {
@@ -28,7 +28,7 @@ void CollisionWarning::processingThread(CollisionWarning *this_ptr) {
     }
 }
 
-void CollisionWarning::updateData(const cv::Mat &img, const std::vector<TrafficObject> &objects) {
+void CollisionWarningController::updateData(const cv::Mat &img, const std::vector<TrafficObject> &objects) {
     std::unique_lock<std::mutex> lck(mtx);
     img.copyTo(this->img);
     this->objects = objects;
@@ -36,7 +36,7 @@ void CollisionWarning::updateData(const cv::Mat &img, const std::vector<TrafficO
     cv.notify_all();
 }
 
-void CollisionWarning::calculateDistance(const cv::Mat &img, std::vector<TrafficObject> &objects) {
+void CollisionWarningController::calculateDistance(const cv::Mat &img, std::vector<TrafficObject> &objects) {
 
     // Check transform
     // cv::Mat transform_img = camera_model->getBirdViewModel()->transformImage(img);
@@ -65,7 +65,7 @@ void CollisionWarning::calculateDistance(const cv::Mat &img, std::vector<Traffic
 }
 
 
-bool CollisionWarning::isInDangerSituation(const cv::Size &img_size,        
+bool CollisionWarningController::isInDangerSituation(const cv::Size &img_size,        
     std::vector<TrafficObject> &objects) {
         
     if (car_status->getCarSpeed() < MIN_SPEED_FOR_COLLISION_WARNING) {

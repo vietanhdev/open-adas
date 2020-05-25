@@ -1,5 +1,3 @@
-#include "unet.h"
-
 #include <cuda_runtime_api.h>
 
 #include <cstdlib>
@@ -18,6 +16,7 @@
 #include "buffers.h"
 #include "common.h"
 #include "logger.h"
+#include "uff_model.h"
 
 UffModel::UffModel(const UffModelParams& params) {
     mParams = params;
@@ -31,12 +30,12 @@ UffModel::UffModel(const UffModelParams& params) {
 
     } else {  // Else, create engine file
 
-        cout << "Creating a new engine file at: "
-             << mParams.engineFilePath << endl;
+        cout << "Creating a new engine file at: " << mParams.engineFilePath
+             << endl;
         build();
         if (!saveEngine(mParams.engineFilePath, std::cerr)) {
             cerr << "Error on saving engine at: " << mParams.engineFilePath
-             << endl;
+                 << endl;
             return;
         }
     }
@@ -44,7 +43,7 @@ UffModel::UffModel(const UffModelParams& params) {
     if (mParams.classListFile != "") {
         if (readClassListFile(mParams.classListFile, mParams.classes) != 0) {
             cerr << "Error on loading class list: " << mParams.classListFile
-             << endl;
+                 << endl;
             return;
         }
         cout << mParams.nClasses << endl;
@@ -91,7 +90,7 @@ bool UffModel::saveEngine(const std::string& fileName, std::ostream& err) {
         return false;
     }
 
-    IHostMemory * serializedEngine = mEngine->serialize();
+    IHostMemory* serializedEngine = mEngine->serialize();
     if (serializedEngine == nullptr) {
         err << "Engine serialization failed" << std::endl;
         return false;
@@ -118,7 +117,6 @@ bool UffModel::createContext() {
 
     return true;
 }
-
 
 //!
 //! \brief Creates the network, configures the builder and creates the network
@@ -214,12 +212,13 @@ void UffModel::constructNetwork(
 
 // Read class list from file
 // Return 0 if success, otherwise return a positive number
-int UffModel::readClassListFile(const std::string & class_list_file, std::vector<ObjectClass> &classes) {
+int UffModel::readClassListFile(const std::string& class_list_file,
+                                std::vector<ObjectClass>& classes) {
     // Read data file
     std::ifstream data_file(class_list_file);
-    if(!data_file) {
+    if (!data_file) {
         return 1;
-    } 
+    }
 
     classes.clear();
 
@@ -230,8 +229,7 @@ int UffModel::readClassListFile(const std::string & class_list_file, std::vector
         // Split string
         std::vector<std::string> splited;
         std::istringstream iss(line);
-        for(std::string s; iss >> s;)
-            splited.push_back(s);
+        for (std::string s; iss >> s;) splited.push_back(s);
 
         // Read class data
         if (splited.size() >= 2) {
@@ -239,18 +237,16 @@ int UffModel::readClassListFile(const std::string & class_list_file, std::vector
             std::string class_name = splited[1];
             classes.push_back(ObjectClass(class_id, class_name));
         }
-
     }
 
     return 0;
 }
 
-
 std::string& UffModel::ltrim(std::string& str, const std::string& chars) {
     str.erase(0, str.find_first_not_of(chars));
     return str;
 }
- 
+
 std::string& UffModel::rtrim(std::string& str, const std::string& chars) {
     str.erase(str.find_last_not_of(chars) + 1);
     return str;
