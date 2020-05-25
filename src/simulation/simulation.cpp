@@ -9,6 +9,11 @@ using namespace cv;
 void Simulation::setupAndConnectComponents() {
     setupUi(this);
 
+    // Setup virtual CAN
+    if (USE_CAN_BUS_TO_RECEIVE_SPEED) {
+        system("sh setup_vcan.sh");
+    }
+
     // Connect buttons
     connect(this->playBtn, SIGNAL(released()), this, SLOT(playBtnClicked()));
     connect(this->simDataList, SIGNAL(itemSelectionChanged()), this,
@@ -354,8 +359,12 @@ void Simulation::setPlaying(bool playing) {
 
 void Simulation::setCarSpeed(float speed) {
     car_speed = speed;
-    // car_status->setCarSpeed(speed);
-    can_bus_emitter.sendSpeed(speed);
+    if (!USE_CAN_BUS_TO_RECEIVE_SPEED) {
+        car_status->setCarSpeed(speed);
+    } else {
+        can_bus_emitter.sendSpeed(speed);
+    }
+    
 }
 
 void Simulation::simDataList_onselectionchange() {

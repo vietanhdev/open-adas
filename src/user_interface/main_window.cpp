@@ -35,7 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
     car_gps_reader = std::make_shared<CarGPSReader>();
     #endif
 
-    can_reader = std::make_shared<CANReader>();
+    if (USE_CAN_BUS_TO_RECEIVE_SPEED) {
+        can_reader = std::make_shared<CANReader>();
+    }
 
     collision_warning = std::make_shared<CollisionWarningController>(camera_model, car_status);
 
@@ -210,8 +212,10 @@ void MainWindow::carPropReaderThread(
         car_gps_reader->updateProps();
         #endif
 
-        can_reader->readCANSignal();
-        car_status->setCarSpeed(can_reader->getSpeed());
+        if (USE_CAN_BUS_TO_RECEIVE_SPEED) {
+            can_reader->readCANSignal();
+            car_status->setCarSpeed(can_reader->getSpeed());
+        }
 
         this_thread::sleep_for(chrono::milliseconds(10));
         

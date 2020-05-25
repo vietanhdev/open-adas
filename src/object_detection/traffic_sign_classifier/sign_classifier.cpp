@@ -8,7 +8,7 @@ TrafficSignClassifier::TrafficSignClassifier() {
 
     params.inputW = INPUT_WIDTH;
     params.inputH = INPUT_HEIGHT;
-    params.batchSize = 2;
+    params.batchSize = 4;
     params.nClasses = 15;
     params.uffFilePath = SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_MODEL;
     params.engineFilePath = SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_TENSORRT_PLAN;
