@@ -8,7 +8,7 @@ TrafficSignClassifier::TrafficSignClassifier() {
 
     params.inputW = INPUT_WIDTH;
     params.inputH = INPUT_HEIGHT;
-    params.batchSize = 8;
+    params.batchSize = 2;
     params.nClasses = 15;
     params.uffFilePath = SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_MODEL;
     params.engineFilePath = SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_TENSORRT_PLAN;
@@ -35,11 +35,12 @@ std::vector<int> TrafficSignClassifier::getSignIds(const std::vector<cv::Mat>& i
     for (int batch = 0; batch < n_batchs; ++batch) {
 
         std::vector<int> batch_labels;
+        int begin_id = batch * params.batchSize;
         int end_id = batch * params.batchSize + params.batchSize;
         if (end_id > n_images) {
-            end_id = n_images - batch * params.batchSize;
+            end_id = batch * params.batchSize + n_images - batch * params.batchSize;
         }
-        std::vector<cv::Mat>::const_iterator first = input_imgs.begin() + batch * params.batchSize;
+        std::vector<cv::Mat>::const_iterator first = input_imgs.begin() + begin_id;
         std::vector<cv::Mat>::const_iterator last = input_imgs.begin() + end_id;
         std::vector<cv::Mat> inputs(first, last);
 
@@ -55,15 +56,15 @@ std::vector<int> TrafficSignClassifier::getSignIds(const std::vector<cv::Mat>& i
     assert(input_imgs.size() == labels.size());
 
 
-    // if (!input_imgs.empty()) {
-    //     for (size_t i = 0; i < input_imgs.size(); i++)
-    //     {
-    //         std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
-    //         std::time_t t = std::chrono::system_clock::to_time_t(p);
-    //         cv::imwrite("debug/" + std::string(std::ctime(&t)) + std::to_string(i) + ".png", input_imgs[i]);
-    //     }
-        
-    // }
+    if (!input_imgs.empty() && DEBUG_WRITE_SIGN_CROPS) {
+        fs::create_directory("debug_traffic_sign");
+        for (size_t i = 0; i < input_imgs.size(); i++)
+        {
+            std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
+            std::time_t t = std::chrono::system_clock::to_time_t(p);
+            cv::imwrite("debug_traffic_sign/" + std::string(std::ctime(&t)) + std::to_string(i) + ".png", input_imgs[i]);
+        }   
+    }
 
     return labels;
 }

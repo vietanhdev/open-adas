@@ -31,6 +31,7 @@
 #include "car_status.h"
 #include "filesystem_include.h"
 #include "camera_model.h"
+#include "can_bus_emitter.h"
 
 struct SimData {
     std::string video_path;
@@ -55,6 +56,8 @@ class Simulation : public QWidget, private Ui::Simulation {
 
     std::vector<SimData> sim_data;
     std::vector<int> selected_sim_data_indices;
+
+    CanBusEmitter can_bus_emitter;
 
    public:
     explicit Simulation(std::shared_ptr<CarStatus> car_status, std::shared_ptr<CameraModel> camera_model, QWidget *parent = nullptr);

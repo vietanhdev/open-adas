@@ -1,11 +1,13 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "config_sign_classification.h"
+#include "config_lane_detection.h"
+
 #define IMG_MAX_SIZE 384
 
 // #define DISABLE_LANE_DETECTOR
 #define DISABLE_GPS_READER
-
 
 #define SMARTCAM_DEBUG
 
@@ -15,28 +17,6 @@
 #define DEBUG_SHOW_FPS
 #define SHOW_DISTANCES true
 
-#define SMARTCAM_OBJECT_DETECTION_MODEL \
-    "models/object_detection/ctdet_bdd_resnet18_384.onnx"
-#define SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN \
-    "models/object_detection/ctdet_bdd_resnet18_384.engine"
-// Mode: FLOAT32, FLOAT16. INT in the future
-#define SMARTCAM_OBJECT_DETECTION_MODE "FLOAT16"
-#define MIN_OBJECT_SIZE 10
-
-#define SMARTCAM_LANE_DETECTION_MODEL \
-    "models/lane_detection/config02_model_.103-0.399921.uff"
-#define SMARTCAM_LANE_DETECTION_TENSORRT_PLAN \
-    "models/lane_detection/config02_model_.103-0.399921.engine"
-
-#define SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_MODEL \
-    "models/traffic_sign/traffic_sign_classification_resnet18_64.uff"
-#define SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_TENSORRT_PLAN \
-    "models/traffic_sign/traffic_sign_classification_resnet18_64.engine"
-#define SMARTCAM_TRAFFIC_SIGN_CLASS_LIST \
-    "models/traffic_sign/classes.txt"
-
-#define MIN_TRAFFIC_SIGN_SIZE 15
-#define SIGN_CLASSIFICATION_THRESH 0.8
 #define MAX_SPEED_SIGN_VALID_TIME 30*60*1000
 #define TIME_TO_RENOTIFY_A_SAME_TRAFFIC_SIGN 60*1000
 #define OVERSPEED_WARNING_AFTER_TRAFFIC_SIGN 6 * 1000

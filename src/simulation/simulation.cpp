@@ -355,6 +355,7 @@ void Simulation::setPlaying(bool playing) {
 void Simulation::setCarSpeed(float speed) {
     car_speed = speed;
     car_status->setCarSpeed(speed);
+    can_bus_emitter.sendSpeed(speed);
 }
 
 void Simulation::simDataList_onselectionchange() {

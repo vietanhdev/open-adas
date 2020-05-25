@@ -1,6 +1,9 @@
 #if !defined(CONFIG_CAN_BUS_H)
 #define CONFIG_CAN_BUS_H
 
+
+#define CAN_DEVICE "vcan0"
+
 #ifndef DATA_DIR
 #define DATA_DIR "./data/"
 #endif

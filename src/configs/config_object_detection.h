@@ -1,6 +1,14 @@
 #ifndef CONFIG_OBJECT_DETECTION_H
 #define CONFIG_OBJECT_DETECTION_H
 
+#define SMARTCAM_OBJECT_DETECTION_MODEL \
+    "models/object_detection/ctdet_bdd_resnet18_384.onnx"
+#define SMARTCAM_OBJECT_DETECTION_TENSORRT_PLAN \
+    "models/object_detection/ctdet_bdd_resnet18_384.engine"
+// Mode: FLOAT32, FLOAT16. INT in the future
+#define SMARTCAM_OBJECT_DETECTION_MODE "FLOAT16"
+#define MIN_OBJECT_SIZE 10
+
 #include <vector>
 
 namespace ctdet {

@@ -115,6 +115,7 @@ add_executable(${PROJECT_NAME}
 
     "src/simulation/simulation.cpp"
     "src/simulation/simulation.ui"
+    "src/simulation/can_bus_emitter.cpp"
 
     "src/common/camera_model/camera_model.cpp"
     "src/common/camera_model/birdview_model.cpp"
