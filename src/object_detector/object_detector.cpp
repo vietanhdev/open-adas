@@ -48,14 +48,20 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::
     std::vector<TrafficObject> traffic_objects;
     int original_img_height = original_img.rows;
     int original_img_width = original_img.cols;
-    for (size_t i = 0; i < detected_objects.size(); ++i) {
-        
-        if (detected_objects[i].bbox.x2 - detected_objects[i].bbox.x1 < MIN_OBJECT_SIZE ||
-        detected_objects[i].bbox.y2 - detected_objects[i].bbox.y1 < MIN_OBJECT_SIZE) {
-            continue;
-        }
 
-        std::string traffic_sign_type = "";
+    // Filter by size
+    std::vector<Detection> filtered_detected_object(detected_objects.size());
+    auto it = std::copy_if (detected_objects.begin(), detected_objects.end(), filtered_detected_object.begin(), [](Detection d){
+        return d.bbox.x2 - d.bbox.x1 >= MIN_OBJECT_SIZE &&
+        d.bbox.y2 - d.bbox.y1 >= MIN_OBJECT_SIZE;
+    } );
+    filtered_detected_object.resize(std::distance(filtered_detected_object.begin(),it));  // shrink container to new size
+    detected_objects = filtered_detected_object;
+
+    // Classify traffic signs
+    std::vector<size_t> sign_object_ids;
+    std::vector<cv::Mat> sign_crops;
+    for (size_t i = 0; i < detected_objects.size(); ++i) {
 
         if (detected_objects[i].classId == 8) { // Traffic sign
 
@@ -73,14 +79,19 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::
             cv::Rect roi(x1, y1, width, height);
             cv::Mat crop = original_img(roi);
 
-            std::string sign_name = sign_classifier.getSignName(crop);
-            traffic_sign_type = sign_name;
+            sign_crops.push_back(crop);
+            sign_object_ids.push_back(i);
             
         }
         
         traffic_objects.push_back(
-            TrafficObject(detected_objects[i], traffic_sign_type)
+            TrafficObject(detected_objects[i], "")
         );
+    }
+
+    std::vector<std::string> sign_names = sign_classifier.getSignNames(sign_crops);
+    for (size_t i = 0; i < sign_object_ids.size(); ++i){
+        traffic_objects[sign_object_ids[i]].traffic_sign_type = sign_names[i];
     }
 
     return traffic_objects;

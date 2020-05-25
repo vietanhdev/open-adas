@@ -22,32 +22,33 @@
 ClassificationNet::ClassificationNet(const UffModelParams& params): UffModel(params) {}
 
 // Reads the input, pre-process, and stores in managed buffer
-bool ClassificationNet::processInput(const samplesCommon::BufferManager& buffers, const cv::Mat& img) {
-    int inputH = mParams.inputH;
-    int inputW = mParams.inputW;
-
-    cv::Mat resized_img;
-    cv::resize(img, resized_img, cv::Size(inputW, inputH));
-    resized_img.convertTo(resized_img, CV_32FC3, 1.0/255);
+bool ClassificationNet::processInput(const samplesCommon::BufferManager& buffers, const std::vector<cv::Mat> & imgs) {
+    const int inputH = mParams.inputH;
+    const int inputW = mParams.inputW;
+    const int batchSize = imgs.size();
 
     // put data into buffer
     float* hostDataBuffer =
         static_cast<float*>(buffers.getHostBuffer(mParams.inputTensorNames[0]));
 
     int volChl = inputH * inputW;
+    int volImg = volChl * 3;
+    for (int i = 0; i < batchSize; ++i) {
 
-    for (int x = 0; x < inputW; ++x) {
-        for (int y = 0; y < inputH; ++y) {
-            cv::Vec3f intensity = resized_img.at<cv::Vec3f>(y, x);
-            float blue = intensity.val[0];
-            float green = intensity.val[1];
-            float red = intensity.val[2];
+        cv::Mat resized_img;
+        cv::resize(imgs[i], resized_img, cv::Size(inputW, inputH));
+        resized_img.convertTo(resized_img, CV_32FC3, 1.0/255);
 
-            int j = y * inputH + x;
+        for (int x = 0; x < inputW; ++x) {
+            for (int y = 0; y < inputH; ++y) {
+                cv::Vec3f intensity = resized_img.at<cv::Vec3f>(y, x);
 
-            hostDataBuffer[0 * volChl + j] = float(blue);
-            hostDataBuffer[1 * volChl + j] = float(green);
-            hostDataBuffer[2 * volChl + j] = float(red);
+                int j = y * inputH + x;
+
+                hostDataBuffer[i * volImg + 0 * volChl + j] = float(intensity.val[0]);
+                hostDataBuffer[i * volImg + 1 * volChl + j] = float(intensity.val[1]);
+                hostDataBuffer[i * volImg + 2 * volChl + j] = float(intensity.val[2]);
+            }
         }
     }
 
@@ -55,22 +56,26 @@ bool ClassificationNet::processInput(const samplesCommon::BufferManager& buffers
 }
 
 // Process output and verify result
-bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffers, int & object_class, float threshold) {
+bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffers, std::vector<int> & labels, int n_samples, float threshold) {
 
     const float* out_buff = static_cast<float*>(
         buffers.getHostBuffer(mParams.outputTensorNames[0]));
 
-    object_class = -1;
-    float max_prob = 0.0;
-    for (int i = 0; i < mParams.nClasses; ++i) {
-        if (out_buff[i] > max_prob) {
-            object_class = i;
-            max_prob = out_buff[i];
+    for (int batch = 0; batch < n_samples; ++batch) {
+        int label = -1;
+        float max_prob = 0.0;
+        for (int i = 0; i < mParams.nClasses; ++i) {
+            if (out_buff[i] > max_prob) {
+                label = i;
+                max_prob = out_buff[batch * mParams.nClasses + i];
+            }
         }
-    }
 
-    if (max_prob < threshold) {
-        object_class = -1;
+        if (max_prob < threshold) {
+            label = -1;
+        }
+
+        labels.push_back(label);
     }
 
     return true;
@@ -79,20 +84,20 @@ bool ClassificationNet::processOutput(const samplesCommon::BufferManager& buffer
 // Runs the TensorRT inference engine
 // This function is the main execution function
 // It allocates the buffer, sets inputs and executes the engine
-bool ClassificationNet::infer(const cv::Mat& input_img, int& object_class, float threshold) {
-    int origin_w = input_img.size().width;
-    int origin_h = input_img.size().height;
+bool ClassificationNet::infer(const std::vector<cv::Mat>& input_imgs, std::vector<int>& labels, float threshold) {
 
-    if (!processInput(*buffers, input_img)) {
+    if (!processInput(*buffers, input_imgs)) {
+        cout << "Processing input failed" << endl;
         return false;
     }
 
     // Memcpy from host input buffers to device input buffers
     buffers->copyInputToDevice();
 
-    bool status = context->execute(mParams.batchSize,
+    bool status = context->execute(input_imgs.size(),
                                    buffers->getDeviceBindings().data());
     if (!status) {
+        cout << "CUDA execution failed" << endl;
         return false;
     }
 
@@ -100,7 +105,8 @@ bool ClassificationNet::infer(const cv::Mat& input_img, int& object_class, float
     buffers->copyOutputToHost();
 
     // Post-process output
-    if (!processOutput(*buffers, object_class, threshold)) {
+    if (!processOutput(*buffers, labels, input_imgs.size(), threshold)) {
+        cout << "Processing output failed" << endl;
         return false;
     }
 

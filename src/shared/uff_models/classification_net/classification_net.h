@@ -28,17 +28,17 @@ struct ClassificationNet : UffModel {
     ClassificationNet(const UffModelParams& params);
 
     // Run the TensorRT inference engine
-    bool infer(const cv::Mat& input_img, int& object_class, float threshold);
+    bool infer(const std::vector<cv::Mat>& input_imgs, std::vector<int>& labels, float threshold);
 
     std::string getClassName(int class_id);
 
    private:
     // Put input to buffer
-    bool processInput(const samplesCommon::BufferManager& buffers,
-                      const cv::Mat& input_img);
+    bool processInput(const samplesCommon::BufferManager& buffers, 
+                        const std::vector<cv::Mat> &imgs);
 
     // Process the output
-    bool processOutput(const samplesCommon::BufferManager& buffers, int & object_class, float threshold);
+    bool processOutput(const samplesCommon::BufferManager& buffers, std::vector<int> & labels, int n_samples, float threshold);
 
 };
 
