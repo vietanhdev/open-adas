@@ -86,7 +86,7 @@ bool CollisionWarningController::isInDangerSituation(const cv::Size &img_size,
     cv::Mat in_danger;
     cv::bitwise_and(danger_zone, object_mask, in_danger);
 
-    if (cv::countNonZero(in_danger) > 20) {
+    if (cv::countNonZero(in_danger) > 10) {
         return true;
     }
 
