@@ -276,10 +276,10 @@ void MainWindow::startVideoGrabber() {
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINES
                 cv::Mat detected_line_img_copy = car_status->getDetectedLinesViz();
                 cv::Mat reduced_line_img_copy = car_status->getReducedLinesViz();
-                #endif
 
-                cv::imwrite(std::to_string(frame_ids) + "-detected_line_img.png", detected_line_img_copy);
-                cv::imwrite(std::to_string(frame_ids) + "-reduced_line_img.png", reduced_line_img_copy);
+                // cv::imwrite(std::to_string(frame_ids) + "-detected_line_img.png", detected_line_img_copy);
+                // cv::imwrite(std::to_string(frame_ids) + "-reduced_line_img.png", reduced_line_img_copy);
+                #endif
 
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
                     if (!lane_line_mask_copy.empty()) {
@@ -307,7 +307,7 @@ void MainWindow::startVideoGrabber() {
                     if (!reduced_line_img_copy.empty()) {
                         cv::namedWindow("Reduced Lines", cv::WINDOW_NORMAL);
                         cv::imshow("Reduced Lines", reduced_line_img_copy);
-                        cv::waitKey(0);
+                        cv::waitKey(1);
                     }
                 #endif
                 

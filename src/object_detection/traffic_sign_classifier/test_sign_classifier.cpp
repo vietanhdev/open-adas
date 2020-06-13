@@ -39,7 +39,7 @@ int main(int argc, char** argv)
             cv::Mat input_img = cv::imread(img_path);
             std::vector<cv::Mat> input_imgs({input_img});
             auto start = high_resolution_clock::now(); 
-            std::vector<int> sign_id = classifier.getSignIds(input_imgs);
+            std::vector<int> sign_id = classifier.getSignIds(input_imgs, false);
             auto stop = high_resolution_clock::now(); 
             auto duration = duration_cast<microseconds>(stop - start);
             long long int execution_time = duration.count();

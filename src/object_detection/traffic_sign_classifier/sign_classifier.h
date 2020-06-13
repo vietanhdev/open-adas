@@ -7,6 +7,7 @@
 #include <vector>
 #include <math.h> 
 
+#include "config_sign_classification.h"
 #include "traffic_sign.h"
 #include "classification_net.h"
 
@@ -21,7 +22,7 @@ class TrafficSignClassifier {
 
     TrafficSignClassifier();
 
-    std::vector<int> getSignIds(const std::vector<cv::Mat>& input_img);
+    std::vector<int> getSignIds(const std::vector<cv::Mat>& input_img, bool filter_sign_by_confidence=true);
     std::vector<std::string> getSignNames(const std::vector<cv::Mat>& input_imgs);
     std::vector<std::string> getSignNames(std::vector<int>& class_ids);
     std::string getSignName(int class_id);

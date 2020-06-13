@@ -24,7 +24,7 @@ TrafficSignClassifier::TrafficSignClassifier() {
     model = std::make_shared<ClassificationNet>(params);
 }
 
-std::vector<int> TrafficSignClassifier::getSignIds(const std::vector<cv::Mat>& input_imgs) {
+std::vector<int> TrafficSignClassifier::getSignIds(const std::vector<cv::Mat>& input_imgs, bool filter_sign_by_confidence) {
 
     std::vector<int> labels;
     if (input_imgs.empty()) return labels;
@@ -43,7 +43,7 @@ std::vector<int> TrafficSignClassifier::getSignIds(const std::vector<cv::Mat>& i
         std::vector<cv::Mat>::const_iterator last = input_imgs.begin() + end_id;
         std::vector<cv::Mat> inputs(first, last);
 
-        if (!model->infer(inputs, batch_labels, SIGN_CLASSIFICATION_THRESH)) {
+        if (!model->infer(inputs, batch_labels, filter_sign_by_confidence ? SIGN_CLASSIFICATION_THRESH : 0)) {
             cerr << "Error on running traffic sign classification model." << endl;
         }
 
