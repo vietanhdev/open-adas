@@ -6,18 +6,17 @@ using namespace cv;
 
 TrafficSignClassifier::TrafficSignClassifier() {
 
-    params.inputW = INPUT_WIDTH;
-    params.inputH = INPUT_HEIGHT;
-    params.batchSize = 4;
-    params.nClasses = 15;
-    params.uffFilePath = SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_MODEL;
-    params.engineFilePath = SMARTCAM_TRAFFIC_SIGN_CLASSIFICATION_TENSORRT_PLAN;
-    params.classListFile = SMARTCAM_TRAFFIC_SIGN_CLASS_LIST;
-    params.forceRebuildEngine = false;
-    params.inputTensorNames.push_back(INPUT_NODE);
-    params.outputTensorNames.push_back(OUTPUT_NODE);
-    params.fp16 = true;
-    params.int8 = false;
+    params.inputW = SIGN_CLASSIFICATION_INPUT_WIDTH;
+    params.inputH = SIGN_CLASSIFICATION_INPUT_HEIGHT;
+    params.batchSize = SIGN_CLASSIFICATION_BATCH_SIZE;
+    params.nClasses = SIGN_CLASSIFICATION_N_CLASSES;
+    params.uffFilePath = SIGN_CLASSIFICATION_MODEL;
+    params.engineFilePath = SIGN_CLASSIFICATION_TENSORRT_PLAN;
+    params.classListFile = SIGN_CLASSIFICATION_CLASS_LIST;
+    params.forceRebuildEngine = SIGN_CLASSIFICATION_FORCE_REBUILD_ENGINE;
+    params.inputTensorNames.push_back(SIGN_CLASSIFICATION_INPUT_NODE);
+    params.outputTensorNames.push_back(SIGN_CLASSIFICATION_OUTPUT_NODE);
+    params.fp16 = SIGN_CLASSIFICATION_USE_FP_16;
 
     auto test = gLogger.defineTest("TrafficSignClassifier", 0, NULL);
     gLogger.reportTestStart(test);

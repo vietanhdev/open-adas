@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 
     const std::string keys =
         "{help h usage ? |      | print this message   }"
-        "{input_folder   |      | imput image folder }"
+        "{input_folder   |      | input image folder }"
         "{output_file    |test_result_TensorRT.txt| path to output file }"
         ;
 

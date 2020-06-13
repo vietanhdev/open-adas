@@ -7,16 +7,16 @@ using namespace cv;
 
 LaneDetector::LaneDetector() {
     UffModelParams params;
-    params.inputW = INPUT_WIDTH;
-    params.inputH = INPUT_HEIGHT;
-    params.batchSize = 1;
-    params.nClasses = 1;
-    params.uffFilePath = SMARTCAM_LANE_DETECTION_MODEL;
-    params.engineFilePath = SMARTCAM_LANE_DETECTION_TENSORRT_PLAN;
-    params.forceRebuildEngine = false;
-    params.inputTensorNames.push_back(INPUT_NODE);
-    params.outputTensorNames.push_back(OUTPUT_NODE);
-    params.fp16 = true;
+    params.inputW = LANE_DETECTION_INPUT_WIDTH;
+    params.inputH = LANE_DETECTION_INPUT_HEIGHT;
+    params.batchSize = LANE_DETECTION_BATCH_SIZE;
+    params.nClasses = LANE_DETECTION_N_CLASSES;
+    params.uffFilePath = LANE_DETECTION_MODEL;
+    params.engineFilePath = LANE_DETECTION_TENSORRT_PLAN;
+    params.forceRebuildEngine = LANE_DETECTION_FORCE_REBUILD_ENGINE;
+    params.inputTensorNames.push_back(LANE_DETECTION_INPUT_NODE);
+    params.outputTensorNames.push_back(LANE_DETECTION_OUTPUT_NODE);
+    params.fp16 = LANE_DETECTION_USE_FP_16; 
 
     auto test = gLogger.defineTest("LaneDetector", 0, NULL);
     gLogger.reportTestStart(test);

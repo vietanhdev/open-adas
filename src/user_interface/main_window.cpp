@@ -251,6 +251,9 @@ void MainWindow::startVideoGrabber() {
          car_status->getObjectDetectionTime();
     Timer::time_duration_t lane_detection_time =
          car_status->getLaneDetectionTime();
+
+
+    int frame_ids = 0;
     while (true) {
 
         // Processing
@@ -264,6 +267,8 @@ void MainWindow::startVideoGrabber() {
                 
             if (!detected_lane_lines.empty()) {
 
+                cv::imwrite(std::to_string(frame_ids) + ".png", draw_frame);
+
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
                 cv::Mat lane_line_mask_copy = car_status->getLineMask();
                 #endif
@@ -273,6 +278,9 @@ void MainWindow::startVideoGrabber() {
                 cv::Mat reduced_line_img_copy = car_status->getReducedLinesViz();
                 #endif
 
+                cv::imwrite(std::to_string(frame_ids) + "-detected_line_img.png", detected_line_img_copy);
+                cv::imwrite(std::to_string(frame_ids) + "-reduced_line_img.png", reduced_line_img_copy);
+
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
                     if (!lane_line_mask_copy.empty()) {
                         cv::resize(lane_line_mask_copy, lane_line_mask_copy, draw_frame.size());
@@ -280,8 +288,10 @@ void MainWindow::startVideoGrabber() {
                         cv::Mat rgb_lane_result =
                             cv::Mat::zeros(draw_frame.size(), CV_8UC3);
 
-                        rgb_lane_result.setTo(Scalar(0, 0, 255), lane_line_mask_copy > 0.5);
+                        rgb_lane_result.setTo(Scalar(255, 255, 255), lane_line_mask_copy > 0.5);
                         draw_frame.setTo(Scalar(0, 0, 0), lane_line_mask_copy > 0.5);
+                        
+                        cv::imwrite(std::to_string(frame_ids) + "-lanemask.png", rgb_lane_result);
 
                         cv::addWeighted(draw_frame, 1, rgb_lane_result, 1, 0,
                                         draw_frame);
@@ -297,11 +307,13 @@ void MainWindow::startVideoGrabber() {
                     if (!reduced_line_img_copy.empty()) {
                         cv::namedWindow("Reduced Lines", cv::WINDOW_NORMAL);
                         cv::imshow("Reduced Lines", reduced_line_img_copy);
-                        cv::waitKey(1);
+                        cv::waitKey(0);
                     }
                 #endif
                 
             }
+
+            frame_ids++;
 
             #endif
 

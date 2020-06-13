@@ -14,11 +14,6 @@ class TrafficSignClassifier {
 
    private:
     UffModelParams params;
-    const int INPUT_WIDTH = 64;
-    const int INPUT_HEIGHT = 64;
-    const std::string INPUT_NODE = "data";
-    const std::string OUTPUT_NODE = "dense/Softmax";
-
     std::shared_ptr<ClassificationNet> model;
 
    public:

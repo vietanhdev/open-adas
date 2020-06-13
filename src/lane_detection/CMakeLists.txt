@@ -52,7 +52,10 @@ target_link_libraries(lane_detector
 )
 
 
-cuda_add_executable(test_lane_detector test_lane_detector.cpp)
+cuda_add_executable(test_lane_detector
+        test_lane_detector.cpp
+        ../common/utils/timer.cpp
+        )
 target_link_libraries(test_lane_detector
         lane_detector
 )
