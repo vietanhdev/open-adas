@@ -49,7 +49,7 @@
 #include <linux/can.h>
 #include <linux/can/error.h>
 
-#include "lib.h"
+#include "can_lib.h"
 
 #define CANID_DELIM '#'
 #define DATA_SEPERATOR '.'

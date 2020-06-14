@@ -22,14 +22,14 @@ add_subdirectory(libs/NemaTode)
 include_directories(include)
 
 
-SET_SOURCE_FILES_PROPERTIES( libs/can_lib.cpp PROPERTIES LANGUAGE CXX )
-SET_SOURCE_FILES_PROPERTIES( libs/can_reader.cpp PROPERTIES LANGUAGE CXX )
+SET_SOURCE_FILES_PROPERTIES( libs/can_lib/can_lib.cpp PROPERTIES LANGUAGE CXX )
+SET_SOURCE_FILES_PROPERTIES( can_reader.cpp PROPERTIES LANGUAGE CXX )
 
 add_library(can_lib 
-    libs/can_lib.cpp
+    libs/can_lib/can_lib.cpp
 )
 add_library(can_reader 
-    libs/can_reader.cpp
+    can_reader.cpp
 )
 
 add_library(car_status car_status.cpp)
