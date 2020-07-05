@@ -40,6 +40,10 @@ class CarStatus {
     std::mutex detected_objects_mutex;
 
     std::atomic<float> car_speed; // km/h
+    std::atomic<bool> turning_left;
+    std::atomic<bool> turning_right;
+    Timer::time_point_t last_activated_turning_signal_time;
+    std::mutex last_activated_turning_signal_time_mutex;
 
     // Time durations
     std::mutex time_mutex;
@@ -81,8 +85,12 @@ class CarStatus {
     cv::Mat getReducedLinesViz();
 
     float getCarSpeed();
+    bool getLeftTurnSignal();
+    bool getRightTurnSignal();
+    Timer::time_point_t getLastActivatedTurningSignalTime();
     float getDangerDistance();
     void setCarSpeed(float speed);
+    void setCarStatus(float speed, bool turning_left, bool turning_right);
 
     void setCollisionWarning(bool is_warning);
     CollisionWarningStatus getCollisionWarning();

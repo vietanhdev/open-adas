@@ -102,6 +102,14 @@ float CarStatus::getCarSpeed() {
     return car_speed;
 }
 
+bool CarStatus::getLeftTurnSignal() {
+    return turning_left;
+}
+
+bool CarStatus::getRightTurnSignal() {
+    return turning_right;
+}
+
 float CarStatus::getDangerDistance() {
     return getCarSpeed() / 3.6 * 1.5;
 }
@@ -139,6 +147,21 @@ CollisionWarningStatus CarStatus::getCollisionWarning() {
 
 void CarStatus::setCarSpeed(float speed) {
     car_speed = speed;
+}
+
+void CarStatus::setCarStatus(float speed, bool turning_left, bool turning_right) {
+    car_speed = speed;
+    this->turning_left = turning_left;
+    this->turning_right = turning_right;
+    if (turning_left || turning_right) {
+        std::lock_guard<std::mutex> guard(last_activated_turning_signal_time_mutex);
+        last_activated_turning_signal_time = Timer::getCurrentTime();
+    }
+}
+
+Timer::time_point_t CarStatus::getLastActivatedTurningSignalTime() {
+    std::lock_guard<std::mutex> guard(last_activated_turning_signal_time_mutex);
+    return last_activated_turning_signal_time;
 }
 
 cv::Mat CarStatus::resizeByMaxSize(const cv::Mat &img, int max_size) {

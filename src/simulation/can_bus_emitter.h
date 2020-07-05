@@ -73,6 +73,7 @@ class CanBusEmitter {
 
    public:
     void sendSpeed(int speed);
+    void sendTurnSignal(bool turning_left, bool turning_right);
 };
 
 #endif  // CAN_BUS_SENDER_H

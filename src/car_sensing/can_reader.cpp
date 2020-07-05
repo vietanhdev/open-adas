@@ -117,3 +117,11 @@ void CANReader::update_speed_status(struct canfd_frame *cf, int maxdlen) {
 int CANReader::getSpeed() {
     return current_speed;
 }
+
+bool CANReader::getLeftTurnSignal() {
+    return (bool)(turn_status[0]);
+}
+
+bool CANReader::getRightTurnSignal() {
+    return (bool)(turn_status[1]);
+}

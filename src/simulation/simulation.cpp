@@ -10,7 +10,7 @@ void Simulation::setupAndConnectComponents() {
     setupUi(this);
 
     // Setup virtual CAN
-    if (USE_CAN_BUS_TO_RECEIVE_SPEED) {
+    if (USE_CAN_BUS_FOR_SIMULATION_DATA) {
         system("sh setup_vcan.sh");
     }
 
@@ -122,7 +122,7 @@ int Simulation::readSimulationData(std::string video_path, std::string data_file
                 sim_data.playing_fps = fps;
             }
 
-            sim_data.frame_to_speed.reserve(sim_data.end_frame + 1);
+            sim_data.sim_frames.reserve(sim_data.end_frame + 1);
 
             std::string line;
             while (std::getline(data_file, line)) {
@@ -130,15 +130,18 @@ int Simulation::readSimulationData(std::string video_path, std::string data_file
                     int begin_frame;
                     int end_frame;
                     float speed;
+                    int turning_left, turning_right;
                     std::istringstream iss(line);
-                    iss >> begin_frame >> end_frame >> speed;
-                    sim_data.speed_data.push_back(
-                        SpeedData(begin_frame, end_frame, speed));
+                    iss >> begin_frame >> end_frame >> speed >> turning_left >> turning_right;
+                    sim_data.sim_frames.push_back(
+                        SimFrameData(begin_frame, end_frame, speed, turning_left, turning_right));
 
                     assert(begin_frame <= end_frame);
 
                     for (size_t i = begin_frame; i <= end_frame; ++i) {
-                        sim_data.frame_to_speed[i] = speed;
+                        sim_data.sim_frames[i].car_speed = speed;
+                        sim_data.sim_frames[i].turning_left = turning_left;
+                        sim_data.sim_frames[i].turning_right = turning_right;
                     }
                     
                 } else {
@@ -220,7 +223,10 @@ void Simulation::playingThread(Simulation * this_ptr) {
             break;
         }
 
-        this_ptr->setCarSpeed(sim_data.frame_to_speed[current_frame_id]);
+        this_ptr->setCarStatus(sim_data.sim_frames[current_frame_id].car_speed,
+                sim_data.sim_frames[current_frame_id].turning_left,
+                sim_data.sim_frames[current_frame_id].turning_right
+            );
         
         this_ptr->playing_thread_running = true;
         sim_data.capture >> frame;
@@ -359,12 +365,20 @@ void Simulation::setPlaying(bool playing) {
 
 void Simulation::setCarSpeed(float speed) {
     car_speed = speed;
-    if (!USE_CAN_BUS_TO_RECEIVE_SPEED) {
+    if (!USE_CAN_BUS_FOR_SIMULATION_DATA) {
         car_status->setCarSpeed(speed);
     } else {
         can_bus_emitter.sendSpeed(speed);
     }
-    
+}
+
+void Simulation::setCarStatus(float speed, bool turning_left, bool turning_right) {
+    if (!USE_CAN_BUS_FOR_SIMULATION_DATA) {
+        car_status->setCarStatus(speed, turning_left, turning_right);
+    } else {
+        can_bus_emitter.sendSpeed(speed);
+        can_bus_emitter.sendTurnSignal(turning_left, turning_right);
+    }
 }
 
 void Simulation::simDataList_onselectionchange() {

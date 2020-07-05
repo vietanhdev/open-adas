@@ -58,6 +58,8 @@ class CANReader {
    public:
     CANReader();
     int getSpeed();
+    bool getLeftTurnSignal();
+    bool getRightTurnSignal();
     void readCANSignal();
 };
 

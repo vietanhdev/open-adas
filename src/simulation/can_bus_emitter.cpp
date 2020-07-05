@@ -136,15 +136,14 @@ void CanBusEmitter::send_turn_signal() {
     send_pkt(CAN_MTU);
 }
 
-// // Checks if turning and activates the turn signal
-// void checkTurn() {
-//     if(turning < 0) {
-//         signal_state ^= CAN_LEFT_SIGNAL;
-//     } else if(turning > 0) {
-//         signal_state ^= CAN_RIGHT_SIGNAL;
-//     } else {
-//         signal_state = 0;
-//     }
-//     send_turn_signal();
-//     lastTurnSignal = currentTime;
-// }
+
+void CanBusEmitter::sendTurnSignal(bool turning_left, bool turning_right) {
+    if(turning_left) {
+        signal_state ^= CAN_LEFT_SIGNAL;
+    } else if(turning_right) {
+        signal_state ^= CAN_RIGHT_SIGNAL;
+    } else {
+        signal_state = 0;
+    }
+    send_turn_signal();
+}

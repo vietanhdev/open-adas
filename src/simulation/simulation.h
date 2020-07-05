@@ -66,6 +66,7 @@ class Simulation : public QWidget, private Ui::Simulation {
     void stopPlaying();
     void startPlaying();
     void setCarSpeed(float);
+    void setCarStatus(float speed, bool turning_left, bool turning_right);
 
    private slots:
     void selectVideoBtnClicked();

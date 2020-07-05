@@ -5,12 +5,14 @@
 #include <atomic>
 #include <opencv2/opencv.hpp>
 
-struct SpeedData {
+struct SimFrameData {
     int begin_frame;
     int end_frame;
+    bool turning_left = false;
+    bool turning_right = false;
     float car_speed;
-    SpeedData(int begin_frame, int end_frame, float car_speed):
-    begin_frame(begin_frame), end_frame(end_frame), car_speed(car_speed)  {};
+    SimFrameData(int begin_frame, int end_frame, float car_speed, bool turning_left, bool turning_right):
+    begin_frame(begin_frame), end_frame(end_frame), car_speed(car_speed), turning_left(turning_left), turning_right(turning_right)  {};
 };
 
 struct SimulationData {
@@ -20,8 +22,7 @@ struct SimulationData {
     int end_frame = -1;
 
     cv::VideoCapture capture;
-    std::vector<SpeedData> speed_data;
-    std::vector<float> frame_to_speed;
+    std::vector<SimFrameData> sim_frames;
 
 };
 

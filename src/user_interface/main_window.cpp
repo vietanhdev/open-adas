@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     car_gps_reader = std::make_shared<CarGPSReader>();
     #endif
 
-    if (USE_CAN_BUS_TO_RECEIVE_SPEED) {
+    if (USE_CAN_BUS_FOR_SIMULATION_DATA) {
         can_reader = std::make_shared<CANReader>();
     }
 
@@ -173,6 +173,13 @@ void MainWindow::laneDetectionThread(
             continue;
         }
 
+        // Don't analyze lane when turning signal is activated
+        if (Timer::calcTimePassed(car_status->getLastActivatedTurningSignalTime()) <= 5000) {
+            main_window->is_lane_departure_warning = false;
+            car_status->setDetectedLaneLines(std::vector<LaneLine>(), cv::Mat(), cv::Mat(), cv::Mat());
+            continue;
+        }
+
         #if defined (DEBUG_LANE_DETECTOR_SHOW_LINES)  || defined (DEBUG_LANE_DETECTOR_SHOW_LINE_MASK)
         cv::Mat lane_line_mask;
         cv::Mat detected_line_img;
@@ -212,9 +219,11 @@ void MainWindow::carPropReaderThread(
         car_gps_reader->updateProps();
         #endif
 
-        if (USE_CAN_BUS_TO_RECEIVE_SPEED) {
+        if (USE_CAN_BUS_FOR_SIMULATION_DATA) {
             can_reader->readCANSignal();
-            car_status->setCarSpeed(can_reader->getSpeed());
+            car_status->setCarStatus(can_reader->getSpeed(),
+                can_reader->getLeftTurnSignal(),
+                can_reader->getRightTurnSignal());
         }
 
         this_thread::sleep_for(chrono::milliseconds(10));
