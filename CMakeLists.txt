@@ -69,7 +69,7 @@ include_directories(
     "src/object_detection"
     "src/common/onnx_models/include"
 
-    "src/object_detection/traffic_sign_classifier"
+    "src/object_detection/traffic_sign_classification"
     "src/common/uff_models/classification_net"
 
     "src/lane_detection"

@@ -8,7 +8,6 @@
 #include <math.h> 
 
 #include "config_sign_classification.h"
-#include "traffic_sign.h"
 #include "classification_net.h"
 
 class TrafficSignClassifier {

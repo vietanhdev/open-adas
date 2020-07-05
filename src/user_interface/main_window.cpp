@@ -267,8 +267,6 @@ void MainWindow::startVideoGrabber() {
                 
             if (!detected_lane_lines.empty()) {
 
-                cv::imwrite(std::to_string(frame_ids) + ".png", draw_frame);
-
                 #ifdef DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
                 cv::Mat lane_line_mask_copy = car_status->getLineMask();
                 #endif
@@ -312,8 +310,6 @@ void MainWindow::startVideoGrabber() {
                 #endif
                 
             }
-
-            frame_ids++;
 
             #endif
 
@@ -365,6 +361,9 @@ void MainWindow::startVideoGrabber() {
             if (is_lane_departure_warning || Timer::calcTimePassed(getLastLaneDepartureWarningTime()) < 4000) {
                 ml_cam::place_overlay(draw_frame, lane_departure_warning_icon, 32, 144);
             }
+
+            // cv::imwrite(std::to_string(frame_ids) + ".png", draw_frame);
+            // frame_ids++;
     
             // ### Show current image
             QImage qimg(draw_frame.data, static_cast<int>(draw_frame.cols),

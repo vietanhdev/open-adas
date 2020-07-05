@@ -19,7 +19,7 @@ list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES -Xcompiler -fPIC")
 
 
 # Build sign classifier
-add_subdirectory(./traffic_sign_classifier)
+add_subdirectory(./traffic_sign_classification)
 
 include_directories(${CUDA_INCLUDE_DIRS}
                     ${TENSORRT_INCLUDE_DIR}
@@ -30,7 +30,7 @@ include_directories(${CUDA_INCLUDE_DIRS}
                     ../common/uff_models/common/include
                     ../common/uff_models/classification_net
                     ../configs/
-                    ./traffic_sign_classifier
+                    ./traffic_sign_classification
                     )
 
 file(GLOB CPP_SRC ../common/onnx_models/*.cpp *.cpp)

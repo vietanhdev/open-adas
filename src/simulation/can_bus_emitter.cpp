@@ -55,23 +55,6 @@ CanBusEmitter::CanBusEmitter() {
         }
     }
 
-    if (difficulty > 0) {
-        if (door_len < 8) {
-            door_len += rand() % (8 - door_len);
-        } else {
-            door_len = 0;
-        }
-        if (signal_len < 8) {
-            signal_len += rand() % (8 - signal_len);
-        } else {
-            signal_len = 0;
-        }
-        if (speed_len < 8) {
-            speed_len += rand() % (8 - speed_len);
-        } else {
-            speed_len = 0;
-        }
-    }
 }
 
 
