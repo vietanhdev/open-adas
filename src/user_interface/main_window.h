@@ -101,6 +101,7 @@ class MainWindow : public QMainWindow {
     std::atomic<bool> is_mute = false;
     std::atomic<bool> is_alert = true;
     Timer::time_point_t last_audio_time;
+    std::string last_audio_file;
 
    public:
     std::shared_ptr<CarStatus> car_status;

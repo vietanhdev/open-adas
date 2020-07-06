@@ -89,6 +89,7 @@ void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, Mai
 
         if (speed_limit.overspeed_warning &&
             !speed_limit.overspeed_warning_has_notified) {
+            cout << "Play over speed warning" << endl;
             main_window->alert("traffic_signs/warning_overspeed.wav");
         }
 
@@ -112,7 +113,7 @@ void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, Mai
             main_window->setLastLaneDepartureWarningTime(Timer::getCurrentTime());
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
     }
     
@@ -234,11 +235,14 @@ void MainWindow::carPropReaderThread(
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::playAudio(std::string audio_file) {
-    if (!is_mute && Timer::calcTimePassed(last_audio_time) > 2000) {
+    if (!is_mute && (Timer::calcTimePassed(last_audio_time) > 2000
+        || last_audio_file != audio_file)
+    ) {
         // Play a silent sound first to give HDMI enough time to 
         // start audio service
         system(("canberra-gtk-play -f sounds/silent.wav;canberra-gtk-play -f sounds/" + audio_file + " &").c_str());
         last_audio_time = Timer::getCurrentTime();
+        last_audio_file = audio_file;
     }
 }
 

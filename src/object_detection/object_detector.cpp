@@ -72,15 +72,15 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::
             int width = x2 - x1;
             int height = y2 - y1;
 
-            if (width < MIN_TRAFFIC_SIGN_SIZE || height < MIN_TRAFFIC_SIGN_SIZE) {
-                continue;
+            if (width > MIN_TRAFFIC_SIGN_SIZE && height > MIN_TRAFFIC_SIGN_SIZE) {
+
+                cv::Rect roi(x1, y1, width, height);
+                cv::Mat crop = original_img(roi);
+
+                sign_crops.push_back(crop);
+                sign_object_ids.push_back(i);
+
             }
-
-            cv::Rect roi(x1, y1, width, height);
-            cv::Mat crop = original_img(roi);
-
-            sign_crops.push_back(crop);
-            sign_object_ids.push_back(i);
             
         }
         

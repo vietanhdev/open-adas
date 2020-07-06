@@ -226,6 +226,8 @@ MaxSpeedLimit CarStatus::getMaxSpeedLimit() {
         speed_limit.overspeed_warning = true;
         speed_limit.overspeed_warning_has_notified = false;
         speed_limit.overspeed_warning_notified_time = Timer::getCurrentTime();
+
+        cout << "Activated speed warning" << endl;
     
     // If the car speed is become normal, 
     // turn off warning
