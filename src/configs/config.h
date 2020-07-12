@@ -14,7 +14,7 @@
 // Show lane debug images
 // #define DEBUG_LANE_DETECTOR_SHOW_LINES
 // #define DEBUG_LANE_DETECTOR_SHOW_LINE_MASK
-#define DEBUG_SHOW_FPS
+// #define DEBUG_SHOW_FPS
 #define SHOW_DISTANCES true
 #define USE_CAN_BUS_FOR_SIMULATION_DATA true
 

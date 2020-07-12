@@ -8,10 +8,25 @@ CarStatus::CarStatus() {
 }
 
 void CarStatus::reset() {
-    std::lock_guard<std::mutex> guard(start_time_mutex);
-    std::lock_guard<std::mutex> guard2(speed_limit_mutex);
-    start_time = Timer::getCurrentTime();
-    speed_limit = MaxSpeedLimit();
+    {
+        std::lock_guard<std::mutex> guard(start_time_mutex);
+        start_time = Timer::getCurrentTime();
+    }
+    {
+        std::lock_guard<std::mutex> guard2(speed_limit_mutex);
+        speed_limit = MaxSpeedLimit();
+    }
+    car_speed = 0;
+
+    // Reset image
+    setDetectedLaneLines(std::vector<LaneLine>());
+    setDetectedObjects(std::vector<TrafficObject>());
+    cv::Mat current_img = getCurrentImage();
+    cv::Mat black_image(240, 320, CV_8UC3, cv::Scalar(0, 0, 0));
+    cv::putText(black_image, "Loading...", cv::Point2f(50,100), cv::FONT_HERSHEY_PLAIN, 1.2,  cv::Scalar(255,255,255));
+    setCurrentImage(black_image);
+    this_thread::sleep_for(chrono::milliseconds(2000));
+    
 }
 
 Timer::time_point_t CarStatus::getStartTime() {
