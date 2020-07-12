@@ -2,6 +2,7 @@ from __future__ import print_function
 from __future__ import division
 import cv2
 import argparse
+import time
 alpha_slider_max = 240
 title_window = 'Speed Labeling'
 
@@ -21,6 +22,8 @@ args = parser.parse_args()
 # If the input is the camera, pass 0 instead of the video file name
 cap = cv2.VideoCapture(args.video)
 
+print(args.video)
+
 # Check if camera opened successfully
 if (cap.isOpened()== False): 
   print("Error opening video stream or file")
@@ -29,6 +32,9 @@ cv2.namedWindow(title_window, cv2.WINDOW_NORMAL)
 cv2.createTrackbar("Speed", title_window , 0, alpha_slider_max, on_trackbar)
 # Show some stuff
 on_trackbar(0)
+
+left_turn = 0
+right_turn = 0
 
 speed_data = []
 current_frame_id = 0
@@ -49,15 +55,31 @@ while(cap.isOpened()):
 
         if current_frame_id == 0:
             cv2.waitKey(0)
+            
+        left_turn_signal = 0
+        right_turn_signal = 0
+        current_time = time.time()
+        half_second = int(current_time * 10) % 10
+        if left_turn and half_second < 5:
+            left_turn_signal = 1
+        if right_turn_signal and half_second < 5:
+            right_turn_signal = 1
+            
 
-        speed_data.append("{} {} {}".format(current_frame_id, current_frame_id, current_speed))
+        speed_data.append("{} {} {} {} {}".format(current_frame_id, current_frame_id, current_speed, left_turn_signal, right_turn_signal))
 
-        
 
-        # Press Q on keyboard to  exit
-        if cv2.waitKey(50) & 0xFF == ord('q'):
+        k = cv2.waitKey(50)
+        if k & 0xFF == ord('q'):
             break
-
+        elif k & 0xFF == ord('a'):
+            left_turn = 1
+        elif k & 0xFF == ord('d'):
+            right_turn = 1
+        else:
+            left_turn = 0
+            right_turn = 0
+        
     # Break the loop
     else: 
         break
