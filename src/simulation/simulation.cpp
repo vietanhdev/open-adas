@@ -19,6 +19,9 @@ void Simulation::setupAndConnectComponents() {
     connect(this->simDataList, SIGNAL(itemSelectionChanged()), this,
             SLOT(simDataList_onselectionchange()));
     connect(this->closeBtn, SIGNAL(released()), this, SLOT(closeBtnClicked()));
+
+    connect(this->softRestartBtn, SIGNAL(released()), this, SLOT(softRestart()));
+    connect(this->shutdownBtn, SIGNAL(released()), this, SLOT(shutdown()));
     
 
     // Read simulation data
@@ -60,6 +63,14 @@ Simulation::Simulation(std::shared_ptr<CarStatus> car_status, std::string input_
     setVideoPath(input_video_path);
     setDataFilePath(input_data_path);
     this->car_status = car_status;
+}
+
+void Simulation::softRestart() {
+    std::exit(42);
+}
+
+void Simulation::shutdown() {
+    system("sudo shutdown now");
 }
 
 

@@ -74,6 +74,8 @@ class Simulation : public QWidget, private Ui::Simulation {
     void playBtnClicked();
     void simDataList_onselectionchange();
     void closeBtnClicked();
+    void softRestart();
+    void shutdown();
 
    private:
     static void playingThread(Simulation * this_ptr);
