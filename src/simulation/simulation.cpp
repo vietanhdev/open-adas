@@ -66,7 +66,7 @@ Simulation::Simulation(std::shared_ptr<CarStatus> car_status, std::string input_
 }
 
 void Simulation::softRestart() {
-    std::exit(42);
+    system("pkill CarSmartCam; ./CarSmartCam &");
 }
 
 void Simulation::shutdown() {
