@@ -1,4 +1,4 @@
-# CarSmartCam
+# Advanced driver-assistance system using Jetson Nano
 
 Smart dash camera for car.
 
