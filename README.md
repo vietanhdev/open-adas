@@ -1,6 +1,12 @@
 # Advanced driver-assistance system using Jetson Nano
 
-Smart dash camera for car.
+An advanced driver-assistance system on Jetson Nano embedded computer with four main functions: forward collision warning, lane departure warning, traffic sign recognition and overspeed warning. This repository contains source code for Jetson Nano, not including the source code for model training and conversion.
+
+**Blog posts:**
+
+- <https://aicurious.io/posts/adas-jetson-nano-intro-and-hardware/>.
+- <https://aicurious.io/posts/adas-jetson-nano-software/>.
+- https://aicurious.io/posts/adas-jetson-nano-deep-neural-networks/.
 
 ## I. DEVELOPMENT ENVIRONMENT AND BUILD
 
