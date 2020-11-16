@@ -48,6 +48,10 @@ https://linuxize.com/post/how-to-install-opencv-on-ubuntu-18-04/
 https://github.com/protocolbuffers/protobuf
 ```
 
+#### Download models
+
+- Download `models` folder and put into root folder of this project: <https://drive.google.com/drive/folders/1a25J1C4pCGi6Dd3Y9UmoQegwc6sx86vF?usp=sharing>.
+
 #### Compile and Run
 
 - Compile
@@ -77,7 +81,7 @@ sudo ln -s /usr/local/cuda/lib64/libcudart.so /usr/lib/libcudart.so
 sudo ln -s /usr/local/cuda/lib64/libcublas.so /usr/lib/libcublas.so
 ```
 
-## III. REFERENCES:
+## II. REFERENCES:
 
 - In this project, we use code from:
     + Dark Theme for Qt5 by Juergen Skrotzky: [https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle](https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle).
