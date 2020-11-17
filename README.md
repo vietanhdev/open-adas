@@ -48,9 +48,9 @@ https://linuxize.com/post/how-to-install-opencv-on-ubuntu-18-04/
 https://github.com/protocolbuffers/protobuf
 ```
 
-#### Download models
+#### Download and testing data
 
-- Download `models` folder and put into root folder of this project: <https://drive.google.com/drive/folders/1a25J1C4pCGi6Dd3Y9UmoQegwc6sx86vF?usp=sharing>.
+- Download models and testing data [here](https://drive.google.com/drive/folders/1-DDchZQNOWpppNX8udyKj0OViDhYD38O?usp=sharing) and put into root folder of this project.
 
 #### Compile and Run
 
