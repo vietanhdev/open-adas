@@ -58,6 +58,10 @@ https://github.com/protocolbuffers/protobuf
 
 #### Compile and Run
 
+- Update `GPU_ARCHS`: Modify `GPU_ARCHS` in `CMakeLists.txt` to suit your GPU. For Jetson Nano, GPU_ARCHS = 53 and for my RTX 2070, GPU_ARCHS = 75. Read more in following posts:
+  + <https://www.programmersought.com/article/28125950847/>
+  + <https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/>
+
 - Compile
 ```
 cd <project directory>
