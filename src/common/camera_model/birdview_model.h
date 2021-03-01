@@ -3,6 +3,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <atomic>
+#include <mutex>
 #include "utils.h"
 
 class BirdViewModel {
