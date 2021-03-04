@@ -32,15 +32,15 @@ include_directories(
 file(GLOB UFF_MODEL_CPP ../common/uff_models/common/*.cpp)
 file(GLOB UNET_CPP ../common/uff_models/unet/*.cpp)
 
-cuda_add_library(lane_detector lane_detector.cpp ${UFF_MODEL_CPP} ${UNET_CPP} ../../utils/timer.cpp)
+cuda_add_library(openadas_lane_detector lane_detector.cpp ${UFF_MODEL_CPP} ${UNET_CPP} ../../utils/timer.cpp)
 
 # Use C++ 17
-target_compile_features(lane_detector PRIVATE cxx_std_17)
+target_compile_features(openadas_lane_detector PRIVATE cxx_std_17)
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
     set (CPP_FS_LIB "stdc++fs")
 endif()
 
-target_link_libraries(lane_detector
+target_link_libraries(openadas_lane_detector
         ${TENSORRT_LIBRARY_INFER}
         ${OpenCV_LIBS}
         ${CPP_FS_LIB}
@@ -54,5 +54,5 @@ cuda_add_executable(test_lane_detector
         test_lane_detector.cpp
 )
 target_link_libraries(test_lane_detector
-        lane_detector
+        openadas_lane_detector
 )

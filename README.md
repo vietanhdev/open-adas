@@ -1,4 +1,4 @@
-# Advanced driver-assistance system using Jetson Nano
+# OpenADAS - An advanced driver-assistance system using Jetson Nano
 
 An advanced driver-assistance system on Jetson Nano embedded computer with four main functions: forward collision warning, lane departure warning, traffic sign recognition and overspeed warning. This repository contains source code for Jetson Nano, not including the source code for model training and conversion.
 
@@ -74,13 +74,13 @@ sudo bash setup_vcan.sh
 
 - Run
 ```
-./CarSmartCam
+./OpenADAS
 ```
 
 This will starts the program in full screen and touch mode. If you want to use a computer mouse, add `--on_dev_machine` option:
 
 ```
-./CarSmartCam --on_dev_machine
+./OpenADAS --on_dev_machine
 ```
 
 #### Known issues

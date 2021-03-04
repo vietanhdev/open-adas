@@ -1,4 +1,4 @@
-#if !defined(CONFIG_CAN_BUS_H)
+#ifndef CONFIG_CAN_BUS_H
 #define CONFIG_CAN_BUS_H
 
 

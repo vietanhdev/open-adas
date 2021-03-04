@@ -15,10 +15,10 @@ add_subdirectory(lane_detection)
 include_directories("..")
 
 add_library(
-      perception
+      openadas_perception
       "camera_model/birdview_model.cpp"
       "camera_model/camera_model.cpp"
 )
 
-target_link_libraries(perception object_detector lane_detector car_sensors)
+target_link_libraries(openadas_perception openadas_object_detector openadas_lane_detector openadas_car_sensors)
 

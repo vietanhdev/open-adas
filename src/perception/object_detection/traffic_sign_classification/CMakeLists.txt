@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 3.5)
-project(sign_classifier)
-
 find_package(CUDA REQUIRED)
 
 find_path(TENSORRT_INCLUDE_DIR NvInfer.h
@@ -33,15 +30,15 @@ include_directories(${CUDA_INCLUDE_DIRS}
 file(GLOB UFF_MODEL_CPP ../../common/uff_models/common/*.cpp)
 file(GLOB NET_CPP ../../common/uff_models/classification_net/*.cpp)
 
-cuda_add_library(sign_classifier SHARED sign_classifier.cpp ${UFF_MODEL_CPP} ${NET_CPP})
+cuda_add_library(openadas_sign_classifier SHARED sign_classifier.cpp ${UFF_MODEL_CPP} ${NET_CPP})
 
 # Use C++ 17
-target_compile_features(sign_classifier PRIVATE cxx_std_17)
+target_compile_features(openadas_sign_classifier PRIVATE cxx_std_17)
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
 	set (CPP_FS_LIB "stdc++fs")
 endif()
 
-target_link_libraries(sign_classifier
+target_link_libraries(openadas_sign_classifier
 	${TENSORRT_LIBRARY_INFER}
 	${OpenCV_LIBS}
 	${CPP_FS_LIB}
@@ -53,5 +50,5 @@ target_link_libraries(sign_classifier
 
 cuda_add_executable(test_sign_classifier test_sign_classifier.cpp)
 target_link_libraries(test_sign_classifier
-	sign_classifier
+	openadas_sign_classifier
 )

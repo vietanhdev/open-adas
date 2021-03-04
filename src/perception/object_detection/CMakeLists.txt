@@ -32,17 +32,17 @@ include_directories(${CUDA_INCLUDE_DIRS}
 
 file(GLOB CPP_SRC ../common/onnx_models/*.cpp *.cpp)
 file(GLOB CU_SRC ../common/onnx_models/*.cu)
-cuda_add_library(object_detector SHARED ${CPP_SRC} ${CU_SRC})
+cuda_add_library(openadas_object_detector SHARED ${CPP_SRC} ${CU_SRC})
 # Use C++ 17
-target_compile_features(object_detector PRIVATE cxx_std_17)
+target_compile_features(openadas_object_detector PRIVATE cxx_std_17)
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
     set (CPP_FS_LIB "stdc++fs")
 endif()
-target_link_libraries(object_detector
+target_link_libraries(openadas_object_detector
         ${TENSORRT_LIBRARY_INFER}
         ${OpenCV_LIBS}
         ${CPP_FS_LIB}
         nvonnxparser
         nvonnxparser_runtime
-        sign_classifier
+        openadas_sign_classifier
 )

@@ -1,4 +1,4 @@
-#if !defined(CAMERA_H)
+#ifndef CAMERA_H
 #define CAMERA_H
 
 #include <string>

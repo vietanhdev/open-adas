@@ -1,5 +1,5 @@
-#if !defined(UTILITY_H)
-#define UTILITY_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <opencv2/opencv.hpp>
 #include <stdlib.h>

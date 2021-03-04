@@ -1,4 +1,4 @@
-#if !defined(BIRDVIEW_MODEL_H)
+#ifndef BIRDVIEW_MODEL_H
 #define BIRDVIEW_MODEL_H
 
 #include <opencv2/opencv.hpp>

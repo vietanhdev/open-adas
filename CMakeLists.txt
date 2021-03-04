@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 # Specify project title
-project(CarSmartCam)
+project(OpenADAS)
 
 # Setup for Qt GUI
 set(CMAKE_AUTOMOC ON)
@@ -62,6 +62,11 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 # without -fPIE. We add that here.
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
+# Build the libraries with -fPIC
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+add_subdirectory("src/sensors")
+add_subdirectory("src/perception")
 
 # add required source, header, ui and resource files
 add_executable(
@@ -69,22 +74,36 @@ add_executable(
     "src/main.cpp"
     "src/utils/common.cpp"
     "src/utils/file_storage.cpp"
+
+    "resources.qrc"
+    "src/ui/main_window.cpp"
+    "src/ui/main_window.ui"
+    "src/ui/dark_theme/dark_style.qrc"
+    "src/ui/dark_theme/dark_style.cpp"
+    "src/ui/traffic_sign_images.cpp"
+    "src/ui/camera_wizard/camera_wizard.cpp"
+    "src/ui/camera_wizard/instruction_page/instruction_page.cpp"
+    "src/ui/camera_wizard/instruction_page/instruction_page.ui"
+    "src/ui/camera_wizard/measurement_page/measurement_page.cpp"
+    "src/ui/camera_wizard/measurement_page/measurement_page.ui"
+    "src/ui/camera_wizard/four_point_select_page/four_point_select_page.cpp"
+    "src/ui/camera_wizard/four_point_select_page/four_point_select_page.ui"
+    "src/ui/warnings/collision_warning_controller.cpp"
+    "src/ui/warnings/traffic_sign_monitor.cpp"
+    "src/ui/simulation/simulation.ui"
+    "src/ui/simulation/simulation.cpp"
+    "src/ui/simulation/can_bus_emitter.cpp"
+
+    "src/perception/camera_model/birdview_model.cpp"
+    "src/perception/camera_model/camera_model.cpp"
 )
-
-# Build the libraries with -fPIC
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
-
-add_subdirectory("src/sensors")
-add_subdirectory("src/perception")
-add_subdirectory("src/ui")
 
 # Link required libs
 target_link_libraries(${PROJECT_NAME} 
     ${CPP_FS_LIB}
-    car_sensors
-    perception
-    ui
+    openadas_car_sensors
+    openadas_perception
     nvonnxparser
     stdc++fs
     ${Qt5Widgets_LIBRARIES} 

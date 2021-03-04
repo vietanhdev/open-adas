@@ -1,4 +1,4 @@
-#if !defined(CAN_READER_H)
+#ifndef CAN_READER_H
 #define CAN_READER_H
 
 #include <getopt.h>

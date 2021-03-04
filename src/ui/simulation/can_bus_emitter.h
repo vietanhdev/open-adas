@@ -1,4 +1,4 @@
-#if !defined(CAN_BUS_EMITTER_H)
+#ifndef CAN_BUS_EMITTER_H
 #define CAN_BUS_EMITTER_H
 
 

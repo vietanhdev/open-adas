@@ -1,5 +1,5 @@
-#if !defined(UTILS_H)
-#define UTILS_H
+#ifndef FOUR_POINTS_H
+#define FOUR_POINTS_H
 
 #include <opencv2/opencv.hpp>
 
