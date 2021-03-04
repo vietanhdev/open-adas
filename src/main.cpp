@@ -1,15 +1,16 @@
 #include <stdlib.h>
-#include <QApplication>
 #include <iostream>
 #include <atomic>
 #include <opencv2/opencv.hpp>
 
-#include "dark_style.h"
-#include "file_storage.h"
-#include "filesystem_include.h"
-#include "main_window.h"
-#include "simulation.h"
-#include "input_source.h"
+#include "ui/dark_theme/dark_style.h"
+#include "ui/main_window.h"
+#include "ui/simulation/simulation.h"
+#include "ui/input_source.h"
+
+#include "utils/file_storage.h"
+#include "utils/filesystem_include.h"
+
 
 using namespace std;
 using namespace cv;
