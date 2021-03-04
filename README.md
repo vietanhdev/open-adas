@@ -6,7 +6,7 @@ An advanced driver-assistance system on Jetson Nano embedded computer with four 
 
 - <https://aicurious.io/posts/adas-jetson-nano-intro-and-hardware/>.
 - <https://aicurious.io/posts/adas-jetson-nano-software/>.
-- https://aicurious.io/posts/adas-jetson-nano-deep-neural-networks/.
+- <https://aicurious.io/posts/adas-jetson-nano-deep-neural-networks/.
 
 **Update 21/12/2020:** I created an image of my SD card [here](https://drive.google.com/file/d/1jg68ySnTt4Zm_hb4JVZKKWXRWkDucqUu/view?usp=sharing). You can flash and run this image on Jetson Nano.
 
@@ -31,11 +31,7 @@ An advanced driver-assistance system on Jetson Nano embedded computer with four 
 
 ```
 sudo apt-get install build-essential
-sudo apt-get install qtcreator
-sudo apt-get install qt5-default
-sudo apt-get install qt5-doc
-sudo apt-get install qt5-doc-html qtbase5-doc-html
-sudo apt-get install qtbase5-examples
+sudo apt-get install qt5-default qtcreator qt5-doc qt5-doc-html qtbase5-doc-html qtbase5-examples -y
 sudo /sbin/ldconfig -v
 ```
 
@@ -70,11 +66,22 @@ cmake -DCUDA_INCLUDE_DIRS=/usr/local/cuda-10.1/include ..
 make
 ```
 
+- Setup virtual CAN (run once)
+
+```
+sudo bash setup_vcan.sh
+```
+
 - Run
 ```
 ./CarSmartCam
 ```
 
+This will starts the program in full screen and touch mode. If you want to use a computer mouse, add `--on_dev_machine` option:
+
+```
+./CarSmartCam --on_dev_machine
+```
 
 #### Known issues
 
@@ -132,6 +139,21 @@ export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-10.2/
 ```
 
 You should change the path corresponding to your environment.
+
+**Issue: Qt5 library not found**
+
+```
+ fatal error: QtWidgets/QCloseEvent: No such file or directory
+ #include <QtWidgets/QCloseEvent>
+          ^~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+```
+
+**Issue: SIOCGIFINDEX: No such device**
+
+```
+sudo bash setup_vcan.sh
+```
 
 ## II. REFERENCES:
 
