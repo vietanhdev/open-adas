@@ -6,7 +6,7 @@ An advanced driver-assistance system on Jetson Nano embedded computer with four 
 
 - <https://aicurious.io/posts/adas-jetson-nano-intro-and-hardware/>.
 - <https://aicurious.io/posts/adas-jetson-nano-software/>.
-- <https://aicurious.io/posts/adas-jetson-nano-deep-neural-networks/.
+- <https://aicurious.io/posts/adas-jetson-nano-deep-neural-networks/>.
 
 **Update 21/12/2020:** I created an image of my SD card [here](https://drive.google.com/file/d/1jg68ySnTt4Zm_hb4JVZKKWXRWkDucqUu/view?usp=sharing). You can flash and run this image on Jetson Nano.
 
