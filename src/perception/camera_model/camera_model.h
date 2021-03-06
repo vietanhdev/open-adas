@@ -42,6 +42,8 @@ class CameraModel {
         float br_x, float br_y,
         float bl_x, float bl_y
     );
+
+    bool isCalibrated();
 };
 
 #endif

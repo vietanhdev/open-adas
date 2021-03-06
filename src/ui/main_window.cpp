@@ -4,8 +4,8 @@
 
 using namespace cv;
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent, bool is_simulation_mode)
+    : QMainWindow(parent), ui(new Ui::MainWindow), is_simulation_mode(is_simulation_mode) {
     ui->setupUi(this);
 
     ui->graphicsView->setScene(new QGraphicsScene(this));
@@ -28,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
     object_detector = std::make_shared<ObjectDetector>();
 
     // Camera calibration wizard
-    std::cout << "Pointer:" << this->car_status << std::endl;
     this->camera_wizard = std::make_shared<CameraWizard>(this->car_status);
     this->camera_wizard->setStyleSheet("QAbstractButton { height: 50px }");
     // Prevent resize error when access simulation first
@@ -51,6 +50,12 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     collision_warning = std::make_shared<CollisionWarningController>(camera_model, car_status);
+
+    // Start image capturing thread
+    if (!is_simulation_mode) {
+        std::thread camera_thread(&MainWindow::cameraCaptureThread, car_status);
+        camera_thread.detach();
+    }
 
     // Start processing threads
     std::thread od_thread(&MainWindow::objectDetectionThread, 
@@ -82,6 +87,26 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 
+void MainWindow::cameraCaptureThread(std::shared_ptr<CarStatus> car_status) {
+    cv::VideoCapture video;
+    if (!video.open(0)) {
+        QMessageBox::critical(
+            nullptr, "Camera Error",
+            "Could not read from camera");
+        return;
+    }
+    
+    while (true) {
+        Mat frame;
+        video >> frame;
+        if (frame.empty()) {
+            continue;
+        }
+        car_status->setCurrentImage(frame);
+    }
+}
+
+
 void MainWindow::showCameraWizard() {
     this->camera_wizard->restart();
     this->camera_wizard->showFullScreen();
@@ -105,6 +130,15 @@ void MainWindow::updateCameraModel(
 void MainWindow::warningMonitorThread(std::shared_ptr<CarStatus> car_status, MainWindow *main_window) {
 
     while (true) {
+
+        // Calibration warning
+        if (!main_window->camera_model->isCalibrated()) {
+            main_window->ui->warningText->setText(QString("Warning: Camera hasn't been calibrated yet. Please calibrate your camera to enable safety features."));
+            main_window->ui->warningText->setVisible(true);
+            continue;
+        } else {
+            main_window->ui->warningText->setVisible(false);
+        }
 
         MaxSpeedLimit speed_limit = car_status->getMaxSpeedLimit();
         main_window->setSpeedLimit(speed_limit);
@@ -306,7 +340,6 @@ void MainWindow::startVideoGrabber() {
 
         if (!draw_frame.empty()) {
 
-
             #ifndef DISABLE_LANE_DETECTOR
             std::vector<LaneLine> detected_lane_lines = car_status->getDetectedLaneLines();
                 
@@ -358,7 +391,7 @@ void MainWindow::startVideoGrabber() {
 
             #endif
 
-            if (car_status->getCarSpeed() >= MIN_SPEED_FOR_COLLISION_WARNING) {
+            if (car_status->getCarSpeed() >= MIN_SPEED_FOR_COLLISION_WARNING && camera_model->isCalibrated()) {
                 float danger_distance = car_status->getDangerDistance();
                 cv::Mat danger_zone = camera_model->getBirdViewModel()->getDangerZone(draw_frame.size(), danger_distance);
                 cv::Mat rgb_danger_zone = cv::Mat::zeros(draw_frame.size(), CV_8UC3);
@@ -406,11 +439,8 @@ void MainWindow::startVideoGrabber() {
             if (is_lane_departure_warning || Timer::calcTimePassed(getLastLaneDepartureWarningTime()) < 4000) {
                 ml_cam::place_overlay(draw_frame, lane_departure_warning_icon, 32, 144);
             }
-
-            // cv::imwrite(std::to_string(frame_ids) + ".png", draw_frame);
-            // frame_ids++;
     
-            // ### Show current image
+            // Show current image
             QImage qimg(draw_frame.data, static_cast<int>(draw_frame.cols),
                         static_cast<int>(draw_frame.rows),
                         static_cast<int>(draw_frame.step),
@@ -478,6 +508,12 @@ MaxSpeedLimit MainWindow::getSpeedLimit() {
 }
 
 void MainWindow::openSimulationSelector() {
+    if (!is_simulation_mode) {
+        QMessageBox::critical(
+        this, "Not in simulation mode",
+        "Cannot select this screen because we are not in simulation mode. Run the program in simulation mode by adding --input_source=\"simulation\".");
+        return;
+    }
     this->simulation->showFullScreen();
 }
 

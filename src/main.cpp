@@ -20,10 +20,10 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     const std::string keys =
         "{help h usage ? |      | print this message   }"
-        "{input_source   |simulation| input source. 'simulation' or 'camera'   }"
+        "{input_source   |camera| input source. 'camera' or 'simulation'   }"
         "{input_video_path  |      | path to video file for simulation }"
         "{input_data_path   |      | path to data file for simulation  }"
-        "{on_dev_machine   | false | on development machine  }"
+        "{on_dev_machine    |false | on development machine  }"
         ;
 
     CommandLineParser parser(argc, argv, keys);
@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     a.setStyle(new DarkStyle);
 
     // Create our mainwindow instance
-    MainWindow *main_window = new MainWindow;
+    MainWindow *main_window = new MainWindow(0, input_source=="simulation");
     if (!on_dev_machine) {
         main_window->showFullScreen();
     } else {
@@ -80,8 +80,8 @@ int main(int argc, char *argv[]) {
 
     } else if (input_source == "camera") {
         
-        cout << "Input from camera has not been supported yet." << endl;
-        exit(1);
+        // cout << "Input from camera has not been supported yet." << endl;
+        // exit(1);
 
     }
 

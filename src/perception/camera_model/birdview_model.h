@@ -39,6 +39,8 @@ class BirdViewModel {
 
     cv::Mat getDangerZone(const cv::Size img_size, float danger_distance);
 
+    bool isCalibrated();
+
 };
 
 #endif  // BIRDVIEW_MODEL_H
