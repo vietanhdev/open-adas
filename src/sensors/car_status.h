@@ -12,7 +12,6 @@
 #include "perception/object_detection/object_detector.h"
 
 #include "sensors/collision_warning_status.h"
-
 #include "sensors/speed_limit.h"
 
 #include "utils/timer.h"

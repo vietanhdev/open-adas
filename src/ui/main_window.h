@@ -56,7 +56,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
    public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = 0, bool is_simulation_mode=false);
     ~MainWindow();
     void startVideoGrabber();
     void refreshCams();
@@ -75,6 +75,7 @@ class MainWindow : public QMainWindow {
 
    public:
     std::shared_ptr<CameraModel> camera_model;
+    bool is_simulation_mode;
 
    private:
     Ui::MainWindow *ui;
@@ -120,6 +121,7 @@ class MainWindow : public QMainWindow {
 
    private:
 
+    static void cameraCaptureThread(std::shared_ptr<CarStatus>);
     static void objectDetectionThread(
         std::shared_ptr<ObjectDetector> object_detector, std::shared_ptr<CarStatus> ,
         CollisionWarningController *collision_warning);

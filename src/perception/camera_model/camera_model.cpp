@@ -72,3 +72,7 @@ void CameraModel::updateCameraModel(
 BirdViewModel *CameraModel::getBirdViewModel() {
     return &birdview_model;
 }
+
+bool CameraModel::isCalibrated() {
+    return birdview_model.isCalibrated();
+}

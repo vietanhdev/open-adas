@@ -57,6 +57,10 @@ void BirdViewModel::transformPoints(const std::vector<cv::Point2f> &normalized_p
 
 float BirdViewModel::getDistanceToCar(float y) {
     std::lock_guard<std::mutex> guard(mtx);
+    // Return -1 if the camera hasn't been calibrated
+    if (!isCalibrated()) {
+        return -1;
+    }
     float distance = (car_y_in_pixel - y) * height_pixel_to_meter_ratio;
     if (distance < 0) {
         distance = -1;
@@ -87,4 +91,8 @@ cv::Mat BirdViewModel::getDangerZone(const cv::Size img_size, float danger_dista
     cv::threshold(danger_mask, danger_mask, 1, 255, cv::THRESH_BINARY);
 
     return transformed_danger_mask;
+}
+
+bool BirdViewModel::isCalibrated() {
+    return is_calibrated;
 }
