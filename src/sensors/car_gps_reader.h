@@ -17,11 +17,11 @@ using namespace std;
 
 
 enum SignalStatus {
-    SIGNAL_NORMAL = 0,
-    SIGNAL_NOT_CONNECTED = 1,
-    SIGNAL_SOCKET_CREATION_ERROR = -1,
-    SIGNAL_INVALID_ADDRESS = -2,
-    SIGNAL_CONNECTION_FAILED = -3
+    kSignalNormal = 0,
+    kSignalNotConnected = 1,
+    kSignalsocketCreationError = -1,
+    kSignalInvalidAddress = -2,
+    kSignalConnectionFailed = -3
 };
 
 class CarGPSReader {
@@ -47,7 +47,7 @@ class CarGPSReader {
     // -1: Socket creation error
     // -2: Invalid address/ Address not supported
     // -3: Connection failed
-    int signal_status = SIGNAL_NOT_CONNECTED;
+    int signal_status = kSignalNotConnected;
     
 
     std::mutex car_prop_mutex;

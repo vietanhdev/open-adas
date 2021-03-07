@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "../common/onnx_models/include/ctdetNet.h"
+#include "perception/common/onnx_models/include/ctdetNet.h"
 #include "traffic_object.h"
 #include "traffic_sign_classification/sign_classifier.h"
 

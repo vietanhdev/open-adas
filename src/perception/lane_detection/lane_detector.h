@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "lane_line.h"
+#include "perception/lane_detection/lane_line.h"
 #include "perception/common/uff_models/unet/unet.h"
 #include "utils/timer.h"
 

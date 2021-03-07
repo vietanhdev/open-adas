@@ -8,8 +8,8 @@
 
 class BirdViewModel {
 
-    int birdview_img_width = 1000;
-    int birdview_img_height = 10000;
+    static constexpr int kBirdviewImgWidth = 1000;
+    static constexpr int kBirdviewImgHeight = 10000;
     FourPoints four_points =
         FourPoints(cv::Point2f(250, 8000), cv::Point2f(750, 8000),
                    cv::Point2f(750, 8500), cv::Point2f(250, 8500));

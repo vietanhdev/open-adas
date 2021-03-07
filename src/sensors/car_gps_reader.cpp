@@ -12,19 +12,19 @@ CarGPSReader::CarGPSReader() {
 
 int CarGPSReader::printError() {
     switch (signal_status) {
-        case SIGNAL_NORMAL:
+        case kSignalNormal:
             cout << "Socket: No error" << endl;
             break;
-        case SIGNAL_NOT_CONNECTED:
+        case kSignalNotConnected:
             cout << "Socket: Not connected" << endl;
             break;
-        case SIGNAL_SOCKET_CREATION_ERROR:
+        case kSignalsocketCreationError:
             cout << "Socket: Socket creation error" << endl;
             break;
-        case SIGNAL_INVALID_ADDRESS:
+        case kSignalInvalidAddress:
             cout << "Socket: Invalid address/ Address not supported" << endl;
             break;
-        case SIGNAL_CONNECTION_FAILED:
+        case kSignalConnectionFailed:
             cout << "Socket: Connection failed" << endl;
             break;
     }
@@ -35,7 +35,7 @@ int CarGPSReader::printError() {
 // Return 0: success
 // Return 1: fail
 int CarGPSReader::updateProps() {
-    if (getSignalStatus() == SIGNAL_NOT_CONNECTED) {
+    if (getSignalStatus() == kSignalNotConnected) {
         init_socket_conn();
     }
 
@@ -58,7 +58,7 @@ int CarGPSReader::updateProps() {
     nmea_parser->readBuffer((uint8_t *)buffer, sizeof(buffer));
 
     std::lock_guard<std::mutex> lk(car_prop_mutex);
-    signal_status = SIGNAL_NORMAL;
+    signal_status = kSignalNormal;
     longitude = gps->fix.longitude;
     latitude = gps->fix.latitude;
     car_speed = gps->fix.speed;
@@ -98,9 +98,9 @@ int CarGPSReader::init_socket_conn() {
     }
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        setSignalStatus(SIGNAL_SOCKET_CREATION_ERROR);
+        setSignalStatus(kSignalsocketCreationError);
         // cerr << "\n Socket creation error \n" << endl;
-        return SIGNAL_SOCKET_CREATION_ERROR;
+        return kSignalsocketCreationError;
     }
 
     struct timeval tv;
@@ -113,13 +113,13 @@ int CarGPSReader::init_socket_conn() {
 
     // Convert IPv4 and IPv6 addresses from text to binary form
     if (inet_pton(AF_INET, socket_server.c_str(), &serv_addr.sin_addr) <= 0) {
-        setSignalStatus(SIGNAL_INVALID_ADDRESS);
+        setSignalStatus(kSignalInvalidAddress);
         // cerr << "\nInvalid address/ Address not supported \n" << endl;
         return -1;
     }
 
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-        setSignalStatus(SIGNAL_CONNECTION_FAILED);
+        setSignalStatus(kSignalConnectionFailed);
         // cerr << "\nConnection Failed \n" << endl;
         return -1;
     }

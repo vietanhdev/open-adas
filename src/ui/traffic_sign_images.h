@@ -5,8 +5,8 @@
 #include <opencv2/opencv.hpp>
 
 struct TrafficSignImage {
-    const int IMG_WIDTH = 48;
-    const int IMG_HEIGHT = 48;
+    static constexpr int kImgWidth = 48;
+    static constexpr int kImgHeight = 48;
     int speed;
     cv::Mat image;
     TrafficSignImage(int speed, std::string img_path, std::string default_img_path): speed(speed) {
@@ -16,7 +16,7 @@ struct TrafficSignImage {
         if (image.empty()) {
             image = cv::imread(default_img_path);
         }
-        cv::resize(image, image, cv::Size(IMG_WIDTH, IMG_HEIGHT));
+        cv::resize(image, image, cv::Size(kImgWidth, kImgHeight));
     }
 };
 

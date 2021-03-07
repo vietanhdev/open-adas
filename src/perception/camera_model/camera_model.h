@@ -46,4 +46,4 @@ class CameraModel {
     bool isCalibrated();
 };
 
-#endif
+#endif // CAMERA_MODEL_H

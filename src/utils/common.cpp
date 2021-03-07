@@ -32,7 +32,7 @@ error_t _dupenv_s(char **pValue, size_t *len, const char *pPath) {
 }
 #endif  // _WIN32
 
-void setLabel(cv::Mat &im, const std::string label, const cv::Point &origin) {
+void setLabel(cv::Mat &im, const std::string& label, const cv::Point &origin) {
     int fontface = cv::FONT_HERSHEY_SIMPLEX;
     double scale = 0.5;
     int thickness = 1;

@@ -39,7 +39,7 @@ cv::Mat BirdViewModel::transformImage(const cv::Mat &img) {
         four_image_points.to_vector(img_width, img_height);
 
     cv::warpPerspective(img, dst, birdview_transform_matrix,
-                        cv::Size(birdview_img_width, birdview_img_height));
+                        cv::Size(kBirdviewImgWidth, kBirdviewImgHeight));
     return dst;
 }
 
@@ -72,11 +72,11 @@ cv::Mat BirdViewModel::getDangerZone(const cv::Size img_size, float danger_dista
 
     std::lock_guard<std::mutex> guard(mtx);
     int tl_y = car_y_in_pixel - danger_distance / height_pixel_to_meter_ratio;
-    int tl_x = birdview_img_width / 2 - car_width_in_pixel / 2;
+    int tl_x = kBirdviewImgWidth / 2 - car_width_in_pixel / 2;
     int br_x = tl_x + car_width_in_pixel;
     int br_y = car_y_in_pixel - 1;
 
-    cv::Mat danger_mask(cv::Size(birdview_img_width, birdview_img_height), CV_8UC1, cv::Scalar(0));
+    cv::Mat danger_mask(cv::Size(kBirdviewImgWidth, kBirdviewImgHeight), CV_8UC1, cv::Scalar(0));
     cv::rectangle(danger_mask, cv::Rect(tl_x, tl_y, br_x-tl_x, br_y-tl_y), 
         cv::Scalar(255), -1);
 
