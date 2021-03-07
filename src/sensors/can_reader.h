@@ -41,8 +41,7 @@ class CANReader {
     struct timeval tv, timeout_config = {0, 0};
     struct stat dirstat;
     fd_set rdfs;
-    char
-        ctrlmsg[CMSG_SPACE(sizeof(struct timeval)) + CMSG_SPACE(sizeof(__u32))];
+    char ctrlmsg[CMSG_SPACE(sizeof(struct timeval)) + CMSG_SPACE(sizeof(__u32))];
     int running = 1;
     int nbytes, maxdlen;
     int ret;

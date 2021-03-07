@@ -18,4 +18,4 @@ class TrafficObject {
     bbox(detection.bbox), classId(detection.classId), prob(detection.prob), traffic_sign_type(traffic_sign_type) {}
 };
 
-#endif
+#endif // TRAFFIC_OBJECT_H

@@ -9,7 +9,7 @@
 
 namespace ml_cam {
 
-    void setLabel(cv::Mat& im, const std::string label, const cv::Point & origin);
+    void setLabel(cv::Mat& im, const std::string& label, const cv::Point & origin);
     std::string getHomePath();
 
     QImage Mat2QImage(cv::Mat const& src);

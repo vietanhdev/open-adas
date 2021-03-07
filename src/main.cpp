@@ -75,13 +75,8 @@ int main(int argc, char *argv[]) {
         }
         
         // Set simulation
-        main_window->setInputSource(InputFromSimulation);
+        main_window->setInputSource(kInputFromSimulation);
         main_window->setSimulation((Simulation*)simulation);
-
-    } else if (input_source == "camera") {
-        
-        // cout << "Input from camera has not been supported yet." << endl;
-        // exit(1);
 
     }
 

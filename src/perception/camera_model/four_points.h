@@ -28,4 +28,4 @@ class FourPoints {
     }
 };
 
-#endif  // UTILS_H
+#endif  // FOUR_POINTS_H
