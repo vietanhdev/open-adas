@@ -6,7 +6,7 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QImage>
-#include <QSound>
+#include <QtMultimedia/QSound>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QPixmap>
