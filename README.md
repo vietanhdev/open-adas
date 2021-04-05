@@ -8,7 +8,7 @@ An advanced driver-assistance system on Jetson Nano embedded computer with four 
 - <https://aicurious.io/posts/adas-jetson-nano-software/>.
 - <https://aicurious.io/posts/adas-jetson-nano-deep-neural-networks/>.
 
-**Update 21/12/2020:** I created an image of my SD card [here](https://drive.google.com/file/d/1jg68ySnTt4Zm_hb4JVZKKWXRWkDucqUu/view?usp=sharing). You can flash and run this image on Jetson Nano.
+**Update 21/12/2020:** I created an image of my SD card [here](https://drive.google.com/file/d/1jg68ySnTt4Zm_hb4JVZKKWXRWkDucqUu/view?usp=sharing). You can flash and run this image on Jetson Nano. **Note:** The source code and binary files in this SD card image is older than in `master` branch.
 
 **For TensorRT 7 support:** Currently, only TensorRT e and 6 are supported. TensorRT 7 has a lot of deprecated APIs and I think there is no way to run this project directly with that version. I don't have time to continue with this project soon, so I really need your contributions to extend this project further.
 
