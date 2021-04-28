@@ -14,11 +14,21 @@ An advanced driver-assistance system on Jetson Nano embedded computer with four 
 - **(Documentation) OpenADAS:** *Design, CANbus, Calibration, Model training and deployment notes*: [docs/open-adas.md](docs/open-adas.md).
 - **(Documentation) How to setup on a Jetson Xavier:** [docs/setup-jetson-xavier.md](docs/setup-jetson-xavier.md).
 
-**Update 21/12/2020:** I created an image of my SD card [here](https://drive.google.com/file/d/1jg68ySnTt4Zm_hb4JVZKKWXRWkDucqUu/view?usp=sharing). You can flash and run this image on Jetson Nano. **Note:** The source code and binary files in this SD card image is older than in `master` branch.
+**For TensorRT 7 support:** Currently, only TensorRT 5 and 6 are supported. TensorRT 7 has a lot of deprecated APIs and I think there is no way to run this project directly with that version. I don't have time to continue with this project soon, so I really need your contributions to extend this project further.
 
-**For TensorRT 7 support:** Currently, only TensorRT e and 6 are supported. TensorRT 7 has a lot of deprecated APIs and I think there is no way to run this project directly with that version. I don't have time to continue with this project soon, so I really need your contributions to extend this project further.
+## Quick setup on Jetson Nano: SD Card image
 
-## I. Environment Setup + Build
+I created an image of my SD card [here](https://drive.google.com/file/d/1jg68ySnTt4Zm_hb4JVZKKWXRWkDucqUu/view?usp=sharing). You can flash and run this image on Jetson Nano.
+
+**Note:**
+
+- The source code and binary files in this SD card image is older than in `master` branch. Please upgrade to the lastest source code and recompile on your device.
+- Use Alt+F4 to exit the GUI and start editing your source code.
+- Login information:
+    + Username: `smartcam`.
+    + Password: Open Terminal and type `sudo passwd smartcam` to change the password.
+
+## Compile from source
 
 ### Requirements:
 
@@ -161,7 +171,7 @@ compilation terminated.
 sudo bash setup_vcan.sh
 ```
 
-## II. References:
+## References:
 
 - In this project, we use code from:
     + Dark Theme for Qt5 by Juergen Skrotzky: [https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle](https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle).
