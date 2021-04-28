@@ -173,7 +173,6 @@ sudo bash setup_vcan.sh
 
 ## References:
 
-- In this project, we use code from:
-    + Dark Theme for Qt5 by Juergen Skrotzky: [https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle](https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle).
+- Dark Theme for Qt5 by Juergen Skrotzky: [https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle](https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle).
 
 - ICSim: <https://github.com/zombieCraig/ICSim>.
