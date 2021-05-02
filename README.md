@@ -1,6 +1,6 @@
 # OpenADAS - An advanced driver-assistance system using Jetson Nano
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://aicurious.io/donation/)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://aicurious.io/donation/)
 
 An advanced driver-assistance system on Jetson Nano embedded computer with four main functions: forward collision warning, lane departure warning, traffic sign recognition and overspeed warning. This repository contains source code for Jetson Nano, not including the source code for model training and conversion.
 
