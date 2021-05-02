@@ -57,7 +57,7 @@ Find these lines in `CMakeLists.txt`:
 set(GPU_ARCHS 75)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
 ```
 
-Replace 75 with 72 for Jetson Xavier. Please read more on [this link](https://developer.nvidia.com/cuda-gpus).
+Replace 75 with 72 for Jetson Xavier or with 62 for Jetson TX2. Please read more on [this link](https://developer.nvidia.com/cuda-gpus).
 
 ### 3. Download models and sample data
 
