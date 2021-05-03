@@ -172,6 +172,28 @@ compilation terminated.
 ```
 sudo bash setup_vcan.sh
 ```
+**Issue: Jetson TX2 Camera Pipeline Error
+
+```bash
+[ WARN:0] global /home/nvidia/host/build_opencv/nv_opencv/modules/videoio/src/cap_gstreamer.cpp (1757) handleMessage OpenCV | GStreamer warning: Embedded video playback halted; module v4l2src0 reported: Internal data stream error.
+[ WARN:0] global /home/nvidia/host/build_opencv/nv_opencv/modules/videoio/src/cap_gstreamer.cpp (886) open OpenCV | GStreamer warning: unable to start pipeline
+[ WARN:0] global /home/nvidia/host/build_opencv/nv_opencv/modules/videoio/src/cap_gstreamer.cpp (480) isPipelinePlaying OpenCV | GStreamer warning: GStreamer: pipeline have not been created
+```
+Default setting tries to capture video from Jetson TX2 on-board CSI camera and fails. Following change must be made in order to capture from USC-Camera with Jetson TX2
+
+Camera ID in line 92 of main_window.cpp (```https://github.com/vietanhdev/open-adas/blob/master/src/ui/main_window.cpp```) must be changed according to the ID of the desired camera. For Jetson TX2; ```/dev/video0``` corresponds to the on-board CSI Camera, so replacement of ```0``` with ```1``` fixes the issue.
+
+```cpp
+cv::VideoCapture video;
+    if (!video.open(0)) {
+        QMessageBox::critical(
+            nullptr, "Camera Error",
+            "Could not read from camera");
+        return;
+    }
+```
+
+
 
 ## References:
 
