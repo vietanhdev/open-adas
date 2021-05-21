@@ -38,7 +38,7 @@ I created an image of my SD card [here](https://drive.google.com/file/d/1jg68ySn
 - Qt 5
 - OpenCV >= 4.0.1
 - C++ 17 compiler
-- CUDA 10.1
+- CUDA 10.x
 - TensorRT 5.1.5-1+cuda10.1, or - TensorRT 6.0.1.8+10.2. **This project should work with TensorRT 5 and TensorRT 6. TensorRT 7 is not supported for now.**
 
 ### Setup for Linux - Ubuntu 18.04
@@ -80,9 +80,11 @@ https://github.com/protocolbuffers/protobuf
 cd <project directory>
 mkdir build
 cd build
-cmake -DCUDA_INCLUDE_DIRS=/usr/local/cuda-10.1/include ..
+cmake -DCUDA_INCLUDE_DIRS=/usr/local/cuda-10.2/include ..
 make
 ```
+
+Replace `CUDA_INCLUDE_DIRS` with your own path.
 
 - Setup virtual CAN (run once)
 
@@ -92,6 +94,7 @@ sudo bash setup_vcan.sh
 
 - Run
 ```
+cd build/bin
 ./OpenADAS
 ```
 
@@ -177,6 +180,12 @@ sudo bash setup_vcan.sh
 ```
 
 ## References:
+
+- Objects as Points - Xingyi Zhou, Dequan Wang, Philipp Krähenbühl: [https://arxiv.org/abs/1904.07850](https://arxiv.org/abs/1904.07850).
+
+- U-Net: Convolutional Networks for Biomedical Image Segmentation - Olaf Ronneberger, Philipp Fischer, Thomas Brox: [https://arxiv.org/abs/1505.04597](https://arxiv.org/abs/1505.04597).
+
+- Deep Residual Learning for Image Recognition - Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun: [https://arxiv.org/abs/1512.03385](https://arxiv.org/abs/1512.03385).
 
 - Dark Theme for Qt5 by Juergen Skrotzky: [https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle](https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle).
 
