@@ -33,7 +33,7 @@ if(NOT CMAKE_CUDA_DEVICE_LINK_EXECUTABLE)
    set(CMAKE_CUDA_DEVICE_LINK_EXECUTABLE "<CMAKE_CUDA_COMPILER> <FLAGS> <CMAKE_CUDA_LINK_FLAGS> ${CMAKE_CUDA_COMPILE_OPTIONS_PIC} ${_CMAKE_CUDA_EXTRA_DEVICE_LINK_FLAGS} -shared -dlink <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
 endif()
 
-find_package( OpenCV 4 REQUIRED )
+find_package( OpenCV REQUIRED )
 
 # As moc files are generated in the binary dir, tell CMake
 # to always look for includes there:
