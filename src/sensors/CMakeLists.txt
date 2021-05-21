@@ -5,6 +5,7 @@ SET(CMAKE_C_LINK_EXECUTABLE ${CMAKE_CXX_LINK_EXECUTABLE})
 add_subdirectory("libs/NemaTode")
 include_directories(
     ".."
+    "../perception/common/onnx_models/onnx-tensorrt"
 )
 
 add_library(can_reader 

@@ -20,10 +20,10 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     const std::string keys =
         "{help h usage ? |      | print this message   }"
-        "{input_source   |camera| input source. 'camera' or 'simulation'   }"
+        "{input_source   |simulation| input source. 'camera' or 'simulation'   }"
         "{input_video_path  |      | path to video file for simulation }"
         "{input_data_path   |      | path to data file for simulation  }"
-        "{on_dev_machine    |false | on development machine  }"
+        "{on_dev_machine    |true| on development machine  }"
         ;
 
     CommandLineParser parser(argc, argv, keys);
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
         if (input_video_path == "" && input_data_path == "") {
             simulation = new Simulation(main_window->car_status, main_window->camera_model);
         } else {
-            simulation = new Simulation(main_window->car_status, input_video_path, input_data_path);
+            simulation = new Simulation(main_window->car_status, main_window->camera_model, input_video_path, input_data_path);
         }
         
         // Set simulation

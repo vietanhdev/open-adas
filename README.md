@@ -95,11 +95,14 @@ sudo bash setup_vcan.sh
 ./OpenADAS
 ```
 
-This will starts the program in full screen and touch mode. If you want to use a computer mouse, add `--on_dev_machine` option:
+**Arguments:**
 
-```
-./OpenADAS --on_dev_machine
-```
+- `--input_source` | default: `simulation` : Input source. 'camera' or 'simulation'.
+- `--input_video_path` | optional : Path to video file for simulation.
+- `--input_data_path`  | optional : Path to data file for simulation.
+- `--on_dev_machine`   | default: `true` : On development machine or not. When this value is set to `false`, OpenADAS will be launched in fullscreen mode without mouse (touch UI). You should this value to `true` in development environment.
+
+Specify `input_video_path` and `input_data_path` if you want to load a simulation scenario by default. Otherwise, you can select scenarios from simulation selector.
 
 #### Known issues
 

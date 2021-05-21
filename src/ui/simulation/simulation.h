@@ -61,7 +61,7 @@ class Simulation : public QWidget, private Ui::Simulation {
 
    public:
     explicit Simulation(std::shared_ptr<CarStatus> car_status, std::shared_ptr<CameraModel> camera_model, QWidget *parent = nullptr);
-    explicit Simulation(std::shared_ptr<CarStatus> car_status, std::string input_video_path, std::string input_data_path, QWidget *parent = nullptr);
+    explicit Simulation(std::shared_ptr<CarStatus> car_status, std::shared_ptr<CameraModel> camera_model, std::string input_video_path, std::string input_data_path, QWidget *parent = nullptr);
     void setupAndConnectComponents();
     void stopPlaying();
     void startPlaying();
