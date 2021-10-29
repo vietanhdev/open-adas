@@ -20,7 +20,7 @@ An advanced driver-assistance system on Jetson Nano embedded computer with four 
 
 ## Quick setup on Jetson Nano: SD Card image
 
-I created an image of my SD card [here](https://drive.google.com/file/d/1jg68ySnTt4Zm_hb4JVZKKWXRWkDucqUu/view?usp=sharing). You can flash and run this image on Jetson Nano.
+I created an image of my SD card [here](https://1drv.ms/u/s!Av71xxzl6mYZgdZxDoxDnxR-sOERSw?e=S2o1uR). You can flash and run this image on Jetson Nano.
 
 **Note:**
 
