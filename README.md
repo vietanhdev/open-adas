@@ -67,7 +67,7 @@ https://github.com/protocolbuffers/protobuf
 
 #### Models and test data
 
-- Download models and testing data [here](https://drive.google.com/drive/folders/1-DDchZQNOWpppNX8udyKj0OViDhYD38O?usp=sharing) and put into root folder of this project.
+- Download models and testing data [here](https://1drv.ms/u/s!Av71xxzl6mYZgddQHbzrtbw9fBGegA?e=M4CvIq) and put into root folder of this project.
 
 #### Compile and Run
 
