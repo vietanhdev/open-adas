@@ -10,9 +10,9 @@ An advanced driver-assistance system on Jetson Nano embedded computer with four 
 
 ## Documentation:
 
-- **(Blog) Intro and Hardware:** <https://aicurious.io/posts/adas-jetson-nano-intro-and-hardware/>.
-- **(Blog) Software stack**: <https://aicurious.io/posts/adas-jetson-nano-software/>.
-- **(Blog) Deep neural networks:** <https://aicurious.io/posts/adas-jetson-nano-deep-neural-networks/>.
+- **(Blog) Intro and Hardware:** <https://aicurious.io/blog/2020-09-10-adas-jetson-nano-intro-and-hardware>.
+- **(Blog) Software stack**: <https://aicurious.io/blog/2020-09-12-adas-jetson-nano-software>.
+- **(Blog) Deep neural networks:** <https://aicurious.io/blog/2020-09-21-adas-jetson-nano-experimental-results>.
 - **(Documentation) OpenADAS:** *Design, CANbus, Calibration, Model training and deployment notes*: [docs/open-adas.md](docs/open-adas.md).
 - **(Documentation) How to setup on a Jetson Xavier:** [docs/setup-jetson-xavier.md](docs/setup-jetson-xavier.md).
 
