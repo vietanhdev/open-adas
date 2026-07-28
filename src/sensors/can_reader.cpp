@@ -17,7 +17,7 @@ CANReader::CANReader() {
     printf("Using CAN interface %s\n", ifr.ifr_name);
     if (ioctl(can, SIOCGIFINDEX, &ifr) < 0) {
         perror("SIOCGIFINDEX");
-        exit(1);
+        return;
     }
     addr.can_ifindex = ifr.ifr_ifindex;
     // CAN FD Mode
@@ -54,8 +54,8 @@ CANReader::CANReader() {
 void CANReader::readCANSignal() {
     nbytes = recvmsg(can, &msg, 0);
     if (nbytes < 0) {
-        perror("read");
-        cout << "Error reading from CAN" << endl;
+        // Suppress infinite spam in headless mode by sleeping
+        sleep(1);
         return;
     }
     if ((size_t)nbytes == CAN_MTU)

@@ -8,12 +8,16 @@
 #include <vector>
 
 #include "perception/lane_detection/lane_line.h"
+#ifndef DISABLE_UFF
 #include "perception/common/uff_models/unet/unet.h"
+#endif
 #include "utils/timer.h"
 
 class LaneDetector {
    private:
+#ifndef DISABLE_UFF
     std::shared_ptr<Unet> model;
+#endif
 
     std::vector<Timer::time_point_t> dual_line_checking_time;
     std::vector<bool> is_dual_line;

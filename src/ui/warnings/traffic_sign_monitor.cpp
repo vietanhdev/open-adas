@@ -23,9 +23,15 @@ std::string TrafficSignMonitor::getLargestSign(const std::vector<TrafficObject> 
 
         // Now we only care about speed sign
         // => Skip others
+#ifndef DISABLE_UFF
         if (!TrafficSignClassifier::isSpeedSign(sign_type)) {
             continue;
         }
+#else
+        if (sign_type.find("MAX_SPEED_LIMIT") == std::string::npos && sign_type != "END_OF_SPEED_LIMIT") {
+            continue;
+        }
+#endif
 
         int area = (traffic_objects[i].bbox.x2 - traffic_objects[i].bbox.x1) * (traffic_objects[i].bbox.y2 - traffic_objects[i].bbox.y1);
 

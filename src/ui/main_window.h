@@ -1,12 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
 #include <QCloseEvent>
 #include <QDebug>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QImage>
-#include <QtMultimedia/QSound>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QPixmap>
@@ -88,7 +88,9 @@ class MainWindow : public QMainWindow {
 
     // Processors
     std::shared_ptr<ObjectDetector> object_detector;
+#ifndef DISABLE_UFF
     std::shared_ptr<LaneDetector> lane_detector;
+#endif
     std::shared_ptr<CarGPSReader> car_gps_reader;
     std::shared_ptr<CollisionWarningController> collision_warning;
     std::shared_ptr<CANReader> can_reader;
@@ -125,8 +127,10 @@ class MainWindow : public QMainWindow {
     static void objectDetectionThread(
         std::shared_ptr<ObjectDetector> object_detector, std::shared_ptr<CarStatus> ,
         CollisionWarningController *collision_warning);
+#ifndef DISABLE_UFF
     static void laneDetectionThread(
         std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus>, MainWindow *);
+#endif
     static void carPropReaderThread(
         std::shared_ptr<CarGPSReader> car_gps_reader,
         std::shared_ptr<CANReader> can_reader,

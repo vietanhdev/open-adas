@@ -6,7 +6,7 @@
 #include <fstream>
 #include "ctdetNet.h"
 #include "ctdetLayer.h"
-#include "entroyCalibrator.h"
+// #include "entroyCalibrator.h" // Removed for TRT 10 port
 
 static CTDetLogger gLogger;
 
@@ -15,16 +15,17 @@ namespace ctdet
 
     ctdetNet::ctdetNet(const std::string &onnxFile, const std::string &calibFile,
             ctdet::RUN_MODE mode):forwardFace(false),mContext(nullptr),mEngine(nullptr),mRunTime(nullptr),
-                                  runMode(mode),runIters(0),mPlugins(nullptr)
+                                  runMode(mode),runIters(0)
     {
 
         const int maxBatchSize = 1;
         nvinfer1::IHostMemory *modelStream{nullptr};
         int verbosity = (int) nvinfer1::ILogger::Severity::kWARNING;
         nvinfer1::IBuilder* builder = nvinfer1::createInferBuilder(gLogger);
-        nvinfer1::INetworkDefinition* network = builder->createNetwork();
+        
+        const auto explicitBatch = 1U << static_cast<uint32_t>(nvinfer1::NetworkDefinitionCreationFlag::kEXPLICIT_BATCH);
+        nvinfer1::INetworkDefinition* network = builder->createNetworkV2(explicitBatch);
 
-        mPlugins = nvonnxparser::createPluginFactory(gLogger);
         auto parser = nvonnxparser::createParser(*network, gLogger);
         if (!parser->parseFromFile(onnxFile.c_str(), verbosity))
         {
@@ -33,64 +34,45 @@ namespace ctdet
             exit(EXIT_FAILURE);
         }
 
-        builder->setMaxBatchSize(maxBatchSize);
-        builder->setMaxWorkspaceSize(1 << 30);// 1G
+        nvinfer1::IBuilderConfig* config = builder->createBuilderConfig();
+        config->setMemoryPoolLimit(nvinfer1::MemoryPoolType::kWORKSPACE, 1ULL << 30); // 1G
 
-        nvinfer1::int8EntroyCalibrator *calibrator = nullptr;
-        if(calibFile.size()>0) calibrator = new nvinfer1::int8EntroyCalibrator(maxBatchSize,calibFile,"calib.table");
-        if (runMode== RUN_MODE::INT8)
+        if (runMode == RUN_MODE::INT8)
         {
-            //nvinfer1::IInt8Calibrator* calibrator;
-            std::cout <<"setInt8Mode"<<std::endl;
-            if (!builder->platformHasFastInt8())
-                std::cout << "Notice: the platform do not has fast for int8" << std::endl;
-            builder->setInt8Mode(true);
-            builder->setInt8Calibrator(calibrator);
+            std::cout << "setInt8Mode (Not supported in TRT 10 port currently)" << std::endl;
         }
         else if (runMode == RUN_MODE::FLOAT16)
         {
-            std::cout <<"setFp16Mode"<<std::endl;
-            if (!builder->platformHasFastFp16())
-                std::cout << "Notice: the platform do not has fast for fp16" << std::endl;
-            builder->setFp16Mode(true);
+            std::cout << "setFp16Mode" << std::endl;
+            config->setFlag(nvinfer1::BuilderFlag::kFP16);
         }
-        // config input shape
 
         std::cout << "Begin building engine..." << std::endl;
-        nvinfer1::ICudaEngine* engine = builder->buildCudaEngine(*network);
-        if (!engine){
+        modelStream = builder->buildSerializedNetwork(*network, *config);
+        if (!modelStream){
             std::string error_message ="Unable to create engine";
             gLogger.log(nvinfer1::ILogger::Severity::kERROR, error_message.c_str());
             exit(-1);
         }
         std::cout << "End building engine..." << std::endl;
 
-        if(calibrator){
-            delete calibrator;
-            calibrator = nullptr;
-        }
-        // We don't need the network any more, and we can destroy the parser.
-
-
-        // Serialize the engine, then close everything down.
-        modelStream = engine->serialize();
-        engine->destroy();
-        network->destroy();
-        builder->destroy();
-        parser->destroy();
-        assert(modelStream != nullptr);
         mRunTime = nvinfer1::createInferRuntime(gLogger);
         assert(mRunTime != nullptr);
-        mEngine= mRunTime->deserializeCudaEngine(modelStream->data(), modelStream->size(), mPlugins);
+        mEngine = mRunTime->deserializeCudaEngine(modelStream->data(), modelStream->size());
         assert(mEngine != nullptr);
-        modelStream->destroy();
+
+        delete modelStream;
+        delete network;
+        delete config;
+        delete builder;
+        delete parser;
+        
         InitEngine();
 
     }
 
     ctdetNet::ctdetNet(const std::string &engineFile)
-            :forwardFace(false),mContext(nullptr),mEngine(nullptr),mRunTime(nullptr),runMode(RUN_MODE::FLOAT32),runIters(0),
-            mPlugins(nullptr)
+            :forwardFace(false),mContext(nullptr),mEngine(nullptr),mRunTime(nullptr),runMode(RUN_MODE::FLOAT32),runIters(0)
     {
         using namespace std;
         fstream file;
@@ -109,11 +91,10 @@ namespace ctdet
 
         file.close();
 
-        mPlugins = nvonnxparser::createPluginFactory(gLogger);
         std::cout << "deserializing" << std::endl;
         mRunTime = nvinfer1::createInferRuntime(gLogger);
         assert(mRunTime != nullptr);
-        mEngine = mRunTime->deserializeCudaEngine(data.get(), length, mPlugins);
+        mEngine = mRunTime->deserializeCudaEngine(data.get(), length);
         assert(mEngine != nullptr);
         InitEngine();
     }
@@ -123,7 +104,24 @@ namespace ctdet
         mContext = mEngine->createExecutionContext();
         assert(mContext != nullptr);
         mContext->setProfiler(&mProfiler);
-        int nbBindings = mEngine->getNbBindings();
+        
+        int32_t nbTensors = mEngine->getNbIOTensors();
+        
+        mIOTensorNames.clear();
+        std::vector<std::string> temp_outputs;
+        for (int i = 0; i < nbTensors; ++i) {
+            const char* name = mEngine->getIOTensorName(i);
+            if (mEngine->getTensorIOMode(name) == nvinfer1::TensorIOMode::kINPUT) {
+                mIOTensorNames.insert(mIOTensorNames.begin(), name);
+            } else {
+                temp_outputs.push_back(name);
+            }
+        }
+        for (const auto& name : temp_outputs) {
+            mIOTensorNames.push_back(name);
+        }
+        
+        int nbBindings = mIOTensorNames.size();
 
         if (nbBindings > 4) forwardFace= true;
 
@@ -132,8 +130,9 @@ namespace ctdet
         int64_t totalSize = 0;
         for (int i = 0; i < nbBindings; ++i)
         {
-            nvinfer1::Dims dims = mEngine->getBindingDimensions(i);
-            nvinfer1::DataType dtype = mEngine->getBindingDataType(i);
+            const char* name = mIOTensorNames[i].c_str();
+            nvinfer1::Dims dims = mEngine->getTensorShape(name);
+            nvinfer1::DataType dtype = mEngine->getTensorDataType(name);
             totalSize = volume(dims) * maxBatchSize * getElementSize(dtype);
             mBindBufferSizes[i] = totalSize;
             mCudaBuffers[i] = safeCudaMalloc(totalSize);
@@ -145,10 +144,14 @@ namespace ctdet
 
     void ctdetNet::doInference(const void *inputData, void *outputData)
     {
-        const int batchSize = 1;
         int inputIndex = 0 ;
         CUDA_CHECK(cudaMemcpyAsync(mCudaBuffers[inputIndex], inputData, mBindBufferSizes[inputIndex], cudaMemcpyHostToDevice, mCudaStream));
-        mContext->execute(batchSize, &mCudaBuffers[inputIndex]);
+        
+        for (size_t i = 0; i < mIOTensorNames.size(); ++i) {
+            mContext->setTensorAddress(mIOTensorNames[i].c_str(), mCudaBuffers[i]);
+        }
+        mContext->enqueueV3(mCudaStream);
+        
         CUDA_CHECK(cudaMemset(cudaOutputBuffer, 0, sizeof(float)));
         if (forwardFace){
             CTfaceforward_gpu(static_cast<const float *>(mCudaBuffers[1]),static_cast<const float *>(mCudaBuffers[2]),
@@ -178,6 +181,7 @@ namespace ctdet
             }
             file.write((const char*)data->data(), data->size());
             file.close();
+            delete data;
         }
 
     }

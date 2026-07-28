@@ -82,3 +82,8 @@ CMakeLists.txt.user
 !/data/videos/.gitkeep
 
 /lib
+*.mp4
+*.txt
+*.json
+*.jpg
+*.png

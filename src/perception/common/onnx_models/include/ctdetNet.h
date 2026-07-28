@@ -13,7 +13,7 @@
 #include "NvOnnxParser.h"
 #include "configs/config_object_detection.h"
 #include "ctdet_utils.h"
-#include "NvOnnxParserRuntime.h"
+
 
 namespace ctdet
 {
@@ -39,14 +39,12 @@ namespace ctdet
             for(auto& item : mCudaBuffers)
                 cudaFree(item);
             cudaFree(cudaOutputBuffer);
-            if(!mRunTime)
-                mRunTime->destroy();
-            if(!mContext)
-                mContext->destroy();
-            if(!mEngine)
-                mEngine->destroy();
-            if(!mPlugins)
-                mPlugins->destroy();
+            if(mRunTime)
+            {
+                delete mContext;  // must be deleted before engine
+                delete mEngine;   // must be deleted before runtime
+                delete mRunTime;  // runtime must outlive engine
+            }
         }
 
         void saveEngine(const std::string& fileName);
@@ -74,9 +72,9 @@ namespace ctdet
 
         RUN_MODE runMode;
 
-        nvonnxparser::IPluginFactory *mPlugins;
         std::vector<void*> mCudaBuffers;
         std::vector<int64_t> mBindBufferSizes;
+        std::vector<std::string> mIOTensorNames;
         void * cudaOutputBuffer;
 
         cudaStream_t mCudaStream;

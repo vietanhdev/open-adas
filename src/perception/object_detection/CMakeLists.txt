@@ -15,8 +15,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Ofast")
 list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES -Xcompiler -fPIC")
 
 
+find_library(NVONNXPARSER_LIBRARY nvonnxparser
+        HINTS ${TENSORRT_ROOT} ${TENSORRT_BUILD} ${CUDA_TOOLKIT_ROOT_DIR}
+        PATH_SUFFIXES lib lib64 lib/x64)
+message(STATUS "Found NVONNXPARSER_LIBRARY: ${NVONNXPARSER_LIBRARY}")
+
 # Build sign classifier
-add_subdirectory(./traffic_sign_classification)
+if(NOT DISABLE_UFF)
+    add_subdirectory(./traffic_sign_classification)
+endif()
 
 include_directories(
         ".."
@@ -31,19 +38,30 @@ include_directories(
         "../configs/"
 )
 
-file(GLOB CPP_SRC ../common/onnx_models/*.cpp *.cpp)
-file(GLOB CU_SRC ../common/onnx_models/*.cu)
+file(GLOB CPP_SRC ../common/onnx_models/*.cpp *.cpp ../common/onnx_models/onnx-tensorrt/DCNv2.cpp)
+file(GLOB CU_SRC ../common/onnx_models/*.cu ../common/onnx_models/onnx-tensorrt/dcn_v2_im2col_cuda.cu)
 cuda_add_library(openadas_object_detector SHARED ${CPP_SRC} ${CU_SRC})
 # Use C++ 17
 target_compile_features(openadas_object_detector PRIVATE cxx_std_17)
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
     set (CPP_FS_LIB "stdc++fs")
 endif()
-target_link_libraries(openadas_object_detector
-        ${TENSORRT_LIBRARY_INFER}
-        ${OpenCV_LIBS}
-        ${CPP_FS_LIB}
-        nvonnxparser
-        nvonnxparser_runtime
-        openadas_sign_classifier
-)
+
+if(DISABLE_UFF)
+    target_link_libraries(openadas_object_detector
+            ${TENSORRT_LIBRARY_INFER}
+            ${NVONNXPARSER_LIBRARY}
+            ${OpenCV_LIBS}
+            ${CPP_FS_LIB}
+            ${CUDA_CUBLAS_LIBRARIES}
+    )
+else()
+    target_link_libraries(openadas_object_detector
+            ${TENSORRT_LIBRARY_INFER}
+            ${NVONNXPARSER_LIBRARY}
+            ${OpenCV_LIBS}
+            ${CPP_FS_LIB}
+            ${CUDA_CUBLAS_LIBRARIES}
+            openadas_sign_classifier
+    )
+endif()

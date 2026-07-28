@@ -64,6 +64,7 @@ Simulation::Simulation(std::shared_ptr<CarStatus> car_status, std::shared_ptr<Ca
     setDataFilePath(input_data_path);
     this->car_status = car_status;
     this->camera_model = camera_model;
+    startPlaying();
 }
 
 void Simulation::softRestart() {
@@ -249,7 +250,9 @@ void Simulation::playingThread(Simulation * this_ptr) {
 
         this_ptr->car_status->setCurrentImage(frame);
 
-        std::this_thread::sleep_for(std::chrono::microseconds(int(1.0 / sim_data.playing_fps * 1e6)));
+        float fps_to_use = sim_data.playing_fps;
+        if (fps_to_use <= 0.001) fps_to_use = 30.0;
+        std::this_thread::sleep_for(std::chrono::microseconds(int(1.0 / fps_to_use * 1e6)));
 
         ++current_frame_id;
     }

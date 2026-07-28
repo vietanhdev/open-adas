@@ -10,7 +10,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 # Set GPU architecture. This decides which instruction set will be used for GPU code.
-set(GPU_ARCHS 75)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
+set(GPU_ARCHS 89)  ## config your GPU_ARCHS,See [here](https://developer.nvidia.com/cuda-gpus) for finding what maximum compute capability your specific GPU supports.
 
 # Setup CMake
 set(CMAKE_BUILD_TYPE Debug)
@@ -51,8 +51,6 @@ include_directories(
     "/usr/include/x86_64-linux-gnu/qt5/QtCore"
     "/usr/include/x86_64-linux-gnu/qt5/QtWidgets" 
     "/usr/include/x86_64-linux-gnu/qt5/QtGui"
-    "/usr/include/x86_64-linux-gnu/qt5/QtMultimedia"
-    "/usr/include/x86_64-linux-gnu/qt5/QtMultimediaWidgets"
 )
 
 # We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
@@ -60,10 +58,25 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 
 # Executables fail to build with Qt 5 in the default configuration
 # without -fPIE. We add that here.
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+set(CMAKE_CXX_FLAGS "-O3 -fsanitize=undefined -g ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+
+option(DISABLE_UFF "Disable UFF based models" OFF)
 
 # Build the libraries with -fPIC
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+if (DISABLE_UFF)
+    add_definitions(-DDISABLE_UFF)
+endif()
+
+find_path(TENSORRT_INCLUDE_DIR NvInfer.h
+        HINTS ${TENSORRT_ROOT} ${CUDA_TOOLKIT_ROOT_DIR}
+        PATH_SUFFIXES include/)
+include_directories(${TENSORRT_INCLUDE_DIR})
+
+find_library(NVONNXPARSER_LIBRARY nvonnxparser
+        HINTS ${TENSORRT_ROOT}/lib
+        PATH_SUFFIXES lib lib64)
 
 add_subdirectory("src/sensors")
 add_subdirectory("src/perception")
@@ -74,6 +87,7 @@ add_executable(
     "src/main.cpp"
     "src/utils/common.cpp"
     "src/utils/file_storage.cpp"
+    "src/utils/timer.cpp"
 
     "resources.qrc"
     "src/ui/main_window.cpp"
@@ -104,10 +118,9 @@ target_link_libraries(${PROJECT_NAME}
     ${CPP_FS_LIB}
     openadas_car_sensors
     openadas_perception
-    nvonnxparser
+    ${NVONNXPARSER_LIBRARY}
     stdc++fs
     ${Qt5Widgets_LIBRARIES} 
-    ${Qt5Multimedia_LIBRARIES}
     ${OpenCV_LIBS}
 )
 
@@ -115,6 +128,11 @@ target_link_libraries(${PROJECT_NAME}
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                        ${CMAKE_SOURCE_DIR}/images $<TARGET_FILE_DIR:${PROJECT_NAME}>/images)
+
+# Build tensorrt engine tool
+add_executable(build_tensorrt_engine "src/tools/build_tensorrt_engine.cpp")
+target_link_libraries(build_tensorrt_engine openadas_perception openadas_object_detector stdc++fs)
+
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                        ${CMAKE_SOURCE_DIR}/models $<TARGET_FILE_DIR:${PROJECT_NAME}>/models)

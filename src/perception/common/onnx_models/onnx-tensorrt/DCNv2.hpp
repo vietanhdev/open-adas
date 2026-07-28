@@ -1,20 +1,16 @@
-//
-// Created by cao on 19-12-20.
-//
-
 #ifndef ONNX2TRT_DCNV2_H
 #define ONNX2TRT_DCNV2_H
 
 #pragma once
 
-#include "plugin.hpp"
-#include "serialize.hpp"
+#include "NvInfer.h"
 #include <cudnn.h>
 #include <vector>
+#include <string>
 #include <cublas_v2.h>
 #include <cuda.h>
 
-class DCNv2Plugin final : public onnx2trt::Plugin {
+class DCNv2Plugin final : public nvinfer1::IPluginV2DynamicExt {
     int _in_channel;
     int _out_channel;
     int _kernel_H;
@@ -31,52 +27,9 @@ class DCNv2Plugin final : public onnx2trt::Plugin {
     float* _d_ones;
     float *_d_columns;
 
-
     bool _initialized;
+    std::string mNamespace;
 
-protected:
-    void deserialize(void const* serialData, size_t serialLength) {
-        deserializeBase(serialData, serialLength);
-        deserialize_value(&serialData, &serialLength, &_in_channel);
-        deserialize_value(&serialData, &serialLength, &_out_channel);
-        deserialize_value(&serialData, &serialLength, &_kernel_H);
-        deserialize_value(&serialData, &serialLength, &_kernel_W);
-        deserialize_value(&serialData, &serialLength, &_deformable_group);
-        deserialize_value(&serialData, &serialLength, &_dilation);
-        deserialize_value(&serialData, &serialLength, &_groups);
-        deserialize_value(&serialData, &serialLength, &_padding);
-        deserialize_value(&serialData, &serialLength, &_stride);
-        deserialize_value(&serialData, &serialLength, &_h_weight);
-        deserialize_value(&serialData, &serialLength, &_h_bias);
-    }
-    size_t getSerializationSize() override {
-        return (serialized_size(_in_channel) +
-                serialized_size(_out_channel) +
-                serialized_size(_kernel_H) +
-                serialized_size(_kernel_W) +
-                serialized_size(_deformable_group) +
-                serialized_size(_dilation) +
-                serialized_size(_groups) +
-                serialized_size(_padding) +
-                serialized_size(_stride) +
-                serialized_size(_h_weight) +
-                serialized_size(_h_bias)
-               ) + getBaseSerializationSize();
-    }
-    void serialize(void *buffer) override {
-        serializeBase(buffer);
-        serialize_value(&buffer, _in_channel);
-        serialize_value(&buffer, _out_channel);
-        serialize_value(&buffer, _kernel_H);
-        serialize_value(&buffer, _kernel_W);
-        serialize_value(&buffer, _deformable_group);
-        serialize_value(&buffer, _dilation);
-        serialize_value(&buffer, _groups);
-        serialize_value(&buffer, _padding);
-        serialize_value(&buffer, _stride);
-        serialize_value(&buffer, _h_weight);
-        serialize_value(&buffer, _h_bias);
-    }
 public:
     DCNv2Plugin(int in_channel,
                 int out_channel,
@@ -90,27 +43,54 @@ public:
                 nvinfer1::Weights const& weight,
                 nvinfer1::Weights const& bias);
 
-    DCNv2Plugin(void const* serialData, size_t serialLength) : _initialized(false) {
-        this->deserialize(serialData, serialLength);
-    }
+    DCNv2Plugin(void const* serialData, size_t serialLength);
+    ~DCNv2Plugin() override;
 
-    const char* getPluginType() const override { return "DCNv2"; }
-    bool supportsFormat(nvinfer1::DataType type,
-                        nvinfer1::PluginFormat format) const override;
+    // IPluginV2 methods
+    const char* getPluginType() const noexcept override { return "DCNv2"; }
+    const char* getPluginVersion() const noexcept override { return "1"; }
+    int getNbOutputs() const noexcept override { return 1; }
+    int initialize() noexcept override;
+    void terminate() noexcept override;
+    size_t getSerializationSize() const noexcept override;
+    void serialize(void* buffer) const noexcept override;
+    void destroy() noexcept override { delete this; }
+    void setPluginNamespace(const char* pluginNamespace) noexcept override { mNamespace = pluginNamespace; }
+    const char* getPluginNamespace() const noexcept override { return mNamespace.c_str(); }
 
-    int getNbOutputs() const override { return 1; }
-    nvinfer1::Dims getOutputDimensions(int index,
-                                       const nvinfer1::Dims *inputDims,
-                                       int nbInputs) override;
+    // IPluginV2Ext methods
+    nvinfer1::DataType getOutputDataType(int index, const nvinfer1::DataType* inputTypes, int nbInputs) const noexcept override;
 
-    int initialize() override;
-    void terminate() override;
-    int enqueue(int batchSize,
-                const void *const *inputs, void **outputs,
-                void *workspace, cudaStream_t stream) override;
-    size_t getWorkspaceSize(int maxBatchSize) const override;
-    ~DCNv2Plugin();
+    // IPluginV2DynamicExt methods
+    nvinfer1::IPluginV2DynamicExt* clone() const noexcept override;
+    nvinfer1::DimsExprs getOutputDimensions(
+        int outputIndex, const nvinfer1::DimsExprs* inputs, int nbInputs, nvinfer1::IExprBuilder& exprBuilder) noexcept override;
+    bool supportsFormatCombination(
+        int pos, const nvinfer1::PluginTensorDesc* inOut, int nbInputs, int nbOutputs) noexcept override;
+    void configurePlugin(
+        const nvinfer1::DynamicPluginTensorDesc* in, int nbInputs, const nvinfer1::DynamicPluginTensorDesc* out, int nbOutputs) noexcept override;
+    size_t getWorkspaceSize(
+        const nvinfer1::PluginTensorDesc* inputs, int nbInputs, const nvinfer1::PluginTensorDesc* outputs, int nbOutputs) const noexcept override;
+    int enqueue(
+        const nvinfer1::PluginTensorDesc* inputDesc, const nvinfer1::PluginTensorDesc* outputDesc,
+        const void* const* inputs, void* const* outputs, void* workspace, cudaStream_t stream) noexcept override;
 };
 
+class DCNv2PluginCreator : public nvinfer1::IPluginCreator {
+public:
+    DCNv2PluginCreator();
+    const char* getPluginName() const noexcept override;
+    const char* getPluginVersion() const noexcept override;
+    const nvinfer1::PluginFieldCollection* getFieldNames() noexcept override;
+    nvinfer1::IPluginV2* createPlugin(const char* name, const nvinfer1::PluginFieldCollection* fc) noexcept override;
+    nvinfer1::IPluginV2* deserializePlugin(const char* name, const void* serialData, size_t serialLength) noexcept override;
+    void setPluginNamespace(const char* pluginNamespace) noexcept override;
+    const char* getPluginNamespace() const noexcept override;
+
+private:
+    static nvinfer1::PluginFieldCollection mFC;
+    static std::vector<nvinfer1::PluginField> mPluginAttributes;
+    std::string mNamespace;
+};
 
 #endif //ONNX2TRT_DCNV2_H

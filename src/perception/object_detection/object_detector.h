@@ -7,7 +7,9 @@
 
 #include "perception/common/onnx_models/include/ctdetNet.h"
 #include "traffic_object.h"
+#ifndef DISABLE_UFF
 #include "traffic_sign_classification/sign_classifier.h"
+#endif
 
 #include "utils/filesystem_include.h"
 #include "configs/config.h"
@@ -17,7 +19,9 @@ class ObjectDetector {
     ctdet::ctdetNet * net;
     std::unique_ptr<float[]> outputData;
 
+#ifndef DISABLE_UFF
     TrafficSignClassifier sign_classifier;
+#endif
 
    public:
     ObjectDetector();

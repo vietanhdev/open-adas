@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent, bool is_simulation_mode)
     connect(this->camera_wizard.get(), SIGNAL(updateCameraModel(float, float, float, float, float, float, float, float, float, float, float, float)), this, SLOT(updateCameraModel(float, float, float, float, float, float, float, float, float, float, float, float)));
 
 
-    #ifndef DISABLE_LANE_DETECTOR
+    #ifndef DISABLE_UFF
     lane_detector = std::make_shared<LaneDetector>();
     #endif
 
@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent, bool is_simulation_mode)
         );
     od_thread.detach();
 
-#ifndef DISABLE_LANE_DETECTOR
+#ifndef DISABLE_UFF
     std::thread ld_thread(&MainWindow::laneDetectionThread, 
         lane_detector,
         car_status,
@@ -229,6 +229,7 @@ void MainWindow::objectDetectionThread(
     }
 }
 
+#ifndef DISABLE_UFF
 void MainWindow::laneDetectionThread(
     std::shared_ptr<LaneDetector> lane_detector, std::shared_ptr<CarStatus> car_status, MainWindow *main_window) {
     cv::Mat clone_img;
@@ -247,6 +248,7 @@ void MainWindow::laneDetectionThread(
             continue;
         }
 
+#ifndef DISABLE_UFF
         #if defined (DEBUG_LANE_DETECTOR_SHOW_LINES)  || defined (DEBUG_LANE_DETECTOR_SHOW_LINE_MASK)
         cv::Mat lane_line_mask;
         cv::Mat detected_line_img;
@@ -261,7 +263,8 @@ void MainWindow::laneDetectionThread(
         std::vector<LaneLine> detected_lines = lane_detector->detectLaneLines(clone_img, lane_departure);
         car_status->setLaneDetectionTime(Timer::calcTimePassed(begin_time));
         car_status->setDetectedLaneLines(detected_lines);
-        #endif 
+        #endif
+#endif // DISABLE_UFF
 
         if (car_status->getCarSpeed() >= MIN_SPEED_FOR_LANE_DEPARTURE_WARNING) {
             main_window->is_lane_departure_warning = lane_departure;
@@ -273,6 +276,7 @@ void MainWindow::laneDetectionThread(
 
     }
 }
+#endif
 
 void MainWindow::carPropReaderThread(
     std::shared_ptr<CarGPSReader> car_gps_reader,
@@ -340,7 +344,7 @@ void MainWindow::startVideoGrabber() {
 
         if (!draw_frame.empty()) {
 
-            #ifndef DISABLE_LANE_DETECTOR
+            #ifndef DISABLE_UFF
             std::vector<LaneLine> detected_lane_lines = car_status->getDetectedLaneLines();
                 
             if (!detected_lane_lines.empty()) {
@@ -412,7 +416,7 @@ void MainWindow::startVideoGrabber() {
 
                 cv::putText(draw_frame, "Object detection: " +  std::to_string(object_detection_time) + " ms", Point2f(10,10), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
 
-                #ifndef DISABLE_LANE_DETECTOR
+                #ifndef DISABLE_UFF
                 cv::putText(draw_frame, "Lane detection: " + std::to_string(lane_detection_time) + " ms", Point2f(10,20), FONT_HERSHEY_PLAIN, 0.8,  Scalar(0,0,255,255), 1.5);
                 #endif
                 
@@ -449,6 +453,14 @@ void MainWindow::startVideoGrabber() {
             ui->graphicsView->fitInView(&pixmap, Qt::KeepAspectRatio);
 
             ui->speedLabel->setText(QString("Speed: ") + QString::number(car_status->getCarSpeed()) + QString(" km/h"));
+
+            static cv::VideoWriter *debug_out = nullptr;
+            if (draw_frame.cols > 320) {
+                if (debug_out == nullptr) {
+                    debug_out = new cv::VideoWriter("/home/AutoDP/jainil.bavishi/open-adas/build/bin/direct_output.avi", cv::VideoWriter::fourcc('M','J','P','G'), 30, draw_frame.size());
+                }
+                debug_out->write(draw_frame);
+            }
         }
 
         qApp->processEvents();

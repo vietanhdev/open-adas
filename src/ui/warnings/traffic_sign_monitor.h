@@ -5,7 +5,9 @@
 #include <string>
 #include "utils/timer.h"
 #include "sensors/car_status.h"
+#ifndef DISABLE_UFF
 #include "perception/object_detection/traffic_sign_classification/sign_classifier.h"
+#endif
 #include "perception/object_detection/object_detector.h"
 
 class TrafficSignMonitor {

@@ -37,8 +37,10 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::
     int num_det = static_cast<int>(outputData[0]);
 
     std::vector<Detection> detected_objects;
-    detected_objects.resize(num_det);
-    memcpy(detected_objects.data(), &outputData[1], num_det * sizeof(Detection));
+    if (num_det > 0) {
+        detected_objects.resize(num_det);
+        memcpy(detected_objects.data(), &outputData[1], num_det * sizeof(Detection));
+    }
 
     postProcess(detected_objects, img, net->forwardFace);
 
@@ -89,10 +91,12 @@ std::vector<TrafficObject> ObjectDetector::detect(const cv::Mat &img, const cv::
         );
     }
 
+#ifndef DISABLE_UFF
     std::vector<std::string> sign_names = sign_classifier.getSignNames(sign_crops);
     for (size_t i = 0; i < sign_object_ids.size(); ++i) {
         traffic_objects[sign_object_ids[i]].traffic_sign_type = sign_names[i];
     }
+#endif
 
     return traffic_objects;
 }
